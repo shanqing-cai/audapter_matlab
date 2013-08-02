@@ -1,0 +1,19 @@
+TODO:
+*. Progress bar in control window
+	[DONE]
+*. Resume function check
+	
+*. Parameter adjustments in control window and instant reprocessing. 
+		rmsThresh
+		fn1
+		fn2
+		aFact, bFact, gFact
+		option to show the word hints
+		option to show speed/duration warning hints
+		[DONE]
+		
+		button to play example recordings (gender specific).
+		speed and duration targets and ranges (needs to be saved to disk)
+		
+		
+*. Proper perturbation vectors.

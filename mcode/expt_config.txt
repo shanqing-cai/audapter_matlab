@@ -1,0 +1,73 @@
+SUBJECT_ID      TS_20130802_1
+SUBJECT_GENDER  male
+SUBJECT_DOB     1-JAN-1983
+SUBJECT_GROUP	CWS
+
+DATA_DIR        E:\DATA\APE_FMT
+
+SHOW_KIDS_ANIM      0    % 0 (no) or 1 (yes)
+
+SHIFT_RATIO_RAND_LOWER_F1		+0.25		% 200 / 800
+SHIFT_RATIO_RAND_LOWER_F2			-0.125   	% 250 / 2000
+SHIFT_RATIO_RAND_HIGHER_F1 		-0.25
+SHIFT_RATIO_RAND_HIGHER_F2			+0.125
+
+%SHIFT_DIRECTION_SUST 		LOWER			% EH --> AE
+SHIFT_RATIO_SUST_F1			+0.25
+SHIFT_RATIO_SUST_F2			-0.125
+
+MOUTH_MIC_DIST  10      % Unit: cm
+SPL_TARGET      74      % Unit: dB A SPL. Lowered from the adult target of 76
+SPL_RANGE       8       % Unit: dB A SPL: single-sided width
+
+VOWEL_LEN_TARG  0.40     % sec 
+VOWEL_LEN_RANGE 0.10     % sec: single-sided width
+
+PRE_WORDS	  BED HEAD TED		% Words for pre, pract1 and pract2 phases
+RAND_WORDS   BED HEAD TED       % Random-phase words
+SUST_WORDS    BED HEAD TED       % Sustained-phase words
+
+
+% PRE_REPS   	2       % Natural production of the VID words
+% PRACT1_REPS     4       % Volume (loudness) practice
+% PRACT2_REPS     4       % Speed practice
+PRE_REPS   	1       % 2: Natural production of the VID words
+PRACT1_REPS     1       % 5: Volume (loudness) practice
+PRACT2_REPS     1       % 5: Speed practice
+
+RAND_BLOCKS                         12	 	% Number of blocks in the random phase: must be an integer multiple of 3
+RAND_TRIALS_PER_BLOCK 		9		% Number of trials in each random block
+RAND_LOWER_TRIALS_PER_BLOCK 1 % Number of "lower" trials in each random block
+RAND_HIGHER_TRIALS_PER_BLOCK 1 % Number of "higher" trials in each random block
+
+% SUST_START_REPS					6		%
+% SUST_RAMP_REPS					6
+% SUST_STAY_REPS					12
+% SUST_END_REPS						6
+SUST_START_REPS					4		%
+SUST_RAMP_REPS					4
+SUST_STAY_REPS					4
+SUST_END_REPS					4
+
+NOISE_REPS_RATIO                0.5     
+% The ratio of noise reps to regular reps. For example, if the value is 0.5,
+% there will be 1 noise rep for every two regular reps. 
+% Set the value to zero if no noise rep is needed.
+% Noise reps will only be inserted into the start, ramp, stay and end phases.
+
+TRIAL_LEN       3     % Unit: sec
+TRIAL_LEN_MAX   8     % Unit: sec
+
+SAMPLING_RATE   48000
+FRAME_SIZE      96  
+DOWNSAMP_FACT   3
+
+% -- Blended noise -- %
+BLEND_NOISE_DB  60   % Unit: dB. To disable blended noise, use -Inf (i.e., not zero!!)
+
+% -- Speech-modulated noise (SMN) -- %
+SMN_GAIN        10      % Unit: dB
+SMN_FF_0        0.8     % Initial forgetting factor (must be < 1.0)
+SMN_FF_1        0.99    % Steady-state forgetting factor (must be < 1.0)
+SMN_ON_RAMP     0.1     % Unit: s
+SMN_OFF_RAMP    0.1     % Unit: s

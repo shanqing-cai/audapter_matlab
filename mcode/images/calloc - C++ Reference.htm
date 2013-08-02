@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>calloc - C++ Reference</title>
+<link rel="shortcut icon" type="image/x-icon" href="http://www.cplusplus.com/favicon.ico">
+<link rel="stylesheet" type="text/css" href="calloc%20-%20C++%20Reference_files/main.css">
+<script src="calloc%20-%20C++%20Reference_files/main.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="I_top">
+<div id="I_header">
+<div id="I_logo"><a href="http://www.cplusplus.com/" title="cplusplus.com"><div></div></a></div>
+<div id="I_search">
+<form id="search" action="/search.do" method="get">
+Search: <input name="q" size="13" class="txt"> <input value="Go" class="btn" type="submit">
+</form>
+</div>
+<div id="I_bar">
+<ul>
+<li><a href="http://www.cplusplus.com/reference/">Reference</a></li>
+<li><a href="http://www.cplusplus.com/reference/clibrary/">C Library</a></li>
+<li><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/">cstdlib (stdlib.h)</a></li>
+<li class="here">calloc</li>
+</ul>
+</div>
+<div id="I_user"><div style="display: block;" id="I_corner"><div id="I_cornerinner"><div id="I_userid">Not logged in</div></div></div><div id="I_userbuttons"><a href="http://www.cplusplus.com/user/access.cgi?w=signup">register</a><a id="I_btnlogin" href="javascript:elI_user.modal(1)">log in</a></div><div style="display: none;" id="I_fold"><div class="deco"></div><form style="display: none;" name="I_loginform" id="I_loginform" action="/user/access.cgi" onsubmit="elI_user.login(); return false;" method="post"><div class="fields"><input name="w" value="login" type="hidden"><input name="y" value="1" type="hidden"><input name="to" value="http://www.cplusplus.com/reference/clibrary/cstdlib/calloc/" type="hidden">user name: <input class="txt" name="l" size="8" title="Type user name" type="text"><br>password: <input class="txt" name="p" size="8" title="Type password" type="password"><br><input class="chk" name="rememberme" id="rememberme" value="1" type="checkbox"><label for="rememberme">remember me</label>&nbsp;<input class="btn" value="sign in" type="submit"><br><div class="forgot"><a href="http://www.cplusplus.com/user/access.cgi?w=lostpass">forgot your password?</a></div></div><div class="openid">or sign in using:<br><a class="google" href="http://www.cplusplus.com/user/access.cgi?w=login&amp;y=1&amp;pr=google&amp;to=%2Freference%2Fclibrary%2Fcstdlib%2Fcalloc%2F" title="Sign in using your google account"><span></span></a><a class="yahoo" href="http://www.cplusplus.com/user/access.cgi?w=login&amp;y=1&amp;pr=yahoo&amp;to=%2Freference%2Fclibrary%2Fcstdlib%2Fcalloc%2F" title="Sign in using your Yahoo! account"><span></span></a> </div></form><div style="display: none;" id="I_loginwait"></div><div style="display: none;" id="I_loginfail"><div id="I_loginfailtext"></div><a class="C_bRepeat" href="javascript:elI_user.modal(1)">try again</a><a class="C_bCancel" href="javascript:elI_user.modal(0)">cancel</a><div class="forgot"><a href="http://www.cplusplus.com/user/access.cgi?w=lostpass">forgot your password?</a></div></div><div class="close"><a href="javascript:elI_user.modal(0)" title="cancel log in"><span></span></a></div></div></div>
+</div></div>
+<div id="I_mid">
+<div id="I_wrap">
+<div id="I_main">
+<div class="C_ad728">
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-7688470879129516";
+google_ad_slot = "7973859818";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript" src="calloc%20-%20C++%20Reference_files/show_ads.js">
+</script><ins style="display:inline-table;border:none;height:90px;margin:0;padding:0;position:relative;visibility:visible;width:728px"><ins id="aswift_0_anchor" style="display:block;border:none;height:90px;margin:0;padding:0;position:relative;visibility:visible;width:728px"><iframe allowtransparency="true" hspace="0" marginwidth="0" marginheight="0" onload="var i=this.id,s=window.google_iframe_oncopy,H=s&amp;&amp;s.handlers,h=H&amp;&amp;H[i],w=this.contentWindow,d;try{d=w.document}catch(e){}if(h&amp;&amp;d&amp;&amp;(!d.body||!d.body.firstChild)){if(h.call){i+='.call';setTimeout(h,0)}else if(h.match){i+='.nav';w.location.replace(h)}s.log&amp;&amp;s.log.push(i)}" vspace="0" id="aswift_0" name="aswift_0" style="left:0;position:absolute;top:0;" frameborder="0" height="90" scrolling="no" width="728"></iframe></ins></ins>
+</div><div id="I_content"><div class="C_doc">
+<div id="I_type">function</div>
+<h1>calloc</h1>
+<div id="I_file">&lt;cstdlib&gt;</div>
+<div class="C_prototype"><pre>void * calloc ( size_t num, size_t size );</pre></div><div id="I_description">Allocate space for array in memory</div>
+Allocates a block of memory for an array of <i>num</i> elements, each of them <i>size</i> bytes long, and initializes all its bits to zero.<br>
+<br>
+The effective result is the allocation of an zero-initialized memory block of (<i>num</i> * <i>size</i>) bytes.<br>
+<br>
+<h3>Parameters</h3>
+<dl>
+<dt>num</dt>
+<dd>Number of elements to be allocated.</dd>
+<dt>size</dt>
+<dd>Size of elements.</dd>
+</dl>
+<br>
+<h3>Return Value</h3>
+A pointer to the memory block allocated by the function.<br>
+The type of this pointer is always <tt>void*</tt>, which can be cast to the desired type of data pointer in order to be dereferenceable.<br>
+If the function failed to allocate the requested block of memory, a <tt>NULL</tt> pointer is returned.<br>
+<br>
+<h3>Example</h3>
+<div class="auto"><table class="snippet"><tbody><tr><td class="rownum"><pre><code>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br></code></pre></td>
+<td class="source"><pre><code><cite>/* calloc example */</cite>
+<dfn>#include &lt;stdio.h&gt;</dfn>
+<dfn>#include &lt;stdlib.h&gt;</dfn>
+
+<var>int</var> main ()
+{
+  <var>int</var> i,n;
+  <var>int</var> * pData;
+  printf (<kbd>"Amount of numbers to be entered: "</kbd>);
+  scanf (<kbd>"%d"</kbd>,&amp;i);
+  pData = (<var>int</var>*) calloc (i,<var>sizeof</var>(<var>int</var>));
+  <var>if</var> (pData==NULL) exit (1);
+  <var>for</var> (n=0;n&lt;i;n++)
+  {
+    printf (<kbd>"Enter number #%d: "</kbd>,n);
+    scanf (<kbd>"%d"</kbd>,&amp;pData[n]);
+  }
+  printf (<kbd>"You have entered: "</kbd>);
+  <var>for</var> (n=0;n&lt;i;n++) printf (<kbd>"%d "</kbd>,pData[n]);
+  free (pData);
+  <var>return</var> 0;
+}</code></pre></td></tr></tbody></table></div>
+<br>
+<br>
+This program simply stores numbers and then prints them out. But the 
+number of items it stores can be adapted each time the program is 
+executed because it allocates as much dynamic memory as needed during 
+runtime.<br>
+<br>
+<h3>See also</h3>
+<dl class="links"><dt><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/free/"><b>free</b></a></dt><dd>Deallocate space in memory <span class="typ">(function)</span></dd></dl><dl class="links"><dt><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/malloc/"><b>malloc</b></a></dt><dd>Allocate memory block <span class="typ">(function)</span></dd></dl><dl class="links"><dt><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/realloc/"><b>realloc</b></a></dt><dd>Reallocate memory block <span class="typ">(function)</span></dd></dl>
+</div><div id="CH_bb"></div></div></div><div id="I_nav">
+<div class="sect root">
+<h3><b><a href="http://www.cplusplus.com/">C++</a></b></h3>
+<ul>
+<li class="folder info"><a href="http://www.cplusplus.com/info/">Information</a></li>
+<li class="folder doc"><a href="http://www.cplusplus.com/doc/">Documentation</a></li>
+<li class="folder selected reference"><a href="http://www.cplusplus.com/reference/">Reference</a></li>
+<li class="folder articles"><a href="http://www.cplusplus.com/articles/">Articles</a></li>
+<li class="folder forum"><a href="http://www.cplusplus.com/forum/">Forum</a></li>
+</ul>
+</div>
+<div class="sect">
+<h3><b><a href="http://www.cplusplus.com/reference/">Reference</a></b></h3>
+<ul>
+<li class="cpp98 cpp11 selected folder"><a href="http://www.cplusplus.com/reference/clibrary/">C Library</a></li>
+<li class="cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/iostream/">IOstream Library</a></li>
+<li class="cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/string/">Strings library</a></li>
+<li class="cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/stl/">STL Containers</a></li>
+<li class="cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/algorithm/">STL Algorithms</a></li>
+<li class="cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/std/">Miscellaneous</a></li>
+</ul>
+</div>
+<div class="sect cpp98 cpp11">
+<h3><b><a href="http://www.cplusplus.com/reference/clibrary/">C Library</a></b></h3>
+<ul>
+<li class="c90 c99 arm cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/clibrary/cassert/">cassert (assert.h)</a></li>
+<li class="c90 c99 arm cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/clibrary/cctype/">cctype (ctype.h)</a></li>
+<li class="c90 c99 arm cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/clibrary/cerrno/">cerrno (errno.h)</a></li>
+<li class="c90 c99 arm cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/clibrary/cfloat/">cfloat (float.h)</a></li>
+<li class="c90 c99 arm cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/clibrary/ciso646/">ciso646 (iso646.h)</a></li>
+<li class="c90 c99 arm cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/clibrary/climits/">climits (limits.h)</a></li>
+<li class="c90 c99 arm cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/clibrary/clocale/">clocale (locale.h)</a></li>
+<li class="c90 c99 arm cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/clibrary/cmath/">cmath (math.h)</a></li>
+<li class="c90 c99 arm cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/clibrary/csetjmp/">csetjmp (setjmp.h)</a></li>
+<li class="c90 c99 arm cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/clibrary/csignal/">csignal (signal.h)</a></li>
+<li class="c90 c99 arm cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/clibrary/cstdarg/">cstdarg (stdarg.h)</a></li>
+<li class="c90 c99 arm cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/clibrary/cstddef/">cstddef (stddef.h)</a></li>
+<li class="c90 c99 arm cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/clibrary/cstdio/">cstdio (stdio.h)</a></li>
+<li class="c90 c99 arm cpp98 cpp11 selected folder"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/">cstdlib (stdlib.h)</a></li>
+<li class="c90 c99 arm cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/clibrary/cstring/">cstring (string.h)</a></li>
+<li class="c90 c99 arm cpp98 cpp11 folder"><a href="http://www.cplusplus.com/reference/clibrary/ctime/">ctime (time.h)</a></li>
+</ul>
+</div>
+<div class="sect c90 c99 arm cpp98 cpp11">
+<h3><b><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/">cstdlib (stdlib.h)</a></b></h3>
+<ul>
+<li><h4>functions:</h4><ul>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/abort/">abort</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/abs/">abs</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/atexit/">atexit</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/atof/">atof</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/atoi/">atoi</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/atol/">atol</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/bsearch/">bsearch</a></li>
+<li class="c90 c99 arm cpp98 cpp11 selected"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/calloc/">calloc</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/div/">div</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/exit/">exit</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/free/">free</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/getenv/">getenv</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/labs/">labs</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/ldiv/">ldiv</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/malloc/">malloc</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/mblen/">mblen</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/mbstowcs/">mbstowcs</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/mbtowc/">mbtowc</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/qsort/">qsort</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/rand/">rand</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/realloc/">realloc</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/srand/">srand</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/strtod/">strtod</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/strtol/">strtol</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/strtoul/">strtoul</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/system/">system</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/wcstombs/">wcstombs</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/wctomb/">wctomb</a></li>
+</ul></li>
+<li><h4>functions (non-standard):</h4><ul>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/itoa/">itoa</a></li>
+</ul></li>
+<li><h4>macros:</h4><ul>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/EXIT_FAILURE/">EXIT_FAILURE</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/EXIT_SUCCESS/">EXIT_SUCCESS</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/MB_CUR_MAX/">MB_CUR_MAX</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/NULL/">NULL</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/RAND_MAX/">RAND_MAX</a></li>
+</ul></li>
+<li><h4>types:</h4><ul>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/div_t/">div_t</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/ldiv_t/">ldiv_t</a></li>
+<li class="c90 c99 arm cpp98 cpp11"><a href="http://www.cplusplus.com/reference/clibrary/cstdlib/size_t/">size_t</a></li>
+</ul></li>
+</ul>
+</div>
+<div id="I_subnav"></div>
+<div class="C_ad234">
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-7688470879129516";
+google_ad_slot = "7445514729";
+google_ad_width = 234;
+google_ad_height = 60;
+//-->
+</script>
+<script type="text/javascript" src="calloc%20-%20C++%20Reference_files/show_ads.js">
+</script><ins style="display:inline-table;border:none;height:60px;margin:0;padding:0;position:relative;visibility:visible;width:234px"><ins id="aswift_1_anchor" style="display:block;border:none;height:60px;margin:0;padding:0;position:relative;visibility:visible;width:234px"><iframe allowtransparency="true" hspace="0" marginwidth="0" marginheight="0" onload="var i=this.id,s=window.google_iframe_oncopy,H=s&amp;&amp;s.handlers,h=H&amp;&amp;H[i],w=this.contentWindow,d;try{d=w.document}catch(e){}if(h&amp;&amp;d&amp;&amp;(!d.body||!d.body.firstChild)){if(h.call){i+='.call';setTimeout(h,0)}else if(h.match){i+='.nav';w.location.replace(h)}s.log&amp;&amp;s.log.push(i)}" vspace="0" id="aswift_1" name="aswift_1" style="left:0;position:absolute;top:0;" frameborder="0" height="60" scrolling="no" width="234"></iframe></ins></ins>
+</div></div>
+<div id="I_midclear"></div>
+</div></div>
+<div id="I_bottom">
+<div id="I_footer">
+	<a href="http://www.cplusplus.com/">Home page</a> | <a href="http://www.cplusplus.com/privacy.do">Privacy policy</a> | <a href="http://v2.cplusplus.com/reference/clibrary/cstdlib/calloc/">old layout</a><br>© cplusplus.com, 2000-2012 - All rights reserved - <i>v3.0</i><br><a href="http://www.cplusplus.com/contact.do?referrer=http%3A%2F%2Fwww.cplusplus.com%2Freference%2Fclibrary%2Fcstdlib%2Fcalloc%2F">Spotted an error? contact us</a>
+</div>
+</div>
+
+
+<script src="calloc%20-%20C++%20Reference_files/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+<!--
+onPrint.print();
+new LoginBox('I_user',1);ParseSwitches('C_switch'); onSession ( function(us) {
+		el=document.getElementById('CH_bb'); el.innerHTML='';
+		if (us.auth(4096)) {
+			
+			el.appendChild(btn('Edit Page','Edit Page','edit','/reference/edit.cgi?a=clibrary+cstdlib+calloc'));
+			el.appendChild(btn('Delete Page','Delete Page','delete','javascript:docdel()'));
+		}
+	});
+	function docdel() { if (confirm('WARNING: You are about to delete this page. Confirm?')) window.location='/reference/delete.cgi?a=clibrary+cstdlib+calloc'; }
+	var gso = new Session ('ssn29','rel29',14400,86400,1339589138);
+_uacct = "UA-521783-1";
+urchinTracker();
+//-->
+</script>
+
+
+</body></html>

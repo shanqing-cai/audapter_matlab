@@ -1,0 +1,36 @@
+* Fix speed (duration) range. Think about how to deal with for children.
+
+Maybe play some recorded voices? 
+
+* Onset prompt (simultaneous with bird?)
+	DONE. Gave four options.
+* No speed animation in pract1 phase.
+	DONE.
+* Record vocal prompts: speed right, longer, shorter, etc. 
+
+* Adjust prompt msg size in the control window
+	DONE
+* "Go button" after a speed error. 
+	DONE
+* Update the "correct" count computation method to include the speed and volume criteria.
+	DONE
+* Solve bug: 
+	--- Coming up: rand. nReps = 6; nTrials = 54 ---
+	(Enter to skip) nRepsNew = 
+	??? Reference to non-existent field 'words'.
+	Bug in getVowelPitches.m
+	DONE
+* Fix the testTSM error 
+	DONE
+* Add bCepsLift and related parameters to UIRecorder
+	DONE
+* Check resuming function
+	* Reloading manually set parameters (in control window) after resuming
+* Option to not show the speed/duration animation in the main phases (except in errors)
+	DONE
+* Rename kidape to kape
+	DONE
+* Make sure that in the rand phase, pert trials are separated by at least two noPert trials.
+	DONE. See line 82 of genRandScript.m	
+	
+* Increase the duration of the trials
