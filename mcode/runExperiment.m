@@ -5,12 +5,18 @@ DEBUG=0;
 %% ---- Read and parse expt_config.txt ----
 expt_config=read_parse_expt_config('expt_config.txt');
 
+if ~(isequal(expt_config.PERT_MODE, 'PITCH') || isequal(expt_config.PERT_MODE, 'FMT'))
+    error('Unrecognized PERT_MODE: %s', expt_config.PERT_MODE);
+end
+
+%% TODO: Ad hoc
+ost = '../pert/ost';
+check_file(ost);
+
 %% ---- Subject and experiment information ---
 subject.expt_config         = expt_config;
 subject.name				= expt_config.SUBJECT_ID; 
 subject.sex					= expt_config.SUBJECT_GENDER;  % male / female
-% subject.shiftDirectionSust	=expt_config.SHIFT_DIRECTION;  %SC F1Up / F1Down
-% subject.shiftRatio			=expt_config.SHIFT_RATIO;    %
 subject.age                 = expt_config.SUBJECT_AGE;
 subject.group               = expt_config.SUBJECT_GROUP;
 
@@ -26,15 +32,8 @@ subject.trialLenMax         = expt_config.TRIAL_LEN_MAX;
 subject.hostName            = deblank(hostName);
 
 subject.dataDir             = expt_config.DATA_DIR;
-% if isequal(subject.hostName,'smcg-w510') || isequal(subject.hostName,'smcg_w510')
-%     subject.dataDir             ='E:\DATA\KIDAPE';
-%     subject.percDir             ='E:\DATA\DYS\PERC';
-% else
-    % subject.dataDir				='C:\CS_2004\PROJECTS\SAP-FMRI\';
-%     subject.dataDir				='D:\CS_2004\PROJECTS\DYS';
-% end
 
-subject.trigByScanner		= 0;
+subject.trigByScanner		= expt_config.TRIGGER_BY_MRI_SCANNER;
 subject.TA					= 2.5;
 subject.ITI					= 6;
 
@@ -70,9 +69,6 @@ if (~isempty(findStringInCell(varargin, 'subject')))
     subject = varargin{findStringInCell(varargin, 'subject') + 1};
 end
 
-% if (~isfield(subject,'pcrKnob'))
-%     subject.pcrKnob=input('Phone / Ctrl Room knob = ');
-% end
 subject.pcrKnob=0;
 
 %%
@@ -94,7 +90,7 @@ if isdir(dirname)
         messg={sprintf('The specified directory %s already contains a previously recorded experiment', dirname)
             ''
             'Continue experiment, overwrite  or cancel ?'};
-        button1 = questdlg(messg,'DIRECTORY NOT EMPTY','Continue','Overwrite','Cancel','Continue');
+        button1 = questdlg(messg, 'DIRECTORY NOT EMPTY', 'Continue', 'Overwrite', 'Cancel', 'Continue');
         switch button1
             case 'Overwrite'
                 button2 = questdlg({sprintf('Are you sure you want to overwrite data in %s?', dirname)} ,'OVERWRITE EXPERIMENT ?');
@@ -196,11 +192,17 @@ if bNew % set up new experiment
                            'noiseRepsRatio', expt.script.(t_phase).noiseRepsRatio);
     end
     
-    p=getTSMDefaultParams(subject.sex,...
+    p = getAudapterDefaultParams(subject.sex,...
         'closedLoopGain',expt.subject.closedLoopGain,...
         'trialLen',expt.subject.trialLen,...
         'trialLenMax', expt.subject.trialLenMax, ...
-        'mouthMicDist',expt.subject.mouthMicDist);
+        'mouthMicDist',expt.subject.mouthMicDist, ...
+        'sr',expt_config.SAMPLING_RATE/expt_config.DOWNSAMP_FACT,...
+        'downFact',expt_config.DOWNSAMP_FACT,...
+        'frameLen',expt_config.FRAME_SIZE/expt_config.DOWNSAMP_FACT, ...
+        'pvocFrameLen', expt_config.PVOC_FRAME_LEN, ...
+        'pvocHop', expt_config.PVOC_HOP);
+    
 
     state.phase=1;
     state.rep=1;
@@ -451,17 +453,6 @@ for n=startPhase:length(allPhases)
 
     expt.script.(thisphase).startTime=clock;
 
-% 	set(hgui.rms_axes,'visible','on');
-%     set(hgui.rms_imgh,'visible','on');
-%     set(hgui.rms_label,'visible','on');
-% 	set(hgui.rms_too_soft,'visible','on');
-% 	set(hgui.rms_too_loud,'visible','on');	
-%     set(hgui.speed_axes,'visible','on');
-%     set(hgui.speed_imgh,'visible','on');
-%     set(hgui.speed_label,'visible','on');
-% 	set(hgui.speed_too_slow,'visible','on');
-%     set(hgui.speed_too_fast,'visible','on');
-    
     hgui.showSpeedPrompt = 0;
     hgui.showRmsPrompt = 0;
     hgui.bSpeedRepeat=0;
@@ -670,34 +661,57 @@ for n=startPhase:length(allPhases)
 		
 		% --- Perturbation field ---
 		p.pertF2=linspace(p.F2Min, p.F2Max, p.pertFieldN);
-        t_amp = norm([subject.expt_config.SHIFT_RATIO_SUST_F1, ...
-                      subject.expt_config.SHIFT_RATIO_SUST_F2]);
-        t_angle = angle(subject.expt_config.SHIFT_RATIO_SUST_F1 + ...
-                        i * subject.expt_config.SHIFT_RATIO_SUST_F2);
+        if isequal(subject.expt_config.PERT_MODE, 'FMT')
+            t_amp = norm([subject.expt_config.SHIFT_RATIO_SUST_F1, ...
+                          subject.expt_config.SHIFT_RATIO_SUST_F2]);
+            t_angle = angle(subject.expt_config.SHIFT_RATIO_SUST_F1 + ...
+                            i * subject.expt_config.SHIFT_RATIO_SUST_F2);        
+        end
 
         pcf_fn = fullfile(subsubdirname, 'fmt.pcf');
                     
         if isequal(thisphase, 'ramp')
-            p.bShift = 1;
-            p.pertAmp = i0 / (expt.script.ramp.nReps+1) * t_amp * ones(1, p.pertFieldN);
-            p.pertPhi = t_angle * ones(1, p.pertFieldN);
-            gen_fmt_pert_pcf(i0 / (expt.script.ramp.nReps+1) * t_amp, t_angle, pcf_fn);
+            if isequal(subject.expt_config.PERT_MODE, 'FMT')
+                p.bShift = 1;
+                p.bPitchShift = 0;
+                p.bPitchShiftRatio = 1.0;
+                p.pertAmp = i0 / (expt.script.ramp.nReps+1) * t_amp * ones(1, p.pertFieldN);
+                p.pertPhi = t_angle * ones(1, p.pertFieldN);
+                gen_pert_pcf(5, 20, i0 / (expt.script.ramp.nReps+1) * t_amp, t_angle, pcf_fn);
+            else
+                p.bShift = 0;
+                pitchShiftST = i0 / (expt.script.ramp.nReps+1) * subject.expt_config.PITCH_SHIFT_SEMITONES_SUST;
+                p.pitchShiftRatio = 2 ^ (pitchShiftST / 12.0);
+                gen_pert_pcf(5, 2, pitchShiftST, 0, 0, pcf_fn);
+            end
         elseif isequal(thisphase, 'stay')
-            p.bShift = 1;
-            p.pertAmp = t_amp * ones(1, p.pertFieldN);
-            p.pertPhi = t_angle * ones(1, p.pertFieldN);
-            gen_fmt_pert_pcf(t_amp, t_angle, pcf_fn);
-        elseif ~isequal(thisphase, 'rand')
+            if isequal(subject.expt_config.PERT_MODE, 'FMT')
+                p.bShift = 1;
+                p.bPitchShift = 0;
+                p.bPitchShiftRatio = 1.0;
+                p.pertAmp = t_amp * ones(1, p.pertFieldN);
+                p.pertPhi = t_angle * ones(1, p.pertFieldN);
+                gen_pert_pcf(5, 2, t_amp, t_angle, pcf_fn);
+            else
+                p.bShift = 0;
+                pitchShiftST = subject.expt_config.PITCH_SHIFT_SEMITONES_SUST;
+                p.pitchShiftRatio = 2 ^ (pitchShiftST / 12.0);
+                gen_pert_pcf(5, 2, pitchShiftST, 0, 0, pcf_fn);
+            end
+        elseif ~isequal(thisphase, 'rand')           
             p.bShift = 0;
+            p.pitchShiftRatio = 0;
             p.pertAmp = zeros(1, p.pertFieldN);
             p.pertPhi = zeros(1, p.pertFieldN);
-            gen_fmt_pert_pcf(0, 0, pcf_fn);
+            gen_pert_pcf(5, 2, 0, 0, 0, pcf_fn);
         end
         
         if ~isequal(thisphase, 'rand')
             check_file(pcf_fn);
             AudapterIO('pcf', pcf_fn);
         end
+        
+        AudapterIO('ost', ost);
         
 		if ~bAO
             AudapterIO('init',p);  %SC Inject p to Audapter
@@ -712,42 +726,63 @@ for n=startPhase:length(allPhases)
             thisTrial = expt.script.(thisphase).(repString).trialOrder(k); % 0: silent; 1: no noise; 2: noise only; 			
             thisWord = expt.script.(thisphase).(repString).word{k};     %SC Retrieve the word from the randomly shuffled list
 
-            
             if isequal(thisphase, 'rand')   % Configure random perturbation
                 thispert = expt.script.(thisphase).(repString).pertType(k);
-                if thispert == 1 % Upward perturbation                    
-                    p.pertAmp = norm([subject.expt_config.SHIFT_RATIO_RAND_HIGHER_F1, ...
-                                      subject.expt_config.SHIFT_RATIO_RAND_HIGHER_F2]) * ...
-                                ones(1, p.pertFieldN);
-                    t_angle =  angle(subject.expt_config.SHIFT_RATIO_RAND_HIGHER_F1 + ...
-                                     i * subject.expt_config.SHIFT_RATIO_RAND_HIGHER_F2);
-                    p.pertPhi = t_angle * ones(1, p.pertFieldN);
-                    p.bShift = 1;
+                if thispert == 1 % Upward perturbation
+                    if isequal(subject.expt_config.PERT_MODE, 'FMT')
+                        p.pertAmp = norm([subject.expt_config.SHIFT_RATIO_RAND_HIGHER_F1, ...
+                                          subject.expt_config.SHIFT_RATIO_RAND_HIGHER_F2]) * ...
+                                    ones(1, p.pertFieldN);
+                        t_angle =  angle(subject.expt_config.SHIFT_RATIO_RAND_HIGHER_F1 + ...
+                                         i * subject.expt_config.SHIFT_RATIO_RAND_HIGHER_F2);
+                        p.pertPhi = t_angle * ones(1, p.pertFieldN);
+                        p.bShift = 1;
+                        p.bPitchShift = 0;
+                        p.pitchShiftRatio = 1.0;
+                    else
+                        p.bShift = 0;
+                        p.bPitchShift = 1;                        
+                        p.pitchShiftRatio = 2 ^ (subject.expt_config.PITCH_SHIFT_SEMITONES_RAND / 12);
+                    end
                     
                     pcf = fullfile(subsubdirname,['trial-', num2str(k), '-', num2str(thisTrial), '_up.pcf']);
                 elseif thispert == -1 % Downward perturbation
-                    p.pertAmp = norm([subject.expt_config.SHIFT_RATIO_RAND_LOWER_F1, ...
-                                      subject.expt_config.SHIFT_RATIO_RAND_LOWER_F2]) * ...
-                                ones(1, p.pertFieldN);
-                    t_angle =  angle(subject.expt_config.SHIFT_RATIO_RAND_LOWER_F1 + ...
-                                     i * subject.expt_config.SHIFT_RATIO_RAND_LOWER_F2);
-                    p.pertPhi = t_angle * ones(1, p.pertFieldN);
-                    p.bShift = 1;
+                    if isequal(subject.expt_config.PERT_MODE, 'FMT')
+                        p.pertAmp = norm([subject.expt_config.SHIFT_RATIO_RAND_LOWER_F1, ...
+                                          subject.expt_config.SHIFT_RATIO_RAND_LOWER_F2]) * ...
+                                    ones(1, p.pertFieldN);
+                        t_angle =  angle(subject.expt_config.SHIFT_RATIO_RAND_LOWER_F1 + ...
+                                         i * subject.expt_config.SHIFT_RATIO_RAND_LOWER_F2);
+                        p.pertPhi = t_angle * ones(1, p.pertFieldN);
+                        p.bShift = 1;
+                        p.bPitchShift = 0;
+                        p.pitchShiftRatio = 1.0;
+                    else
+                        p.bShift = 0;
+                        p.bPitchShift = 1;
+                        p.pitchShiftRatio = 2 ^ (-subject.expt_config.PITCH_SHIFT_SEMITONES_RAND / 12);
+                    end
                     
                     pcf = fullfile(subsubdirname,['trial-', num2str(k), '-', num2str(thisTrial), '_dn.pcf']);
                 else % No perturbation
                     p.pertAmp = zeros(1, p.pertFieldN);
                     p.pertPhi = zeros(1, p.pertFieldN);
                     p.bShift = 0;
+                    p.bPitchShift = 0;
+                    p.pitchShiftRatio = 1.0;
                     
                     pcf = fullfile(subsubdirname,['trial-', num2str(k), '-', num2str(thisTrial), '_np.pcf']);
                 end                               
                 
                 AudapterIO('init', p);
                 
-                gen_fmt_pert_pcf(p.pertAmp(1), t_angle, pcf);
+                if isequal(subject.expt_config.PERT_MODE, 'FMT')
+                    gen_pert_pcf(5, 2, 0, p.pertAmp(1), t_angle, pcf);
+                else
+                    gen_pert_pcf(5, 2, log2(p.pitchShiftRatio) * 12, 0, 0, pcf);
+                end
                 check_file(pcf);
-                AudapterIO('pcf', pcf);                    
+                AudapterIO('pcf', pcf);
             end
 
 			hgui.trialType=thisTrial;

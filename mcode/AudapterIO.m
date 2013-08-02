@@ -152,6 +152,32 @@ switch(action)
             Audapter(3, 'rmsff_fb', p.rmsFF_fb, toPrompt);
         end
         
+        %SC(2012/03/05) Frequency/pitch shifting
+        if (isfield(p, 'bPitchShift'))
+            Audapter(3, 'bpitchshift', p.bPitchShift, toPrompt);
+        end
+        if (isfield(p, 'pitchShiftRatio'))
+            Audapter(3, 'pitchshiftratio', p.pitchShiftRatio, toPrompt);
+        end
+        if (isfield(p, 'gain'))
+            Audapter(3, 'gain', p.gain, toPrompt);
+        end
+        
+        if (isfield(p, 'mute'))
+            Audapter(3, 'mute', p.mute, toPrompt);
+        end
+        
+        if (isfield(p, 'pvocFrameLen'))
+            Audapter(3, 'pvocframelen', p.pvocFrameLen, toPrompt);
+        end
+        if (isfield(p, 'pvocHop'))
+            Audapter(3, 'pvochop', p.pvocHop, toPrompt);
+        end
+        
+        if (isfield(p, 'bDownSampFilt'))
+            Audapter(3, 'bdownsampfilt', p.bDownSampFilt, toPrompt);
+        end
+        
         return;
 %%            
     case 'process',
@@ -165,6 +191,21 @@ switch(action)
 
         switch(nout)
             case 1,
+%                 data.signalIn       = signalMat(:,1);
+%                 data.signalOut      = signalMat(:,2);
+% 
+%                 data.intervals      = dataMat(:,1);
+%                 data.rms            = dataMat(:,2:4);
+%                 
+%                 offS = 5;
+%                 data.fmts           = dataMat(:,offS:offS+p.nTracks-1);
+%                 data.rads           = dataMat(:,offS+p.nTracks:offS+2*p.nTracks-1);
+%                 data.dfmts          = dataMat(:,offS+2*p.nTracks:offS+2*p.nTracks+1);
+%                 data.sfmts          = dataMat(:,offS+2*p.nTracks+2:offS+2*p.nTracks+3);
+% 
+%                 offS = offS+2*p.nTracks+4;
+%                 data.ai             = dataMat(:,offS:offS+p.nLPC);
+                
                 data.signalIn       = signalMat(:,1);
                 data.signalOut      = signalMat(:,2);
 
@@ -177,10 +218,20 @@ switch(action)
                 data.dfmts          = dataMat(:,offS+2*p.nTracks:offS+2*p.nTracks+1);
                 data.sfmts          = dataMat(:,offS+2*p.nTracks+2:offS+2*p.nTracks+3);
 
-                offS = offS+2*p.nTracks+4;
-                data.ai             = dataMat(:,offS:offS+p.nLPC);
+                offS = offS + 2 * p.nTracks + 4;
+%                 data.ai             = dataMat(:,offS:offS+p.nLPC);
+                
+                offS = offS + p.nLPC + 1;
+                data.rms_slope      = dataMat(:, offS);
+                              
+                offS = offS + 1;
+                data.ost_stat       = dataMat(:, offS);
+                
                 data.params         = p;
+
                 varargout(1)        = {data};
+
+
                 return;
 
             case 2,
@@ -200,8 +251,13 @@ switch(action)
     case 'reset',
         Audapter(6);
         
+    case 'ost',        
+        Audapter(8, params);
+        
     case 'pcf',
         Audapter(9, params);
+        
+        
         
     otherwise,
         

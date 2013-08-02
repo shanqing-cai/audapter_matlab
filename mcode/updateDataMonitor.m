@@ -22,6 +22,7 @@ set(gca,'YLim',[-1,1]);
 xlabel('Time (sec)');
 ylabel('Wave Out');
 
+
 [i1,i2,f1,f2,iv1,iv2]=getFmtPlotBounds(data.fmts(:,1),data.fmts(:,2));
 [k1,k2]=detectVowel(data.fmts(:,1),data.fmts(:,2),iv1,iv2,'eh','rms',data.rms(:,1));
 if (~isnan(i1) && ~isnan(i2) && ~isempty(i1) && ~isempty(i2) && k2 >= k1)
@@ -122,7 +123,7 @@ if (~isnan(i1) && ~isnan(i2) && ~isempty(i1) && ~isempty(i2) && k2 >= k1)
         [s,f,t]=spectrogram(sigSeg,128,96,1024,data.params.sr);
         imagesc(t,f,10*log10(abs(s))); hold on;
         axis xy;
-        hold on;
+        hold on;              
         
         frameDur = data.params.frameLen / data.params.sr;
         taxis1 = frameDur * (idx1 - 1) : frameDur : frameDur * (idx2 - 1);
@@ -130,7 +131,12 @@ if (~isnan(i1) && ~isnan(i2) && ~isempty(i1) && ~isempty(i2) && k2 >= k1)
         if idx2 <= size(data.fmts, 1)
             plot(taxis1, data.fmts(idx1 : idx2, 1), 'k-', 'LineWidth', 1.5);   hold on;
             plot(taxis1, data.fmts(idx1 : idx2, 2), 'k-', 'LineWidth', 1.5); 
+            
+            plot(taxis1, data.ost_stat(idx1 : idx2) * 500, 'b-');
         end
+        
+%         taxis2 = 0 : frameDur : frameDur * (length(data.ost_stat) - 1);
+        
         
         set(gca, 'XLim', [t(1),t(end)]);
         set(gca, 'YLim', [0, 5000]);

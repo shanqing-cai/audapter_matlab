@@ -1,4 +1,4 @@
-function p = getTSMDefaultParams(sex,varargin)
+function p = getAudapterDefaultParams(sex,varargin)
 switch sex
     case 'male'       
         p.nLPC          = 17;
@@ -16,14 +16,8 @@ p.aFact         = 1;
 p.bFact         = 0.8;
 p.gFact         = 1;
 
-if isequal(getHostName(), 'SHS-NAMBLABNEW')
-    p.downFact      = 4;
-    p.frameLen      = 64 / p.downFact;% must be a valid DMA Buffer size (64 128 256 ..)
-    Audapter('deviceName', 'M-Audio Delta');
-else
-    p.downFact      = 3;
-    p.frameLen      = 96 / p.downFact;% must be a valid DMA Buffer size (64 128 256 ..)
-end
+p.downFact      = 3;
+p.frameLen      = 96 / p.downFact;% must be a valid DMA Buffer size (64 128 256 ..)
 
 if ~isempty(fsic(varargin,'downFact'))
     p.downfact=varargin{fsic(varargin,'downFact')+1};
@@ -118,7 +112,12 @@ load('micRMS_100dBA.mat');
 p.rmsClipThresh=micRMS_100dBA / (10^((100-100)/20));	% 100 dB maximum input level
 
 p.bPitchShift = 0;
+if ~isempty(fsic(varargin, 'bPitchShift'))
+    p.bPitchShift = varargin{fsic(varargin, 'bPitchShift') + 1};
+end
+
 p.bBypassFmt = 0;
+
 
 %% 
 p.fb3Gain = dBSPL2WaveAmp(-Inf);
@@ -138,5 +137,21 @@ p.pertFieldN=257;
 p.pertF2=zeros(1,p.pertFieldN);
 p.pertAmp=zeros(1,p.pertFieldN);
 p.pertPhi=zeros(1,p.pertFieldN);
+
+%% Pitch shift and delay related
+p.delayFrames = 0;
+p.bPitchShift = 0;
+p.pitchShiftRatio = 1;
+p.pvocFrameLen = 256;
+p.pvocHop = 64;
+p.bDownSampFilt = 1;
+
+if ~isempty(fsic(varargin, 'pvocFrameLen'))
+    p.pvocFrameLen = varargin{fsic(varargin, 'pvocFrameLen') + 1};
+end
+
+if ~isempty(fsic(varargin, 'pvocHop'))
+    p.pvocHop = varargin{fsic(varargin, 'pvocHop') + 1};
+end
 
 return
