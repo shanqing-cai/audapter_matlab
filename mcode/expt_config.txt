@@ -1,7 +1,7 @@
-SUBJECT_ID      TS_20130802_6
+SUBJECT_ID      TS_20130802_11
 SUBJECT_GENDER  male
 SUBJECT_DOB     1-JAN-1983
-SUBJECT_GROUP	CWS
+SUBJECT_GROUP	AWS
 
 DATA_DIR        E:\DATA\APE
 
@@ -10,8 +10,8 @@ SHOW_KIDS_ANIM      0       % 0 (no) or 1 (yes)
 
 PERT_MODE          PITCH       % Alternatives: PITCH / FMT (any other values will lead to error)
 
-PITCH_SHIFT_SEMITONES_RAND       2  % Unit: semitones
-PITCH_SHIFT_SEMITONES_SUST       2  % Unit: semitones
+PITCH_SHIFT_SEMITONES_RAND       1  % Unit: semitones
+PITCH_SHIFT_SEMITONES_SUST       1  % Unit: semitones
 
 SHIFT_RATIO_RAND_LOWER_F1		+0.25		% 200 / 800
 SHIFT_RATIO_RAND_LOWER_F2			-0.125   	% 250 / 2000
@@ -68,8 +68,8 @@ FRAME_SIZE      96
 DOWNSAMP_FACT   3
 
 % -- Phase vocoder options -- %
-PVOC_FRAME_LEN  256
-PVOC_HOP        64
+PVOC_FRAME_LEN  512
+PVOC_HOP        128
 
 
 % -- Blended noise -- %

@@ -8,7 +8,9 @@ switch(action)
     case 'init',
         p=params;
         
-        Audapter(3, 'downfact', p.downFact, toPrompt);
+        if isfield(p, 'downFact')
+            Audapter(3, 'downfact', p.downFact, toPrompt);
+        end
   
         Audapter(3,'srate',p.sr, toPrompt);
         Audapter(3,'framelen',p.frameLen, toPrompt);
@@ -251,11 +253,22 @@ switch(action)
     case 'reset',
         Audapter(6);
         
-    case 'ost',        
-        Audapter(8, params);
-        
+    case 'ost',
+        if nargin == 2
+            Audapter(8, params);
+        elseif nargin == 4
+            Audapter(8, params, varargin{1});
+        else
+            error('%s: Invalid syntax under mode: %s', mfilename, action);
+        end
     case 'pcf',
-        Audapter(9, params);
+        if nargin == 2
+            Audapter(9, params);
+        elseif nargin == 4
+            Audapter(9, params, varargin{1});
+        else
+            error('%s: Invalid syntax under mode: %s', mfilename, action);
+        end
         
         
         

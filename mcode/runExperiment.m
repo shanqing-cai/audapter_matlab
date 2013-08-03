@@ -203,7 +203,11 @@ if bNew % set up new experiment
         'pvocFrameLen', expt_config.PVOC_FRAME_LEN, ...
         'pvocHop', expt_config.PVOC_HOP);
     
-
+    
+    if isequal(expt_config.PERT_MODE, 'PITCH')
+        p.bBypassFmt = 1;
+    end
+    
     state.phase=1;
     state.rep=1;
     state.params=p;
@@ -677,12 +681,12 @@ for n=startPhase:length(allPhases)
                 p.bPitchShiftRatio = 1.0;
                 p.pertAmp = i0 / (expt.script.ramp.nReps+1) * t_amp * ones(1, p.pertFieldN);
                 p.pertPhi = t_angle * ones(1, p.pertFieldN);
-                gen_pert_pcf(5, 20, i0 / (expt.script.ramp.nReps+1) * t_amp, t_angle, pcf_fn);
+                gen_pert_pcf(4, 2, i0 / (expt.script.ramp.nReps+1) * t_amp, t_angle, pcf_fn);
             else
                 p.bShift = 0;
                 pitchShiftST = i0 / (expt.script.ramp.nReps+1) * subject.expt_config.PITCH_SHIFT_SEMITONES_SUST;
                 p.pitchShiftRatio = 2 ^ (pitchShiftST / 12.0);
-                gen_pert_pcf(5, 2, pitchShiftST, 0, 0, pcf_fn);
+                gen_pert_pcf(4, 2, pitchShiftST, 0, 0, pcf_fn);
             end
         elseif isequal(thisphase, 'stay')
             if isequal(subject.expt_config.PERT_MODE, 'FMT')
@@ -691,27 +695,27 @@ for n=startPhase:length(allPhases)
                 p.bPitchShiftRatio = 1.0;
                 p.pertAmp = t_amp * ones(1, p.pertFieldN);
                 p.pertPhi = t_angle * ones(1, p.pertFieldN);
-                gen_pert_pcf(5, 2, t_amp, t_angle, pcf_fn);
+                gen_pert_pcf(4, 2, t_amp, t_angle, pcf_fn);
             else
                 p.bShift = 0;
                 pitchShiftST = subject.expt_config.PITCH_SHIFT_SEMITONES_SUST;
                 p.pitchShiftRatio = 2 ^ (pitchShiftST / 12.0);
-                gen_pert_pcf(5, 2, pitchShiftST, 0, 0, pcf_fn);
+                gen_pert_pcf(4, 2, pitchShiftST, 0, 0, pcf_fn);
             end
         elseif ~isequal(thisphase, 'rand')           
             p.bShift = 0;
             p.pitchShiftRatio = 0;
             p.pertAmp = zeros(1, p.pertFieldN);
             p.pertPhi = zeros(1, p.pertFieldN);
-            gen_pert_pcf(5, 2, 0, 0, 0, pcf_fn);
+            gen_pert_pcf(4, 2, 0, 0, 0, pcf_fn);
         end
         
         if ~isequal(thisphase, 'rand')
             check_file(pcf_fn);
-            AudapterIO('pcf', pcf_fn);
+            AudapterIO('pcf', pcf_fn, [], 0);
         end
         
-        AudapterIO('ost', ost);
+        AudapterIO('ost', ost, [], 0);
         
 		if ~bAO
             AudapterIO('init',p);  %SC Inject p to Audapter
@@ -729,6 +733,7 @@ for n=startPhase:length(allPhases)
             if isequal(thisphase, 'rand')   % Configure random perturbation
                 thispert = expt.script.(thisphase).(repString).pertType(k);
                 if thispert == 1 % Upward perturbation
+                    fprintf(1, 'rand pert type = UP\n');
                     if isequal(subject.expt_config.PERT_MODE, 'FMT')
                         p.pertAmp = norm([subject.expt_config.SHIFT_RATIO_RAND_HIGHER_F1, ...
                                           subject.expt_config.SHIFT_RATIO_RAND_HIGHER_F2]) * ...
@@ -747,6 +752,7 @@ for n=startPhase:length(allPhases)
                     
                     pcf = fullfile(subsubdirname,['trial-', num2str(k), '-', num2str(thisTrial), '_up.pcf']);
                 elseif thispert == -1 % Downward perturbation
+                    fprintf(1, 'rand pert type = DOWN\n');
                     if isequal(subject.expt_config.PERT_MODE, 'FMT')
                         p.pertAmp = norm([subject.expt_config.SHIFT_RATIO_RAND_LOWER_F1, ...
                                           subject.expt_config.SHIFT_RATIO_RAND_LOWER_F2]) * ...
@@ -765,10 +771,11 @@ for n=startPhase:length(allPhases)
                     
                     pcf = fullfile(subsubdirname,['trial-', num2str(k), '-', num2str(thisTrial), '_dn.pcf']);
                 else % No perturbation
+                    fprintf(1, 'rand pert type = NONE\n');
                     p.pertAmp = zeros(1, p.pertFieldN);
                     p.pertPhi = zeros(1, p.pertFieldN);
                     p.bShift = 0;
-                    p.bPitchShift = 0;
+                    p.bPitchShift = 1;
                     p.pitchShiftRatio = 1.0;
                     
                     pcf = fullfile(subsubdirname,['trial-', num2str(k), '-', num2str(thisTrial), '_np.pcf']);
@@ -777,12 +784,12 @@ for n=startPhase:length(allPhases)
                 AudapterIO('init', p);
                 
                 if isequal(subject.expt_config.PERT_MODE, 'FMT')
-                    gen_pert_pcf(5, 2, 0, p.pertAmp(1), t_angle, pcf);
+                    gen_pert_pcf(4, 2, 0, p.pertAmp(1), t_angle, pcf);
                 else
-                    gen_pert_pcf(5, 2, log2(p.pitchShiftRatio) * 12, 0, 0, pcf);
+                    gen_pert_pcf(4, 2, log2(p.pitchShiftRatio) * 12, 0, 0, pcf);
                 end
                 check_file(pcf);
-                AudapterIO('pcf', pcf);
+                AudapterIO('pcf', pcf, [], 0);
             end
 
 			hgui.trialType=thisTrial;
