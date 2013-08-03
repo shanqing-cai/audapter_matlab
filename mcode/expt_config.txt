@@ -1,4 +1,4 @@
-SUBJECT_ID      TS_20130802_11
+SUBJECT_ID      TS_20130802_12
 SUBJECT_GENDER  male
 SUBJECT_DOB     1-JAN-1983
 SUBJECT_GROUP	AWS
@@ -28,6 +28,11 @@ SPL_RANGE       8       % Unit: dB A SPL: single-sided width
 
 VOWEL_LEN_TARG  0.80     % sec 
 VOWEL_LEN_RANGE 0.20     % sec: single-sided width
+
+% Online sentence tracking (ost) and perturbation configuration (pcf)
+OST_FN          ../pert/ost     % ost file name
+OST_MAX_STATE   4               % Must match the ost file
+PERT_STATES     [1, 2]          % Must be an array (e.g., [1] or [1, 2])
 
 PRE_WORDS	  BED HEAD TED		% Words for pre, pract1 and pract2 phases
 RAND_WORDS   BED HEAD TED       % Random-phase words

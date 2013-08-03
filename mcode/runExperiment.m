@@ -9,9 +9,8 @@ if ~(isequal(expt_config.PERT_MODE, 'PITCH') || isequal(expt_config.PERT_MODE, '
     error('Unrecognized PERT_MODE: %s', expt_config.PERT_MODE);
 end
 
-%% TODO: Ad hoc
-ost = '../pert/ost';
-check_file(ost);
+%% Check ost and pcf
+check_file(expt_config.OST_FN);
 
 %% ---- Subject and experiment information ---
 subject.expt_config         = expt_config;
@@ -681,12 +680,14 @@ for n=startPhase:length(allPhases)
                 p.bPitchShiftRatio = 1.0;
                 p.pertAmp = i0 / (expt.script.ramp.nReps+1) * t_amp * ones(1, p.pertFieldN);
                 p.pertPhi = t_angle * ones(1, p.pertFieldN);
-                gen_pert_pcf(4, 2, i0 / (expt.script.ramp.nReps+1) * t_amp, t_angle, pcf_fn);
+                gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
+                             i0 / (expt.script.ramp.nReps+1) * t_amp, t_angle, pcf_fn);
             else
                 p.bShift = 0;
                 pitchShiftST = i0 / (expt.script.ramp.nReps+1) * subject.expt_config.PITCH_SHIFT_SEMITONES_SUST;
                 p.pitchShiftRatio = 2 ^ (pitchShiftST / 12.0);
-                gen_pert_pcf(4, 2, pitchShiftST, 0, 0, pcf_fn);
+                gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
+                             pitchShiftST, 0, 0, pcf_fn);
             end
         elseif isequal(thisphase, 'stay')
             if isequal(subject.expt_config.PERT_MODE, 'FMT')
@@ -695,19 +696,22 @@ for n=startPhase:length(allPhases)
                 p.bPitchShiftRatio = 1.0;
                 p.pertAmp = t_amp * ones(1, p.pertFieldN);
                 p.pertPhi = t_angle * ones(1, p.pertFieldN);
-                gen_pert_pcf(4, 2, t_amp, t_angle, pcf_fn);
+                gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
+                             t_amp, t_angle, pcf_fn);
             else
                 p.bShift = 0;
                 pitchShiftST = subject.expt_config.PITCH_SHIFT_SEMITONES_SUST;
                 p.pitchShiftRatio = 2 ^ (pitchShiftST / 12.0);
-                gen_pert_pcf(4, 2, pitchShiftST, 0, 0, pcf_fn);
+                gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
+                             pitchShiftST, 0, 0, pcf_fn);
             end
         elseif ~isequal(thisphase, 'rand')           
             p.bShift = 0;
             p.pitchShiftRatio = 0;
             p.pertAmp = zeros(1, p.pertFieldN);
             p.pertPhi = zeros(1, p.pertFieldN);
-            gen_pert_pcf(4, 2, 0, 0, 0, pcf_fn);
+            gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
+                         0, 0, 0, pcf_fn);
         end
         
         if ~isequal(thisphase, 'rand')
@@ -715,7 +719,7 @@ for n=startPhase:length(allPhases)
             AudapterIO('pcf', pcf_fn, [], 0);
         end
         
-        AudapterIO('ost', ost, [], 0);
+        AudapterIO('ost', subject.expt_config.OST_FN, [], 0);
         
 		if ~bAO
             AudapterIO('init',p);  %SC Inject p to Audapter
@@ -784,9 +788,11 @@ for n=startPhase:length(allPhases)
                 AudapterIO('init', p);
                 
                 if isequal(subject.expt_config.PERT_MODE, 'FMT')
-                    gen_pert_pcf(4, 2, 0, p.pertAmp(1), t_angle, pcf);
+                    gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
+                                 0, p.pertAmp(1), t_angle, pcf);
                 else
-                    gen_pert_pcf(4, 2, log2(p.pitchShiftRatio) * 12, 0, 0, pcf);
+                    gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
+                                 log2(p.pitchShiftRatio) * 12, 0, 0, pcf);
                 end
                 check_file(pcf);
                 AudapterIO('pcf', pcf, [], 0);
