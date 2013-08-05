@@ -145,20 +145,20 @@ if (~isnan(i1) && ~isnan(i2) && ~isempty(i1) && ~isempty(i2) && k2 >= k1)
             end
             
             % --- Draw the perturbed time interval  --- %
-            minPertState = min(handles.pertStates);
-            maxPertState = max(handles.pertStates);
+%             minPertState = min(handles.pertStates);
+%             maxPertState = max(handles.pertStates);
             
-            idxPert_0 = find(data.ost_stat(idx1 : idx2) == minPertState, 1, 'first');
-            if ~isempty(idxPert_0)
-                idxPert_1 = find(data.ost_stat(idx1 : idx2) == maxPertState, 1, 'last');
-                if isempty(idxPert_1)
-                    idxPert_1 = find(data.ost_stat(idx1 : idx2) == minPertState, 1, 'last');
-                end
-                
-                ys = get(gca, 'YLim');
-                plot(repmat(taxis1(idxPert_0), 1, 2), ys, 'm--');
-                plot(repmat(taxis1(idxPert_1), 1, 2), ys, 'm-');
-            end
+%             idxPert_0 = find(data.ost_stat(idx1 : idx2) == minPertState, 1, 'first');
+%             if ~isempty(idxPert_0)
+%                 idxPert_1 = find(data.ost_stat(idx1 : idx2) == maxPertState, 1, 'last');
+%                 if isempty(idxPert_1)
+%                     idxPert_1 = find(data.ost_stat(idx1 : idx2) == minPertState, 1, 'last');
+%                 end
+%                 
+%                 ys = get(gca, 'YLim');
+%                 plot(repmat(taxis1(idxPert_0), 1, 2), ys, 'm--');
+%                 plot(repmat(taxis1(idxPert_1), 1, 2), ys, 'm-');
+%             end
 
             set(gca, 'XLim', [t(1),t(end)]);
             set(gca, 'YLim', [0, 5000]);
