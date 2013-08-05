@@ -82,23 +82,25 @@ if (~isnan(i1) && ~isnan(i2) && ~isempty(i1) && ~isempty(i2) && k2 >= k1)
 		['soundLevel=',num2str(soundLvOut),' dBA SPL'],'FontSize',11);
 
     % -- Formant trajectories --
-	set(gcf,'CurrentAxes',handles.figIdDat(4));
-	cla;
-	if (data.params.frameLen*idx1>=1 & data.params.frameLen*idx2<=length(taxis) & idx1>=1 & idx2 <= size(data.fmts,1))
-		plot(taxis(data.params.frameLen*(idx1:idx2)),data.fmts(idx1:idx2,1),'k-','LineWidth',1.5);   hold on;
-		plot(taxis(data.params.frameLen*(idx1:idx2)),data.fmts(idx1:idx2,2),'k-','LineWidth',1.5); 
-		plot(taxis(data.params.frameLen*(idx1:idx2)),data.sfmts(idx1:idx2,1),'b-','LineWidth',1.5);
-		plot(taxis(data.params.frameLen*(idx1:idx2)),data.sfmts(idx1:idx2,2),'b-','LineWidth',1.5);
-		set(gca,'XLim',taxis(data.params.frameLen*([idx1,idx2])));
-		set(gca,'YLim',[0,3000]);
-		xs=get(gca,'XLim'); ys=get(gca,'YLim');
-		plot(taxis(data.params.frameLen*([k1,k1])),[ys(1),ys(2)],'-','Color',[0.5,0.5,0.5],'LineWidth',0.5);  hold on;
-		plot(taxis(data.params.frameLen*([k2,k2])),[ys(1),ys(2)],'-','Color',[0.5,0.5,0.5],'LineWidth',0.5);  hold on;    
-		xlabel('Time (sec)');
-		ylabel('Formant freqs (Hz)');
-	else
-		cla;
-    end
+% 	set(gcf,'CurrentAxes',handles.figIdDat(4));
+% 	cla;
+% 	if (data.params.frameLen*idx1>=1 & data.params.frameLen*idx2<=length(taxis) & idx1>=1 & idx2 <= size(data.fmts,1))
+% 		plot(taxis(data.params.frameLen*(idx1:idx2)),data.fmts(idx1:idx2,1),'k-','LineWidth',1.5);   hold on;
+% 		plot(taxis(data.params.frameLen*(idx1:idx2)),data.fmts(idx1:idx2,2),'k-','LineWidth',1.5); 
+% 		plot(taxis(data.params.frameLen*(idx1:idx2)),data.sfmts(idx1:idx2,1),'b-','LineWidth',1.5);
+% 		plot(taxis(data.params.frameLen*(idx1:idx2)),data.sfmts(idx1:idx2,2),'b-','LineWidth',1.5);
+% 		set(gca,'XLim',taxis(data.params.frameLen*([idx1,idx2])));
+% 		set(gca,'YLim',[0,3000]);
+% 		xs=get(gca,'XLim'); ys=get(gca,'YLim');
+% 		plot(taxis(data.params.frameLen*([k1,k1])),[ys(1),ys(2)],'-','Color',[0.5,0.5,0.5],'LineWidth',0.5);  hold on;
+% 		plot(taxis(data.params.frameLen*([k2,k2])),[ys(1),ys(2)],'-','Color',[0.5,0.5,0.5],'LineWidth',0.5);  hold on;    
+% 		xlabel('Time (sec)');
+% 		ylabel('Formant freqs (Hz)');
+%         
+%         
+% 	else
+% 		cla;
+%     end
 
     % -- F1/F2 plane plot --
 % 	set(gcf,'CurrentAxes',handles.figIdDat(5));
@@ -113,52 +115,71 @@ if (~isnan(i1) && ~isnan(i2) && ~isempty(i1) && ~isempty(i2) && k2 >= k1)
 % 	xlabel('F1 (Hz)');
 % 	ylabel('F2 (Hz)');
 
-    % -- Spectrogram and formant trajectories --
-	set(gcf,'CurrentAxes',handles.figIdDat(5));
-	cla;
-    if (~isnan(k1) && ~isnan(k2) && k1>0 && k2>0 && t2>t1)
-        idx_seg_1=max([1,(idx1-1)*data.params.frameLen+1]);
-        idx_seg_2=min([idx2*data.params.frameLen,length(data.signalIn)]);
-        sigSeg=data.signalIn(idx_seg_1:idx_seg_2);
-        [s,f,t]=spectrogram(sigSeg,128,96,1024,data.params.sr);
-        imagesc(t,f,10*log10(abs(s))); hold on;
-        axis xy;
-        hold on;              
-        
-        frameDur = data.params.frameLen / data.params.sr;
-        taxis1 = frameDur * (idx1 - 1) : frameDur : frameDur * (idx2 - 1);
-        taxis1 = 0 : frameDur : frameDur * (idx2 - idx1);
-        if idx2 <= size(data.fmts, 1)
-            plot(taxis1, data.fmts(idx1 : idx2, 1), 'k-', 'LineWidth', 1.5);   hold on;
-            plot(taxis1, data.fmts(idx1 : idx2, 2), 'k-', 'LineWidth', 1.5); 
+    % -- Input spectrogram and formant trajectories -- %
+    for ii = [4, 5]
+        set(gcf,'CurrentAxes',handles.figIdDat(ii));
+        cla;
+        if (~isnan(k1) && ~isnan(k2) && k1>0 && k2>0 && t2>t1)
+            idx_seg_1 = max([1, (idx1 - 1) * data.params.frameLen + 1]);
+            idx_seg_2 = min([idx2 * data.params.frameLen, length(data.signalIn)]);
             
-            plot(taxis1, data.ost_stat(idx1 : idx2) * 500, 'b-');
-        end
-        
-%         taxis2 = 0 : frameDur : frameDur * (length(data.ost_stat) - 1);
-        
-        
-        set(gca, 'XLim', [t(1),t(end)]);
-        set(gca, 'YLim', [0, 5000]);
-        xlabel('Time');
-        ylabel('Frequency');
-    end
+            if ii == 4
+                sigSeg = data.signalIn(idx_seg_1 : idx_seg_2);
+            else
+                sigSeg = data.signalOut(idx_seg_1 : idx_seg_2);
+            end
+            
+            [s, f, t] = spectrogram(sigSeg, 128, 96, 1024, data.params.sr);
+            imagesc(t,f,10*log10(abs(s))); hold on;
+            axis xy;
+            hold on;
 
-    % -- Short-time RMS plots --
-% 	set(gcf,'CurrentAxes',handles.figIdDat(7));
-%     cla;
-%     if (~isnan(k1) && ~isnan(k2) && k1>0 && k2>0 && t2>t1 && ...
-%             ~isempty(data.rms) && idx1>=1 && idx2<=length(data.rms(:,1)))
-%         rms0=data.rms(idx1:idx2,1);
-%         taxis0=0:data.params.frameLen/data.params.sr:(data.params.frameLen/data.params.sr)*(length(rms0)-1);
-%         plot(taxis0,rms0,'b-'); hold on;
-%         set(gca,'XLim',[taxis0(1),taxis0(end)]);
-%         xlabel('Time');
-%         ylabel('Short-time RMS');
-%         plot([taxis0(1),taxis0(end)],repmat(data.params.rmsThresh,1,2),'k--');
-%     end
+            frameDur = data.params.frameLen / data.params.sr;
+            taxis1 = frameDur * (idx1 - 1) : frameDur : frameDur * (idx2 - 1);
+            taxis1 = 0 : frameDur : frameDur * (idx2 - idx1);
+            if idx2 <= size(data.fmts, 1)
+                plot(taxis1, data.fmts(idx1 : idx2, 1), 'k-', 'LineWidth', 1.5);   hold on;
+                plot(taxis1, data.fmts(idx1 : idx2, 2), 'k-', 'LineWidth', 1.5); 
+
+                plot(taxis1, data.ost_stat(idx1 : idx2) * 500, 'b-');
+            end
+            
+            % --- Draw the perturbed time interval  --- %
+            minPertState = min(handles.pertStates);
+            maxPertState = max(handles.pertStates);
+            
+            idxPert_0 = find(data.ost_stat(idx1 : idx2) == minPertState, 1, 'first');
+            if ~isempty(idxPert_0)
+                idxPert_1 = find(data.ost_stat(idx1 : idx2) == maxPertState, 1, 'last');
+                if isempty(idxPert_1)
+                    idxPert_1 = find(data.ost_stat(idx1 : idx2) == minPertState, 1, 'last');
+                end
+                
+                ys = get(gca, 'YLim');
+                plot(repmat(taxis1(idxPert_0), 1, 2), ys, 'm--');
+                plot(repmat(taxis1(idxPert_1), 1, 2), ys, 'm-');
+            end
+
+            set(gca, 'XLim', [t(1),t(end)]);
+            set(gca, 'YLim', [0, 5000]);
+            xlabel('Time (s)');
+            ylabel('Frequency (Hz)');
+            
+            xs = get(gca, 'XLim');
+            ys = get(gca, 'YLim');
+            if ii == 4
+                text(xs(1) + 0.025 * range(xs), ys(2) - 0.06 * range(ys), ...
+                     'Mic. input');
+            else
+                text(xs(1) + 0.025 * range(xs), ys(2) - 0.06 * range(ys), ...
+                     'Auditory feedback');
+            end
+            
+            grid on;
+        end
+    end
     
-% 	pause(1e-3);
+    % -- Input spectrogram and formant trajectories -- %
 end
 
 return

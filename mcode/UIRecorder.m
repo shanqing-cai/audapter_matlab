@@ -116,6 +116,9 @@ handles.smnOffRamp = 0.10;
 
 handles.fb3Gain = 0.0;
 
+% --- OST and PCF related --- %
+handles.pertStates = [1, 2];
+
 set(hObject,'visible','off');
 set(handles.UIrecorder,'interruptible','on','busyaction','queue')
 %--------------------------------------------------------------------------
@@ -715,7 +718,7 @@ dataOut.vowelLevel = 100+20*log10((rmsTrans/micRMS_100dBA));
 
 
 % --- SCai: update the data monitor window ---
-updateDataMonitor(dataOut, handles)
+updateDataMonitor(dataOut, handles);
 % --- ~SCai: update the data monitor window ---
 % --------------------------------------------------------------------------
 

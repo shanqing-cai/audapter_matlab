@@ -310,6 +310,9 @@ hgui.rmsTransTarg=micRMS_100dBA / (10^((100-hgui.rmsTransTarg_spl)/20));
 
 hgui.fb3Gain = dBSPL2WaveAmp(expt_config.BLEND_NOISE_DB);
 
+hgui.pertStates = expt_config.PERT_STATES;
+
+%%
 fprintf('\n');
 disp(['Mouth-microphone distance = ',num2str(expt.subject.mouthMicDist),' cm']);
 disp(['hgui.rmsTransTarg_spl = ',num2str(hgui.rmsTransTarg_spl),' dBA SPL']);
