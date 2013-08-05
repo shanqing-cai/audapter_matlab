@@ -1,5 +1,5 @@
 function varargout = UIRecorder(varargin)
-% UIRECORDER M-file for UIrecorder.fig
+% UIRECORDER M-file for uirecorder.fig
 %      UIRECORDER, by itself, creates a new UIRECORDER or raises the existing
 %      singleton*.
 %
@@ -11,26 +11,26 @@ function varargout = UIRecorder(varargin)
 %
 %      UIRECORDER('Property','Value',...) creates a new UIRECORDER or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before UIrecorder_OpeningFunction gets called.  An
+%      applied to the GUI before UIRecorder_OpeningFunction gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to UIrecorder_OpeningFcn via varargin.
+%      stop.  All inputs are passed to UIRecorder_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help UIrecorder
+% Edit the above text to modify the response to help uirecorder
 
-% Last Modified by GUIDE v2.5 20-Jul-2012 10:27:09
+% Last Modified by GUIDE v2.5 05-Aug-2013 16:36:07
 
 %%
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
     'gui_Singleton',  gui_Singleton, ...
-    'gui_OpeningFcn', @UIrecorder_OpeningFcn, ...
-    'gui_OutputFcn',  @UIrecorder_OutputFcn, ...
+    'gui_OpeningFcn', @UIRecorder_OpeningFcn, ...
+    'gui_OutputFcn',  @UIRecorder_OutputFcn, ...
     'gui_LayoutFcn',  [] , ...
     'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -53,8 +53,8 @@ end
 %     dirname = varargin{fsic(varargin, 'dirname') + 1};
 % end
 
-%% --- Executes just before UIrecorder is made visible.
-function UIrecorder_OpeningFcn(hObject, eventdata, handles, varargin)
+%% --- Executes just before uirecorder is made visible.
+function UIRecorder_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -120,7 +120,7 @@ handles.fb3Gain = 0.0;
 handles.pertStates = [1, 2];
 
 set(hObject,'visible','off');
-set(handles.UIrecorder,'interruptible','on','busyaction','queue')
+set(handles.UIRecorder,'interruptible','on','busyaction','queue')
 %--------------------------------------------------------------------------
 %SC Construct the volume/speed indicator template
 % vumeter  = permute(jet(100),[1,3,2]);
@@ -311,7 +311,7 @@ if ~isfile(fullfile(handles.dirname, 'corr_count.mat'))
     save(fullfile(handles.dirname, 'corr_count.mat'), 'corr_count');
 end
 
-set(0, 'CurrentFigure', handles.UIrecorder);
+set(0, 'CurrentFigure', handles.UIRecorder);
 
 handles.showWordHint = 1;
 handles.showWarningHint = 1;
@@ -386,7 +386,7 @@ handles.rmsTransTarg=micRMS_100dBA / (10^((100-handles.rmsTransTarg_spl)/20));
 
 handles.nextMessage=imread(fullfile(handles.msgImgDir,'message_pre2.bmp'));
 
-set(handles.UIrecorder,'keyPressFcn',@key_Callback);
+set(handles.UIRecorder,'keyPressFcn',@key_Callback);
 set(handles.strh,'keyPressFcn',@key_Callback);
 set(handles.play,'keyPressFcn',@key_Callback);
 % set(handles.rec_slider,'keyPressFcn',@key_Callback);
@@ -401,11 +401,11 @@ guidata(hObject, handles);
 
 
 
-% UIWAIT makes UIrecorder wait for user response (see UIRESUME)
+% UIWAIT makes uirecorder wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
 %% --- Outputs from this function are returned to the command line.
-function varargout = UIrecorder_OutputFcn(hObject, eventdata, handles)
+function varargout = UIRecorder_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -452,11 +452,11 @@ timeNow=clock;
 eTime=etime(timeNow,hgui.timeCreated);
 
 if (isequal(evnt.Key,hgui.trigKey) || isequal(evnt.Key,'a'))
-% 	set(hgui.UIrecorder,'UserData','go');
+% 	set(hgui.uirecorder,'UserData','go');
     disp(['--> Trigger at ',num2str(eTime),' sec <--']);
-	uiresume(hgui.UIrecorder);    
+	uiresume(hgui.UIRecorder);    
 else
-% 	set(hgui.UIrecorder,'UserData','nogo');
+% 	set(hgui.uirecorder,'UserData','nogo');
 end
 
 return
@@ -778,14 +778,14 @@ fprintf('stopRec\n')
 handles.dataOut = checkData(getData, handles);
 
 
-guidata(handles.UIrecorder, handles);
+guidata(handles.UIRecorder, handles);
 
 % set(handles.next,'enable','on')
 % set(handles.prev,'enable','on')
 % set(handles.next,'visible','on')
 % set(handles.prev,'visible','on')
 % if(get(handles.auto_btn,'Value')==get(handles.auto_btn,'Max'))
-%     next_Callback(handles.UIrecorder,[],handles)
+%     next_Callback(handles.uirecorder,[],handles)
 % end
 
 %% --------------------------------------------------------------------------
@@ -820,20 +820,20 @@ function record(handles)
 
 if (handles.trigByScanner==1)
     set(handles.play,'userdata',1);
-    uiwait(handles.UIrecorder);
+    uiwait(handles.UIRecorder);
 else
     waitfor(handles.play,'userdata',1);
 end
 
 if (handles.debug==0)
     
-    go=get(handles.UIrecorder,'UserData');
+    go=get(handles.UIRecorder,'UserData');
     if isequal(go,'nogo')
         return
     end
 
     handles.dataOut=[];
-    guidata(handles.UIrecorder,handles);
+    guidata(handles.UIRecorder,handles);
 
     set(handles.strh,'visible','off');
     set(handles.msgh,'visible','off');
@@ -1089,15 +1089,15 @@ if (handles.debug==0)
                         
     if handles.showKidsAnim
         % -- Experimenter response re. correctness of the subject's production --    
-        button_correct = uicontrol('Parent', handles.UIrecorder, 'Style', 'pushbutton', ...
+        button_correct = uicontrol('Parent', handles.UIRecorder, 'Style', 'pushbutton', ...
                                 'Unit', 'normalized', ...
                                 'Position', [0.25, 0.17, 0.24, 0.05], ...
                                 'String', 'Word correct', 'FontSize', 9, 'ForegroundColor', [0, 0.5, 0]);
-        button_incorrect = uicontrol('Parent', handles.UIrecorder, 'Style', 'pushbutton', ...
+        button_incorrect = uicontrol('Parent', handles.UIRecorder, 'Style', 'pushbutton', ...
                                 'Unit', 'normalized', ...
                                 'Position', [0.50, 0.17, 0.24, 0.05], ...
                                 'String', 'Word incorrect', 'FontSize', 9, 'ForegroundColor', [1, 0, 0]);
-        button_forcerep = uicontrol('Parent', handles.UIrecorder, 'Style', 'pushbutton', ...
+        button_forcerep = uicontrol('Parent', handles.UIRecorder, 'Style', 'pushbutton', ...
                                 'Unit', 'normalized', ...
                                 'Position', [0.75, 0.17, 0.24, 0.05], ...
                                 'String', 'Force repeat', 'FontSize', 9, 'ForegroundColor', [1, 0, 1]);
@@ -1135,7 +1135,7 @@ if (handles.debug==0)
         end
         save(fullfile(handles.dirname, 'corr_count.mat'), 'corr_count');
         handles.corrCnt = corr_count;
-        guidata(handles.UIrecorder, handles);
+        guidata(handles.UIRecorder, handles);
     
         respCorrAnim(resp_correct, handles);
         
@@ -1243,7 +1243,7 @@ if (handles.debug==0)
     if ((~bRmsGood && bRmsRepeat) || (~bSpeedGood && bSpeedRepeat))
         % Repeat until the volume and/or speed criteria are met.
         if handles.showKidsAnim
-            button_repeat = uicontrol('Parent', handles.UIrecorder, 'Style', 'pushbutton', ...
+            button_repeat = uicontrol('Parent', handles.UIRecorder, 'Style', 'pushbutton', ...
                                 'Unit', 'normalized', ...
                                 'Position', [0.25, 0.1, 0.24, 0.05], ...
                                 'String', 'Repeat', 'FontSize', 9, 'FontWeight', 'Bold', ...
@@ -1263,7 +1263,7 @@ if (handles.debug==0)
         % data is saved as UserData in the fig handle (wicht is the signal for
         % the host function to launch the next single trial
         dataOut.uiConfig = uiConfig;
-        set(handles.UIrecorder, 'UserData', dataOut);
+        set(handles.UIRecorder, 'UserData', dataOut);
     end
 % end
 %     if (handles.trigByScanner==0)
@@ -1276,7 +1276,7 @@ else
     dataOut=struct;
     dataOut.signalIn=[]; dataOut.signalOut=[];
     dataOut.rms=[];
-    set(handles.UIrecorder,'UserData',dataOut);
+    set(handles.UIRecorder,'UserData',dataOut);
 end
 return
 
@@ -1761,7 +1761,7 @@ save(handles.uiConfigFN, 'uiConfig');
 
 % handles.showWordHint = val;
 % guidata(hObject, handles);
-% guidata(handles.UIrecorder, handles);
+% guidata(handles.uirecorder, handles);
 return
 
 % --- Executes on button press in rb_showWarningHint.

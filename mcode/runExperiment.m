@@ -269,8 +269,8 @@ recPhases=expt.recPhases;
 % nWords=length(wordList);
 
 hgui = UIRecorder('figIdDat', figIdDat, 'dirname', dirname);
-set(hgui.UIrecorder, 'Position', [900, 60, 440, 700]);
-% winontop(hgui.UIrecorder, 1);
+set(hgui.UIRecorder, 'Position', [900, 60, 440, 700]);
+% winontop(hgui.UIRecorder, 1);
 
 
 if ~isempty(fsic(varargin, 'twoScreens'))
@@ -333,14 +333,14 @@ hgui.smnOnRamp = expt_config.SMN_ON_RAMP;
 hgui.smnOffRamp = expt_config.SMN_OFF_RAMP;
 
 if (isempty(findStringInCell(varargin,'twoScreens')))
-% 	set(hgui.UIrecorder,...
+% 	set(hgui.UIRecorder,...
 % 		'position', [0    5.0000  250.6667   65.8750],...
 % 		'toolbar','none');  %SC Set the position of the expt window, partially for the use of multiple monitors.
 else
 % 	if (expt.subject.trigByScanner==1)
 % 		ms=get(0,'MonitorPosition');
-% 		set(hgui.UIrecorder,'Position',[ms(2,1),ms(1,4)-ms(2,4),ms(2,3)-ms(2,1)+1,ms(2,4)+20],'toolbar','none','doublebuffer','on','renderer','painters');
-% 		pos_win=get(hgui.UIrecorder,'Position');
+% 		set(hgui.UIRecorder,'Position',[ms(2,1),ms(1,4)-ms(2,4),ms(2,3)-ms(2,1)+1,ms(2,4)+20],'toolbar','none','doublebuffer','on','renderer','painters');
+% 		pos_win=get(hgui.UIRecorder,'Position');
 % 		pos_strh=get(hgui.strh,'Position');
 % 		pos_axes_pic=get(hgui.axes_pic,'Position');
 % 		pos_rms_axes=get(hgui.rms_axes,'Position');
@@ -363,7 +363,7 @@ else
 % 		set(hgui.speed_too_fast,'Position',[(pos_win(3)-pos_speed_axes(3))/2+pos_speed_axes(3)-pos_speed_too_fast(3),pos_speed_too_fast(2),pos_speed_too_fast(3),pos_speed_too_fast(4)]);
 %         set(hgui.msgh,'FontSize',17);
 % 	else
-% 		set(hgui.UIrecorder,'Position',[-1400,180,1254,857],'toolbar','none');
+% 		set(hgui.UIRecorder,'Position',[-1400,180,1254,857],'toolbar','none');
 % 	end
 	
 end
@@ -849,7 +849,7 @@ for n=startPhase:length(allPhases)
             set(hgui.button_reproc, 'enable', 'off');
             
             UIRecorder('singleTrial', hgui.play, 1, hgui);
-            data=get(hgui.UIrecorder, 'UserData');           %SC Retrieve the data
+            data=get(hgui.UIRecorder, 'UserData');           %SC Retrieve the data
             % -- Attach uiConfig info --
             load(hgui.uiConfigFN);
             data.uiConfig = uiConfig;
@@ -969,7 +969,7 @@ set(hgui.msgh,'string',...
 	'You have finished the expt.'},'visible','on');
 % set(hgui.msgh_imgh,'CData',CDataMessage.finish,'visible','on');
 pause(3);
-close(hgui.UIrecorder)
+close(hgui.UIRecorder)
 pause(2);
 % saveExperiment(dirname);
 
