@@ -202,6 +202,15 @@ if bNew % set up new experiment
         'pvocFrameLen', expt_config.PVOC_FRAME_LEN, ...
         'pvocHop', expt_config.PVOC_HOP);
     
+    if isequal(expt_config.STEREO_MODE, 'LR_AUDIO')
+        p.stereoMode = 1;
+    elseif isequal(expt_config.STEREO_MODE, 'L_AUDIO')
+        p.stereoMode = 0;
+    elseif isequal(expt_config.STEREO_MODE, 'L_AUDIO_R_SIM_TTL')
+        p.stereoMode = 2;
+    else
+        error('Unrecognized value of STEREO_MODE: %s', expt_config.STEREO_MODE);
+    end
     
     if isequal(expt_config.PERT_MODE, 'PITCH')
         p.bBypassFmt = 1;

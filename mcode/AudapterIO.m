@@ -180,6 +180,10 @@ switch(action)
             Audapter(3, 'bdownsampfilt', p.bDownSampFilt, toPrompt);
         end
         
+        if (isfield(p, 'stereoMode'))
+            Audapter(3, 'stereomode', p.stereoMode, toPrompt);
+        end
+        
         return;
 %%            
     case 'process',

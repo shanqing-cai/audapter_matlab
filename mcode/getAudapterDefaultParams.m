@@ -154,4 +154,7 @@ if ~isempty(fsic(varargin, 'pvocHop'))
     p.pvocHop = varargin{fsic(varargin, 'pvocHop') + 1};
 end
 
+%%
+p.stereoMode = 1; % Left-right audio identical
+
 return
