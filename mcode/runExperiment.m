@@ -424,7 +424,7 @@ for n=startPhase:length(allPhases)
     if (~isequal(thisphase,'ramp') && ~isequal(thisphase,'stay'))
         disp(['--- Coming up: ',thisphase,'. nReps = ',num2str(expt.script.(thisphase).nReps),...
             '; nTrials = ',num2str(expt.script.(thisphase).nTrials),' ---']);
-        nRepsNew=input('(Enter to skip) nRepsNew = ','s');
+        nRepsNew=input('(Modify nReps) nRepsNew = ','s');
         nRepsNew=str2num(nRepsNew);
         if (~isempty(nRepsNew) && ~ischar(nRepsNew) && nRepsNew~=expt.script.(thisphase).nReps)
             expt.script.(thisphase).nReps=nRepsNew;
@@ -443,7 +443,7 @@ for n=startPhase:length(allPhases)
             '; nTrials = ',num2str(expt.script.stay.nTrials),' ---']);
         disp(['--- Ramp+Stay: nReps = ',num2str(expt.script.ramp.nReps+expt.script.stay.nReps),...
             '; nTrials = ',num2str(expt.script.ramp.nTrials+expt.script.stay.nTrials)]);
-        nRepsNew=input('(Enter to skip) Ramp: nRepsNew = ','s');
+        nRepsNew=input('(Modify nReps) Ramp: nRepsNew = ','s');
         nRepsNew=str2num(nRepsNew);
         if (~isempty(nRepsNew) && ~ischar(nRepsNew) && nRepsNew~=expt.script.(thisphase).nReps)
             expt.script.ramp.nReps=nRepsNew;
@@ -455,7 +455,7 @@ for n=startPhase:length(allPhases)
             save(fullfile(dirname,'expt.mat'),'expt');
             disp(['Saved ',fullfile(dirname,'expt.mat')]);
         end
-        nRepsNew=input('(Enter to skip) Stay: nRepsNew = ','s');
+        nRepsNew=input('(Modify nReps) Stay: nRepsNew = ','s');
         nRepsNew=str2num(nRepsNew);
         if (~isempty(nRepsNew) && ~ischar(nRepsNew) && nRepsNew~=expt.script.(thisphase).nReps)
             expt.script.stay.nReps=nRepsNew;
@@ -579,7 +579,7 @@ for n=startPhase:length(allPhases)
                 disp(['Recommended cepsWinWidth = ',num2str(round(p.sr/vowelF0Mean*0.54))]);
                 [vowelF1Mean,vowelF2Mean]=getVowelMeanF1F2(dirname);
                 disp(['Vowel meanF1 = ',num2str(vowelF1Mean),' Hz; meanF2 = ',num2str(vowelF2Mean),' Hz']);
-                
+                fprintf(1, '\n');
             end
             % ~SC(2008/06/10) Manually determine the optimum tracking
             
@@ -779,7 +779,7 @@ for n=startPhase:length(allPhases)
             if isequal(thisphase, 'rand')   % Configure random perturbation                
                 fprintf(1, 'rand pert type = [%s]\n', thisTrial);
                 
-                if isequal(thisTrial, 'up')
+                if ~isequal(thisTrial, 'ctrl')
                     p.pertAmp = zeros(1, p.pertFieldN);
                     p.pertPhi = zeros(1, p.pertFieldN);                    
                     
@@ -787,11 +787,11 @@ for n=startPhase:length(allPhases)
                                        expt.script.(thisphase).(repString).pitchShifts_cent{k}, ...
                                        expt.script.(thisphase).(repString).pitchShifts_onset{k}, ...
                                        expt.script.(thisphase).(repString).pitchShifts_dur{k})
-                elseif isequal(thisTrial, 'down') % Downward perturbation
-                    gen_multi_pert_pcf(ost, pcf, expt_config.INTENSITY_THRESH, ...
-                                       -1.0 * expt.script.(thisphase).(repString).pitchShifts_cent{k}, ...
-                                       expt.script.(thisphase).(repString).pitchShifts_onset{k}, ...
-                                       expt.script.(thisphase).(repString).pitchShifts_dur{k})
+%                 elseif isequal(thisTrial, 'down') % Downward perturbation
+%                     gen_multi_pert_pcf(ost, pcf, expt_config.INTENSITY_THRESH, ...
+%                                        -1.0 * expt.script.(thisphase).(repString).pitchShifts_cent{k}, ...
+%                                        expt.script.(thisphase).(repString).pitchShifts_onset{k}, ...
+%                                        expt.script.(thisphase).(repString).pitchShifts_dur{k})
                 else % No perturbation
                     gen_multi_pert_pcf(ost, pcf, ...
                                        expt_config.INTENSITY_THRESH, [0], [60], [20]);

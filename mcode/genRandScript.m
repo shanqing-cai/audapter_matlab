@@ -7,6 +7,7 @@ function [phaseScript, pertDes] = genRandScript(nBlocks, trialsPerBlock, ...
 check_pos_int(nBlocks, 'N_BLOCKS must be a positive integer');
 check_pos_int(trialsPerBlock, 'TRIALS_PER_BLOCK must be a positive integer');
 
+
 %% trialTypes
 a_trialTypes = {};
 a_trialTypeIsPert = [];
@@ -27,13 +28,32 @@ for i1 = 1 : numel(t_items)
     a_nTrialsPerBlock(end + 1) = str2double(t_strs{1});
     
     check_pos_int(a_nTrialsPerBlock(end), ...
-                  'Number of trials in TRIAL_TYPES_IN_BLOCK must be positive integers');
+                  'Number of trials in TRIAL_TYPES_IN_BLOCK must be positive integers', 1); % Allow zero
 end
+
+if length(unique(a_trialTypes)) ~= length(a_trialTypes)
+    error('Duplicate items in TRIAL_TYPES_IN_BLOCK');
+end
+
+idxCtrl = fsic(a_trialTypes, 'ctrl');
+if length(idxCtrl) == 0
+    error('It is mandatory that ctrl is in TRIAL_TYPES_IN_BLOCK, although the number may be set to zero if necessary.');
+end
+
+%--- Make sure that ctrl is first in list ---%
+idxOrd = [idxCtrl, setxor(1 : length(a_trialTypes), idxCtrl)];
+a_trialTypes = a_trialTypes(idxOrd);
+a_trialTypeIsPert = a_trialTypeIsPert(idxOrd);
+a_nTrialsPerBlock = a_nTrialsPerBlock(idxOrd);
 
 a_trialTypesPert = a_trialTypes(find(a_trialTypeIsPert));
 
 if sum(a_nTrialsPerBlock) ~= trialsPerBlock
     error('Numbers in TRIAL_TYPES_IN_BLOCK do not sum to TRIALS_PER_BLOCK');
+end
+
+if a_nTrialsPerBlock(1) == 0 && minDistBetwShifts ~= 0
+    error('minDistBetwShifts value is invalid because there is no ctrl trial');
 end
 
 %% onsetDelay
@@ -46,6 +66,12 @@ for i1 = 1 : numel(a_trialTypesPert)
     idx1 = strfind(onsetDelays_ms, tt);
     if isempty(idx1)
         error('Cannot find trial type %s in ONSET_DELAYS_MS', tt);
+    end
+    
+    %-- Prune the strfind results --%
+    idx1 = prune_strfind(idx1, onsetDelays_ms, tt, '-');
+    if length(idx1) ~= 1
+        error('Duplicate items found in ONSET_DELAY_MS');
     end
     
     %-- Search for the end --%
@@ -85,6 +111,12 @@ for i1 = 1 : numel(a_trialTypesPert)
     idx1 = strfind(numShifts, tt);
     if isempty(idx1)
         error('Cannot find trial type %s in NUM_SHIFTS', tt);
+    end
+    
+    %-- Prune the strfind results --%
+    idx1 = prune_strfind(idx1, numShifts, tt, '-');
+    if length(idx1) ~= 1
+        error('Duplicate items found in NUM_SHIFTS');
     end
     
     %-- Search for the end --%
@@ -127,6 +159,12 @@ for i1 = 1 : numel(a_trialTypesPert)
         error('Cannot find trial type %s in INTER_SHIFT_DELAYS_MS', tt);
     end
     
+    %-- Prune the strfind results --%
+    idx1 = prune_strfind(idx1, interShiftDelays_ms, tt, '-');
+    if length(idx1) ~= 1
+        error('Duplicate items found in INTER_SHIFT_DELAYS_MS');
+    end
+    
     %-- Search for the end --%
     if length(interShiftDelays_ms) < idx1 + length(tt) + 1 || ~isequal(interShiftDelays_ms(idx1 + length(tt)), '-')
         error('Unrecognized format in INTER_SHIFT_DELAYS_MS');
@@ -166,6 +204,12 @@ for i1 = 1 : numel(a_trialTypesPert)
         error('Cannot find trial type %s in PITCH_SHIFTS_CENT', tt);
     end
     
+    %-- Prune the strfind results --%
+    idx1 = prune_strfind(idx1, pitchShifts_cent, tt, '-');
+    if length(idx1) ~= 1
+        error('Duplicate items found in PITCH_SHIFTS_CENT');
+    end
+    
     %-- Search for the end --%
     if length(pitchShifts_cent) < idx1 + length(tt) + 1 || ~isequal(pitchShifts_cent(idx1 + length(tt)), '-')
         error('Unrecognized format in PITCH_SHIFTS_CENT');
@@ -190,9 +234,9 @@ for i1 = 1 : numel(a_trialTypesPert)
         t_val = pitchShifts_cent(idx1 + length(tt) + 1 : idx1 + length(tt) + idx_cm - 1);        
     end
     
-    if ~isempty(strfind(t_val, '-'))
-        error('Unrecognized format in PITCH_SHIFTS_CENT')
-    end
+%     if ~isempty(strfind(t_val, '-'))
+%         error('Unrecognized format in PITCH_SHIFTS_CENT')
+%     end
     t_vals = splitstring(t_val, ',');
     
     if length(t_vals) == 1
@@ -216,19 +260,25 @@ for i1 = 1 : numel(a_trialTypesPert)
     tt = a_trialTypesPert{i1};
     idx1 = strfind(pitchShifts_ms, tt);
     if isempty(idx1)
-        error('Cannot find trial type %s in PITCH_SHIFTS_CENT', tt);
+        error('Cannot find trial type %s in PITCH_SHIFT_DURS_MS', tt);
+    end
+    
+    %-- Prune the strfind results --%
+    idx1 = prune_strfind(idx1, pitchShifts_ms, tt, '-');
+    if length(idx1) ~= 1
+        error('Duplicate items found in PITCH_SHIFT_DURS_MS');
     end
     
     %-- Search for the end --%
     if length(pitchShifts_ms) < idx1 + length(tt) + 1 || ~isequal(pitchShifts_ms(idx1 + length(tt)), '-')
-        error('Unrecognized format in PITCH_SHIFTS_CENT');
+        error('Unrecognized format in PITCH_SHIFT_DURS_MS');
     end
     
     if isequal(pitchShifts_ms(idx1 + length(tt) + 1), '[')
         idx_rb = strfind(pitchShifts_ms(idx1 + length(tt) + 2 : end), ']');
         
         if isempty(idx_rb)
-            error('Unrecognized format in PITCH_SHIFTS_CENT');
+            error('Unrecognized format in PITCH_SHIFT_DURS_MS');
         end
         idx_rb = idx_rb(1);
         
@@ -244,7 +294,7 @@ for i1 = 1 : numel(a_trialTypesPert)
     end
     
     if ~isempty(strfind(t_val, '-'))
-        error('Unrecognized format in PITCH_SHIFTS_CENT')
+        error('Unrecognized format in PITCH_SHIFT_DURS_MS')
     end
     t_vals = splitstring(t_val, ',');
     
@@ -256,7 +306,7 @@ for i1 = 1 : numel(a_trialTypesPert)
             a_pitchShifts_ms.(tt)(end + 1) = str2double(t_vals{i2});
         end
     else
-        error('Erroneous number of pitch shift amounts for shift type %s', tt);
+        error('Erroneous number of pitch shift duration for shift type %s', tt);
     end
 end
 
@@ -396,4 +446,13 @@ if length(str1) <= 3 || ...
     error(errMsg);
 end
 str1 = str1(2 : end - 1);
+return
+
+function idx1 = prune_strfind(idx, str, subStr, matchChar)
+idx1 = [];
+for i2 = 1 : numel(idx)
+    if idx(i2) + length(subStr) <= length(str) && isequal(str(idx(i2) + length(subStr)), matchChar)
+        idx1(end + 1) =idx(i2);
+    end
+end
 return
