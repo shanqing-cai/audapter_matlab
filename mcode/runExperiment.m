@@ -608,6 +608,7 @@ for n=startPhase:length(allPhases)
             dfns = dir(fullfile(dirname, 'pitch_shift.*.log'));
             pitchShiftLogFN = fullfile(dirname, sprintf('pitch_shift.%.2d.log', length(dfns) + 1));
             pitchShiftLogF = fopen(pitchShiftLogFN, 'at');
+            fprintf(pitchShiftLogF, 'trialFileName, voiceOnset(ms), pitchShiftOnset(ms), pitchShiftEnd(ms), pitchShift(cent)\n');
         case 'start'
             hgui.showRmsPrompt = 1;
             hgui.showSpeedPrompt = 1;
@@ -865,19 +866,20 @@ for n=startPhase:length(allPhases)
             updateParamDisp(p, hgui);
             set(hgui.button_reproc, 'enable', 'off');
             
-            if DEBUG_PS && isequal(thisphase, 'rand')
-                hgui.ps_pitchShiftLogF = pitchShiftLogF;
-            end
+%             if DEBUG_PS && isequal(thisphase, 'rand')
+%                 hgui.ps_pitchShiftLogF = pitchShiftLogF;
+%             end
             UIRecorder('singleTrial', hgui.play, 1, hgui);
             data = get(hgui.UIRecorder, 'UserData');           %SC Retrieve the data
             
             % -- Write pitch shift log -- 
             if isequal(thisphase, 'rand')
-                psSummary = getPitchShiftTimeStamps(data);
+                [psSummary, voiceOnset] = getPitchShiftTimeStamps(data);
                 for k2 = 1 : length(psSummary)
-                    fprintf(pitchShiftLogF, '%s/%s/%s, %f ms, %f ms, %f cents\n', ...
-                            thisphase, repString, ...
+                    fprintf(pitchShiftLogF, '%s/%s/%s, %f, %f, %f, %f\n', ...
+                            thisphase, repString, ...                            
                             ['trial-', num2str(k), '-', num2str(thisTrial)], ...
+                            voiceOnset, ...
                             psSummary{k2}(1), psSummary{k2}(2), psSummary{k2}(3));
                 end
             end
