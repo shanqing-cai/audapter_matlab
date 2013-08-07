@@ -204,9 +204,8 @@ if bNew % set up new experiment
         
         fprintf(1, 'INFO: Using MOTU UltraLite settings. \n');
         fprintf(1, 'INFO: Make sure in MOTU Audio Console, the following parameter values are set:\n');
-        fprintf(1, 'INFO:    downFact = %d\n', cfgUltraLite.downFact);
-        fprintf(1, 'INFO:    sr = %d\n', cfgUltraLite.sr);
-        fprintf(1, 'INFO:    frameLen = %d\n', cfgUltraLite.frameLen);
+        fprintf(1, 'INFO:    sampling rate = %d\n', cfgUltraLite.downFact * cfgUltraLite.sr);        
+        fprintf(1, 'INFO:    buffer size = %d\n', cfgUltraLite.downFact * cfgUltraLite.frameLen);
         fprintf(1, '\n');
     elseif isequal(expt_config.DEVICE_NAME, 'MicroBook')
         Audapter('deviceName', 'MOTU MicroBook');
@@ -607,7 +606,7 @@ for n=startPhase:length(allPhases)
             
             % -- Prepare pitch shift log file -- %
             dfns = dir(fullfile(dirname, 'pitch_shift.*.log'));
-            pitchShiftLogFN = fullfile(dirname, sprintf('pitch_shift.%.2d.log', length(dfns)));
+            pitchShiftLogFN = fullfile(dirname, sprintf('pitch_shift.%.2d.log', length(dfns) + 1));
             pitchShiftLogF = fopen(pitchShiftLogFN, 'at');
         case 'start'
             hgui.showRmsPrompt = 1;
@@ -838,8 +837,8 @@ for n=startPhase:length(allPhases)
             
             % Count down    
             if ~(isequal(thisphase,'start') || isequal(thisphase,'ramp') || isequal(thisphase,'stay') || isequal(thisphase,'end'))
-                disp(['Left: ',num2str(expt.script.(thisphase).nTrials-phaseTrialCnt+1),'/',num2str(expt.script.(thisphase).nTrials)]);
-            else 
+                disp(['Left: ',num2str(expt.script.(thisphase).nTrials - phaseTrialCnt+1),'/',num2str(expt.script.(thisphase).nTrials)]);
+            else
                 if ~(isequal(thisphase,'ramp') || isequal(thisphase,'stay'))
                     disp(['Left: ',num2str(expt.script.(thisphase).nTrials-phaseTrialCnt+1),'/',num2str(expt.script.(thisphase).nTrials),...
                         ', ',num2str((expt.script.(thisphase).nTrials-phaseTrialCnt+1)*hgui.ITI),' sec']);

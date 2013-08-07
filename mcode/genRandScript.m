@@ -384,6 +384,7 @@ for n = 1 : nBlocks
        
     
     phaseScript.(['rep', num2str(n)]) = oneRep;
+    phaseScript.nTrials = phaseScript.nTrials + length(oneRep.trialOrder);
 end
 
 return
