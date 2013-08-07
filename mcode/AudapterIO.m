@@ -233,6 +233,9 @@ switch(action)
                 offS = offS + 1;
                 data.ost_stat       = dataMat(:, offS);
                 
+                offS = offS + 1;
+                data.pitchShiftRatio = dataMat(:, offS);
+                
                 data.params         = p;
 
                 varargout(1)        = {data};

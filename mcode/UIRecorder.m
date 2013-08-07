@@ -677,7 +677,7 @@ else
 	end
 end
 
-if (handles.trialType==3 || handles.trialType==4 || handles.trialType==5)
+if isequal(handles.trialType, 3) || isequal(handles.trialType, 4) || isequal(handles.trialType, 5)
 	bRmsGood=1;
 	bSpeedGood=1;
 end
@@ -850,27 +850,27 @@ if (handles.debug==0)
         pause(0.25);
     end
 
-    if (isequal(handles.word,'Ready...') || handles.trialType==-1)
+    if (isequal(handles.word,'Ready...') || isequal(handles.trialType, -1))
         return
     end
 
-    if handles.trialType == 1
+    if isequal(handles.trialType, 1) || length(handles.trialType) > 1
         if handles.fb3Gain == 0;
             Audapter(3, 'fb', 1);
         else
             Audapter(3, 'fb', 3);
             Audapter(3, 'fb3gain', handles.fb3Gain);
         end
-    elseif handles.trialType == 2
+    elseif isequal(handles.trialType, 2)
         Audapter(3, 'fb', 4);
         Audapter(3, 'rmsff_fb', ...
                  [handles.smnFF0, handles.smnFF1, handles.smnOnRamp, handles.smnOffRamp], 0);
         Audapter(3, 'fb4gaindb', handles.smnGain, 0);
-    elseif handles.trialType == 3
+    elseif isequal(handles.trialType, 3)
         Audapter(3, 'fb', 2);
-    elseif handles.trialType == 4
+    elseif isequal(handles.trialType, 4)
         Audapter(3,'fb',1);
-    elseif handles.trialType == 5
+    elseif isequala(handles.trialType, 5)
         Audapter(3,'fb',1);
     else
         error('Unrecognized trialType: %d', handles.trialType);
@@ -878,7 +878,7 @@ if (handles.debug==0)
     
 	load(handles.uiConfigFN);   % gives uiConfig
     
-    if (handles.trialType==1 || handles.trialType==2)
+    if isequal(handles.trialType, 1) || isequal(handles.trialType, 2) || length(handles.trialType) > 1
         for i1 = 1 : numel(handles.hsp)            
             set(0, 'CurrentFigure', handles.hkf);
             
@@ -1231,7 +1231,7 @@ if (handles.debug==0)
 
     bRmsRepeat = handles.bRmsRepeat;
     bSpeedRepeat = handles.bSpeedRepeat;
-    if (handles.trialType==3 || handles.trialType==4)
+    if isequal(handles.trialType, 3) || isequal(handles.trialType, 4)
         if (bRmsRepeat==1)
             bRmsRepeat=0;
         end

@@ -1,6 +1,6 @@
 function continuous_pitch_shift
-bOffline = 0;
-bUltraLite = 1;
+bOffline = 1;
+bUltraLite = 0;
 
 if bUltraLite
     sRate = 12000;
@@ -13,12 +13,15 @@ else
     frameLen = 32;
     scaleFactor = 0.05;
 end
-    
+
 %%
-Audapter('ost', '../pert/ost_states1-2');
-Audapter('pcf', '../pert/pert_zero.pcf');
+% Audapter('ost', '../pert/ost_states1-2');
+% Audapter('pcf', '../pert/pert_zero.pcf');
 % Audapter('ost', '../pert/ost_states1-4');
 % Audapter('pcf', '../pert/pert_zero_states13.pcf');
+
+Audapter('ost', 'E:\DATA\APE\NWU_TS_20130806_3\rand\rep2\trial-4-down.ost');
+Audapter('pcf', 'E:\DATA\APE\NWU_TS_20130806_3\rand\rep2\trial-4-down.pcf');
 
 Audapter(3, 'bshift', 1);
 Audapter(3, 'bpitchshift', 1);
@@ -79,6 +82,8 @@ end
 
 %%
 data1 = AudapterIO('getData');
+
+getPitchShiftTimeStamps(data1);
 
 show_spectrogram(data1.signalIn, data1.params.sr);
 show_spectrogram(data1.signalOut, data1.params.sr);

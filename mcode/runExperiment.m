@@ -3,14 +3,14 @@ DEBUG=0;
 [ret, hostName] = system('hostname');
 
 %% ---- Read and parse expt_config.txt ----
-expt_config=read_parse_expt_config('expt_config.txt');
+expt_config = read_parse_expt_config('expt_config.txt');
 
 if ~(isequal(expt_config.PERT_MODE, 'PITCH') || isequal(expt_config.PERT_MODE, 'FMT'))
     error('Unrecognized PERT_MODE: %s', expt_config.PERT_MODE);
 end
 
 %% Check ost and pcf
-check_file(expt_config.OST_FN);
+% check_file(expt_config.OST_FN);
 
 %% ---- Subject and experiment information ---
 subject.expt_config         = expt_config;
@@ -80,7 +80,6 @@ if (~isempty(findStringInCell(varargin,'dirname')))
     dirname=varargin{findStringInCell(varargin,'dirname')+1};
 end
 
-
 if isdir(dirname)
     if ~isempty(fsic(varargin, 'forceOverwrite'))
         bNew = true;
@@ -118,28 +117,17 @@ if bNew % set up new experiment
     
 	expt.subject=subject;
     
-    expt.allPhases={'pre', 'pract1', 'pract2', 'rand', 'start', 'ramp','stay','end'};
-    expt.recPhases={'pre', 'pract1', 'pract2', 'rand', 'start', 'ramp','stay','end'}; %SC The pahses during which the data are recorded
+    expt.allPhases={'pre', 'pract1', 'pract2', 'rand'};
+    expt.recPhases={'pre', 'pract1', 'pract2', 'rand'}; %SC The pahses during which the data are recorded
 %     expt.allPhases={'pre', 'pract1', 'pract2', 'start', 'ramp','stay','end'};
 %     expt.recPhases={'pre', 'pract1', 'pract2', 'start', 'ramp','stay','end'}; %SC The pahses during which the data are recorded
     
-    if isfield(expt_config,'NATURAL_REPS') && isfield(expt_config,'NATURAL_WORDS') && ...
-        ~isempty(expt_config.NATURAL_REPS) && ~isempty(expt_config.NATURAL_WORDS) && ...
-        iscell(expt_config.NATURAL_WORDS) && expt_config.NATURAL_REPS>0
-        expt.allPhases=[{'natural'},expt.allPhases];
-        expt.recPhases=[{'natural'},expt.recPhases];
-    end
-    
-    expt.preWords = expt_config.PRE_WORDS;
-    expt.pract1Words = expt.preWords;
-    expt.pract2Words = expt.preWords;
-    expt.randWords = expt_config.RAND_WORDS;	% 3 3-letters, 5 4-letters
-    expt.sustWords = expt_config.SUST_WORDS;
-    
-    if isequal(expt.allPhases{1},'natural')
-        expt.naturalWords=expt_config.NATURAL_WORDS;
-    end
-
+    expt.stimUtter = expt_config.STIM_UTTER;
+%     expt.preWords = expt_config.PRE_WORDS;
+%     expt.pract1Words = expt.preWords;
+%     expt.pract2Words = expt.preWords;
+%     expt.randWords = expt_config.RAND_WORDS;	% 3 3-letters, 5 4-letters
+%     expt.sustWords = expt_config.SUST_WORDS;
 %     if expt_config.TEST1_REPS==0    % No generization tests 
     expt.trialTypes=[1];
     expt.trialOrderRandReps = 1;	%How many reps are randomized together
@@ -151,16 +139,6 @@ if bNew % set up new experiment
     expt.script.rand.trialsPerBlock = expt_config.RAND_TRIALS_PER_BLOCK; 
     expt.script.rand.trialsPerBlock_lower = expt_config.RAND_LOWER_TRIALS_PER_BLOCK;
     expt.script.rand.trialsPerBlock_higher = expt_config.RAND_HIGHER_TRIALS_PER_BLOCK;
-    
-    expt.script.start.nReps = expt_config.SUST_START_REPS;   %SC Default 15   %SC-Mod(09/26/2007)       % !!2!!
-    expt.script.ramp.nReps = expt_config.SUST_RAMP_REPS;   %SC Default 15   %SC-Mod(09/26/2007)       % !!2!!
-    expt.script.stay.nReps = expt_config.SUST_STAY_REPS;   %SC Default 20   %SC-Mod(09/26/2007)       % !!8!!
-    expt.script.end.nReps = expt_config.SUST_END_REPS;    %SC Default 20   %SC-Mod(09/26/2007)       % !!8!!
-    
-    expt.script.start.noiseRepsRatio = expt_config.NOISE_REPS_RATIO;
-    expt.script.ramp.noiseRepsRatio = expt_config.NOISE_REPS_RATIO;
-    expt.script.stay.noiseRepsRatio = expt_config.NOISE_REPS_RATIO;
-    expt.script.end.noiseRepsRatio = expt_config.NOISE_REPS_RATIO;
 
 	expt.trialTypeDesc = cell(1, 5);
 	expt.trialTypeDesc{1} = 'Speech with auditory feedback';
@@ -169,27 +147,30 @@ if bNew % set up new experiment
 	expt.trialTypeDesc{4} = 'Rest (no speech) in silence';
 	expt.trialTypeDesc{5} = 'Non-speech bracket task in silence';
 	
+    fprintf(1, 'Generating script for the practice phases...\n');
     expt.script.pre    = genPhaseScript('pre',    ...
-                                        expt.script.pre.nReps, expt.preWords);
+                                        expt.script.pre.nReps, expt.stimUtter);
     expt.script.pract1 = genPhaseScript('pract1', ...
-                                        expt.script.pract1.nReps, expt.pract1Words);
+                                        expt.script.pract1.nReps, expt.stimUtter);
     expt.script.pract2 = genPhaseScript('pract2', ...
-                                        expt.script.pract2.nReps, expt.pract2Words);
+                                        expt.script.pract2.nReps, expt.stimUtter);
     
-    fprintf('Generating script for the random-perturbation phase...\n');
-    expt.script.rand = genRandScript(expt.script.rand.nBlocks, expt.script.rand.trialsPerBlock, ...
-                                     expt.script.rand.trialsPerBlock_lower, expt.script.rand.trialsPerBlock_higher, ...
-                                     expt.randWords);
+    fprintf(1, 'Generating script for the random-perturbation phase...\n');
+    [expt.script.rand, expt.pertDes] = genRandScript(expt_config.N_BLOCKS, expt_config.TRIALS_PER_BLOCK, ...
+                                     expt_config.TRIAL_TYPES_IN_BLOCK, expt_config.MIN_DIST_BETW_SHIFTS, ...
+                                     expt_config.ONSET_DELAY_MS, expt_config.NUM_SHIFTS, ...
+                                     expt_config.INTER_SHIFT_DELAYS_MS, expt_config.PITCH_SHIFTS_CENT, ...
+                                     expt_config.PITCH_SHIFT_DURS_MS, expt_config.STIM_UTTER);
 	fprintf('Done.\n');
                                     
-    t_phases = {'start', 'ramp', 'stay', 'end'};
-    for k1 = 1 : length(t_phases)
-        t_phase = t_phases{k1};
-        expt.script.(t_phase)  = ...
-            genPhaseScript(t_phase,  ...
-                           expt.script.(t_phase).nReps,  expt.sustWords, ...
-                           'noiseRepsRatio', expt.script.(t_phase).noiseRepsRatio);
-    end
+%     t_phases = {'start', 'ramp', 'stay', 'end'};
+%     for k1 = 1 : length(t_phases)
+%         t_phase = t_phases{k1};
+%         expt.script.(t_phase)  = ...
+%             genPhaseScript(t_phase,  ...
+%                            expt.script.(t_phase).nReps,  expt.sustWords, ...
+%                            'noiseRepsRatio', expt.script.(t_phase).noiseRepsRatio);
+%     end
     
     p = getAudapterDefaultParams(subject.sex,...
         'closedLoopGain',expt.subject.closedLoopGain,...
@@ -201,6 +182,7 @@ if bNew % set up new experiment
         'frameLen',expt_config.FRAME_SIZE/expt_config.DOWNSAMP_FACT, ...
         'pvocFrameLen', expt_config.PVOC_FRAME_LEN, ...
         'pvocHop', expt_config.PVOC_HOP);
+    p.rmsThresh = expt_config.INTENSITY_THRESH;
     
     if isequal(expt_config.STEREO_MODE, 'LR_AUDIO')
         p.stereoMode = 1;
@@ -233,8 +215,6 @@ else % load expt
 %     end
     subject=expt.subject;
 end
-
-
 
 %% initialize algorithm
 AudapterIO('init',p);      %SC Set the initial (default) parameters
@@ -592,6 +572,11 @@ for n=startPhase:length(allPhases)
             
             set(hgui.play,'cdata',hgui.skin.play,'userdata',0);
             hgui.showTextCue=1;
+            
+            % -- Prepare pitch shift log file -- %
+            dfns = dir(fullfile(dirname, 'pitch_shift.*.log'));
+            pitchShiftLogFN = fullfile(dirname, sprintf('pitch_shift.%.2d.log', length(dfns)));
+            pitchShiftF = fopen(pitchShiftLogFN, 'at');
         case 'start'
             hgui.showRmsPrompt = 1;
             hgui.showSpeedPrompt = 1;
@@ -671,7 +656,7 @@ for n=startPhase:length(allPhases)
         
         nTrials=length(expt.script.(thisphase).(repString).trialOrder);
 
-        subsubdirname=fullfile(subdirname,repString);
+        subsubdirname=fullfile(subdirname, repString);
         mkdir(subsubdirname);
 		
 		% --- Perturbation field ---
@@ -742,71 +727,51 @@ for n=startPhase:length(allPhases)
         end
 		% --- ~Perturbation field ---
 
-        for k=1:nTrials
+        for k = 1 : nTrials
             thisTrial = expt.script.(thisphase).(repString).trialOrder(k); % 0: silent; 1: no noise; 2: noise only; 			
             thisWord = expt.script.(thisphase).(repString).word{k};     %SC Retrieve the word from the randomly shuffled list
 
-            if isequal(thisphase, 'rand')   % Configure random perturbation
-                thispert = expt.script.(thisphase).(repString).pertType(k);
-                if thispert == 1 % Upward perturbation
-                    fprintf(1, 'rand pert type = UP\n');
-                    if isequal(subject.expt_config.PERT_MODE, 'FMT')
-                        p.pertAmp = norm([subject.expt_config.SHIFT_RATIO_RAND_HIGHER_F1, ...
-                                          subject.expt_config.SHIFT_RATIO_RAND_HIGHER_F2]) * ...
-                                    ones(1, p.pertFieldN);
-                        t_angle =  angle(subject.expt_config.SHIFT_RATIO_RAND_HIGHER_F1 + ...
-                                         i * subject.expt_config.SHIFT_RATIO_RAND_HIGHER_F2);
-                        p.pertPhi = t_angle * ones(1, p.pertFieldN);
-                        p.bShift = 1;
-                        p.bPitchShift = 0;
-                        p.pitchShiftRatio = 1.0;
-                    else
-                        p.bShift = 0;
-                        p.bPitchShift = 1;                        
-                        p.pitchShiftRatio = 2 ^ (subject.expt_config.PITCH_SHIFT_SEMITONES_RAND / 12);
-                    end
-                    
-                    pcf = fullfile(subsubdirname,['trial-', num2str(k), '-', num2str(thisTrial), '_up.pcf']);
-                elseif thispert == -1 % Downward perturbation
-                    fprintf(1, 'rand pert type = DOWN\n');
-                    if isequal(subject.expt_config.PERT_MODE, 'FMT')
-                        p.pertAmp = norm([subject.expt_config.SHIFT_RATIO_RAND_LOWER_F1, ...
-                                          subject.expt_config.SHIFT_RATIO_RAND_LOWER_F2]) * ...
-                                    ones(1, p.pertFieldN);
-                        t_angle =  angle(subject.expt_config.SHIFT_RATIO_RAND_LOWER_F1 + ...
-                                         i * subject.expt_config.SHIFT_RATIO_RAND_LOWER_F2);
-                        p.pertPhi = t_angle * ones(1, p.pertFieldN);
-                        p.bShift = 1;
-                        p.bPitchShift = 0;
-                        p.pitchShiftRatio = 1.0;
-                    else
-                        p.bShift = 0;
-                        p.bPitchShift = 1;
-                        p.pitchShiftRatio = 2 ^ (-subject.expt_config.PITCH_SHIFT_SEMITONES_RAND / 12);
-                    end
-                    
-                    pcf = fullfile(subsubdirname,['trial-', num2str(k), '-', num2str(thisTrial), '_dn.pcf']);
-                else % No perturbation
-                    fprintf(1, 'rand pert type = NONE\n');
+            if iscell(thisTrial)
+                thisTrial = thisTrial{1};
+            end
+            
+            ost = fullfile(subsubdirname, ['trial-', num2str(k), '-', num2str(thisTrial), '.ost']);
+            pcf = fullfile(subsubdirname, ['trial-', num2str(k), '-', num2str(thisTrial), '.pcf']);
+            
+            p.pertAmp = zeros(1, p.pertFieldN);
+            p.pertPhi = zeros(1, p.pertFieldN);
+            p.bShift = 1;
+            p.bPitchShift = 1;
+            p.pitchShiftRatio = NaN;
+            
+            
+            if isequal(thisphase, 'rand')   % Configure random perturbation                
+                fprintf(1, 'rand pert type = [%s]\n', thisTrial);
+                
+                if isequal(thisTrial, 'up')
                     p.pertAmp = zeros(1, p.pertFieldN);
-                    p.pertPhi = zeros(1, p.pertFieldN);
-                    p.bShift = 0;
-                    p.bPitchShift = 1;
-                    p.pitchShiftRatio = 1.0;
+                    p.pertPhi = zeros(1, p.pertFieldN);                    
                     
-                    pcf = fullfile(subsubdirname,['trial-', num2str(k), '-', num2str(thisTrial), '_np.pcf']);
+                    gen_multi_pert_pcf(ost, pcf, expt_config.INTENSITY_THRESH, ...
+                                       expt.script.(thisphase).(repString).pitchShifts_cent{k}, ...
+                                       expt.script.(thisphase).(repString).pitchShifts_onset{k}, ...
+                                       expt.script.(thisphase).(repString).pitchShifts_dur{k})
+                elseif isequal(thisTrial, 'down') % Downward perturbation
+                    gen_multi_pert_pcf(ost, pcf, expt_config.INTENSITY_THRESH, ...
+                                       -1.0 * expt.script.(thisphase).(repString).pitchShifts_cent{k}, ...
+                                       expt.script.(thisphase).(repString).pitchShifts_onset{k}, ...
+                                       expt.script.(thisphase).(repString).pitchShifts_dur{k})
+                else % No perturbation
+                    gen_multi_pert_pcf(ost, pcf, ...
+                                       expt_config.INTENSITY_THRESH, [0], [60], [20]);
                 end                               
                 
                 AudapterIO('init', p);
                 
-                if isequal(subject.expt_config.PERT_MODE, 'FMT')
-                    gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
-                                 0, p.pertAmp(1), t_angle, pcf);
-                else
-                    gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
-                                 log2(p.pitchShiftRatio) * 12, 0, 0, pcf);
-                end
+                check_file(ost);
                 check_file(pcf);
+                
+                AudapterIO('ost', ost, [], 0);
                 AudapterIO('pcf', pcf, [], 0);
             end
 
@@ -858,7 +823,19 @@ for n=startPhase:length(allPhases)
             set(hgui.button_reproc, 'enable', 'off');
             
             UIRecorder('singleTrial', hgui.play, 1, hgui);
-            data=get(hgui.UIRecorder, 'UserData');           %SC Retrieve the data
+            data = get(hgui.UIRecorder, 'UserData');           %SC Retrieve the data
+            
+            % -- Write pitch shift log -- 
+            if isequal(thisphase, 'rand')
+                psSummary = getPitchShiftTimeStamps(data);
+                for k2 = 1 : length(psSummary)
+                    fprintf(pitchShiftF, '%s/%s/%s, %f ms, %f ms, %f cents\n', ...
+                            thisphase, repString, ...
+                            ['trial-', num2str(k), '-', num2str(thisTrial)], ...
+                            psSummary{k2}(1), psSummary{k2}(2), psSummary{k2}(3));
+                end
+            end
+            
             % -- Attach uiConfig info --
             load(hgui.uiConfigFN);
             data.uiConfig = uiConfig;
@@ -906,7 +883,7 @@ for n=startPhase:length(allPhases)
                 end
             end
 			
-            save(fullfile(subsubdirname,['trial-',num2str(k),'-',num2str(thisTrial)]),'data');
+            save(fullfile(subsubdirname, ['trial-',num2str(k),'-',num2str(thisTrial)]),'data');
             disp(['Saved ',fullfile(subsubdirname,['trial-',num2str(k),'-',num2str(thisTrial)]),'.']);
             disp(' ');
             
@@ -972,6 +949,9 @@ for n=startPhase:length(allPhases)
     end
     startRep=1;
 end
+
+fclose(pitchShiftF);
+
 set(hgui.play,'cdata',hgui.skin.play,'userdata',0);
 set(hgui.msgh,'string',...
 	{'Congratulations!';...
