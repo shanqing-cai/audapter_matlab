@@ -1,11 +1,14 @@
-Subject information ===%
-SUBJECT_ID NWU_TS_20130807_1
+%=== Subject information ===%
+SUBJECT_ID NWU_TS_20130807_9
 SUBJECT_GENDER male
 SUBJECT_DOB 1-JAN-1983
 SUBJECT_GROUP AWS
 
 %=== Data location ===%
 DATA_DIR E:\DATA\APE
+
+%=== Feedback timing mode ===%
+ALWAYS_ON 1     % 0 - no; 1 - yes
 
 %=== Experiment design ===%
 N_BLOCKS 10
@@ -36,9 +39,9 @@ VOWEL_LEN_TARG 2.00 % sec
 VOWEL_LEN_RANGE 0.50 % sec: single-sided width
 
 %=== Number of practice trials ===%
-PRE_REPS 3   
-PRACT1_REPS 3 % Intensity practice
-PRACT2_REPS 3 % Intensity and duration practice
+PRE_REPS 0
+PRACT1_REPS 0 % Intensity practice
+PRACT2_REPS 0 % Intensity and duration practice
 
 
 TRIGGER_BY_MRI_SCANNER 0 % 0 (no) or 1 (yes)

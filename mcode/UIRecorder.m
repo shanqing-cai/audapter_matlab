@@ -87,14 +87,16 @@ handles.debug=0;
 handles.vumeterMode=NaN;  % 1: 10 ticks; 2: 3 ticks;
 handles.bShowCorrAnim = 1;
 
+handles.debug_pitchShiftLogF = 0;
+
 handles.showKidsAnim = 0;
               
 handles.timeCreated=clock;
 
 % handles.promptGain = 0.2;
 
-handles.bAO=0;
-handles.dScale=1;
+handles.bAlwaysOn = 0;
+handles.dScale = 1;
 
 handles.msgImgDir='./uimg';
 handles.utterImgDir='./utterimg';
@@ -438,8 +440,8 @@ if(get(handles.play,'userdata')==0) % currently in pause mode
     singleTrial(handles.play,[],handles)   %%SC
 else % currently in play mode
     set(handles.play,'cdata',handles.skin.play,'userdata',0); % now in pause mode
-    if handles.bAO==1
-        Audapter(3,'scale',0);
+    if handles.bAlwaysOn == 1
+%         Audapter(3, 'scale', 0);
     else
         Audapter(2) %%SC stop Audapter
     end
@@ -944,15 +946,44 @@ if (handles.debug==0)
                         'FontSize', 24, 'FontWeight', 'bold', 'Color', 'b');
         end
 
-        if uiConfig.trialStartWithAnim == 1 || ~handles.showKidsAni
-            AudapterIO('reset');
+        if uiConfig.trialStartWithAnim == 1 || ~handles.showKidsAnim
+            if isequal(handles.phase, 'rand')   % DEBUG
+                f = fopen(fullfile(handles.dirname, 'tmp.log'), 'at');                
+                fprintf(f, 'Starting trial: setting trialLen... %s\n', handles.trialType);
+                fclose(f);
+            end
+            
             if uiConfig.trialPresetDur == 1
                 Audapter(3, 'triallen', handles.trialLen);
             else
                 Audapter(3, 'triallen', handles.trialLenMax);
             end
             
-            Audapter(1);
+            if isequal(handles.phase, 'rand')   % DEBUG
+                f = fopen(fullfile(handles.dirname, 'tmp.log'), 'at');
+                fprintf(f, 'Starting trial: setting trialLen done. %s\n', handles.trialType);
+                fprintf(f, 'Starting trial: reseting... %s\n', handles.trialType);
+                
+                fclose(f);
+            end
+            
+            AudapterIO('reset');
+            if isequal(handles.phase, 'rand')   % DEBUG
+                f = fopen(fullfile(handles.dirname, 'tmp.log'), 'at');
+                fprintf(f, 'Starting trial: reset done. %s\n', handles.trialType);
+                
+                fclose(f);
+            end
+           
+%             fprintf(1, 'handles.debug_pitchShiftLogF = %d\n', ...
+%                     handles.debug_pitchShiftLogF);
+%             if handles.debug_pitchShiftLogF > 0
+%                 fprintf(handles.debug_pitchShiftLogF, 'Starting trial\n');
+%             end
+            
+            if ~handles.bAlwaysOn
+                Audapter(1);
+            end
         end
         
         if handles.showKidsAnim
@@ -994,13 +1025,21 @@ if (handles.debug==0)
             waitTime = handles.trialLen - animDur;
             if waitTime >= 0
                 pause(waitTime);
-                Audapter(2);
+                
+                if ~handles.bAlwaysOn
+                    Audapter(2);
+                end
             end
         else
             if uiConfig.trialStartWithAnim == 1
                 set(handles.button_endCurTrial, 'Enable', 'on');
                 waitfor(handles.button_endCurTrial, 'Enable', 'off');
             end
+        end
+        if isequal(handles.phase, 'rand')   % DEBUG
+            f = fopen(fullfile(handles.dirname, 'tmp.log'), 'at');
+            fprintf(f, 'Ended trial: %s\n', handles.trialType);
+            fclose(f);
         end
            
     end
@@ -1031,9 +1070,9 @@ if (handles.debug==0)
     else        
 %         tic;
         if uiConfig.trialStartWithAnim == 0
-            if handles.bAO==1
+            if handles.bAlwaysOn == 1
                 AudapterIO('reset');
-                Audapter(3, 'scale', handles.dScale);
+%                 Audapter(3, 'scale', handles.dScale);
             else            
                 AudapterIO('reset');
                 if uiConfig.trialPresetDur == 1
@@ -1042,7 +1081,9 @@ if (handles.debug==0)
                     Audapter(3, 'triallen', handles.trialLenMax);
                 end
                 
-                Audapter(1);
+                if ~bAlwaysOn
+                    Audapter(1);
+                end
                 
                 if uiConfig.trialPresetDur == 1
                     pause(handles.trialLen);  % Changed 2008/06/18 to make the pause longer +1.5 --> +2.0
@@ -1070,10 +1111,12 @@ if (handles.debug==0)
     if uiConfig.trialStartWithAnim == 0
         if uiConfig.trialPresetDur == 1
             if handles.bSim == 0
-                if handles.bAO==1
-                    Audapter(3,'scale',0);
+                if handles.bAlwaysOn == 1
+%                     Audapter(3, 'scale', 0);
                 else
-                    Audapter(2);
+                    if ~bAlwaysOn
+                        Audapter(2);
+                    end
                 end
             end
         else

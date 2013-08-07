@@ -1,6 +1,11 @@
 function runExperiment(varargin)
-DEBUG=0;
+DEBUG = 0;
+DEBUG_PS = 0;
+
 [ret, hostName] = system('hostname');
+
+fclose all;
+close all force;
 
 %% ---- Read and parse expt_config.txt ----
 expt_config = read_parse_expt_config('expt_config.txt');
@@ -9,12 +14,13 @@ if ~(isequal(expt_config.PERT_MODE, 'PITCH') || isequal(expt_config.PERT_MODE, '
     error('Unrecognized PERT_MODE: %s', expt_config.PERT_MODE);
 end
 
+
 %% Check ost and pcf
 % check_file(expt_config.OST_FN);
 
 %% ---- Subject and experiment information ---
 subject.expt_config         = expt_config;
-subject.name				= expt_config.SUBJECT_ID; 
+subject.name				= expt_config.SUBJECT_ID;
 subject.sex					= expt_config.SUBJECT_GENDER;  % male / female
 subject.age                 = expt_config.SUBJECT_AGE;
 subject.group               = expt_config.SUBJECT_GROUP;
@@ -50,7 +56,7 @@ subject.designNum			= 2;
 
 subject.lvNoise             = 75; % dBA SPL. The level of noise for completely masking speech (mode trialType = 2 or 3).
 
-bAO=~isempty(fsic(varargin, 'AO')) | ~isempty(fsic(varargin, 'ao'));
+bAlwaysOn = expt_config.ALWAYS_ON;
 
 bSim = 0;
 simDataDir = '';
@@ -59,7 +65,8 @@ if ~isempty(fsic(varargin, 'sim'))
     simDataDir = varargin{fsic(varargin, 'sim') + 1};
 end
 
-subject.bAO=bAO;
+subject.bAlwaysOn = bAlwaysOn;
+
 %%
 subject.date				= clock;
 
@@ -288,7 +295,7 @@ hgui.trialLenMax = expt.subject.trialLenMax;
 % hgui.skin.faceOrder=randperm(length(hgui.skin.dFaces));
 hgui.skin.facePnt=1;
 
-hgui.bAO=bAO;
+hgui.bAlwaysOn = bAlwaysOn;
 hgui.dScale=p.dScale;
 
 hgui.vumeterMode=expt.subject.vumeterMode;
@@ -300,6 +307,8 @@ hgui.rmsTransTarg=micRMS_100dBA / (10^((100-hgui.rmsTransTarg_spl)/20));
 hgui.fb3Gain = dBSPL2WaveAmp(expt_config.BLEND_NOISE_DB);
 
 hgui.pertStates = expt_config.PERT_STATES;
+
+hgui.debug_pitchShiftLogF = 0;
 
 %%
 fprintf('\n');
@@ -371,10 +380,10 @@ else
 end
 
 Audapter(2);
-if bAO    
+if bAlwaysOn    
     AudapterIO('reset');
     Audapter(1);
-    Audapter(3,'scale',0);
+%     Audapter(3, 'scale', 0);
 end
 
 rProgress=0;
@@ -529,7 +538,7 @@ for n=startPhase:length(allPhases)
             hgui.showTextCue=1;
 
         case 'rand'
-            if bAO
+            if bAlwaysOn
                 Audapter(2);
             end
             
@@ -552,9 +561,9 @@ for n=startPhase:length(allPhases)
             end
             % ~SC(2008/06/10) Manually determine the optimum tracking
             
-            if bAO
+            if bAlwaysOn
                 Audapter(1);
-                Audapter(3,'scale',0);
+%                 Audapter(3,'scale',0);
             end
             
             set(hgui.msgh, 'string', {''}, 'visible', 'on'); 
@@ -576,7 +585,7 @@ for n=startPhase:length(allPhases)
             % -- Prepare pitch shift log file -- %
             dfns = dir(fullfile(dirname, 'pitch_shift.*.log'));
             pitchShiftLogFN = fullfile(dirname, sprintf('pitch_shift.%.2d.log', length(dfns)));
-            pitchShiftF = fopen(pitchShiftLogFN, 'at');
+            pitchShiftLogF = fopen(pitchShiftLogFN, 'at');
         case 'start'
             hgui.showRmsPrompt = 1;
             hgui.showSpeedPrompt = 1;
@@ -595,9 +604,9 @@ for n=startPhase:length(allPhases)
             p.bDetect = 1;
 			p.bShift = 1;
             
-            if bAO
+            if bAlwaysOn
                 Audapter(1);
-                Audapter(3, 'scale', 0);
+%                 Audapter(3, 'scale', 0);
             end
             
             set(hgui.play,'cdata',hgui.skin.play,'userdata',0);
@@ -633,20 +642,19 @@ for n=startPhase:length(allPhases)
             
     end
     drawnow    
-    
 
     set(hgui.msgh,'string',getMsgStr(thisphase),'visible','on');        
 
-    if ~bAO
-        if isfile(fullfile(dirname, 'p.mat'))
-            load(fullfile(dirname, 'p.mat'))    % gives p;            
-        end
-        AudapterIO('init',p);  %SC Inject p to Audapter
-    else
-        p0=p; 
-        p0.dScale=0;
-        AudapterIO('init',p0);
+%     if ~bAlwaysOn
+    if isfile(fullfile(dirname, 'p.mat'))
+        load(fullfile(dirname, 'p.mat'))    % gives p;            
     end
+    AudapterIO('init',p);  %SC Inject p to Audapter
+%     else
+%         p0 = p;
+%         p0.dScale=0;
+%         AudapterIO('init',p0);
+%     end
 
     for i0=startRep:nReps    %SC Loop for the reps in the phase
         repString=['rep',num2str(i0)];
@@ -716,15 +724,15 @@ for n=startPhase:length(allPhases)
             AudapterIO('pcf', pcf_fn, [], 0);
         end
         
-        AudapterIO('ost', subject.expt_config.OST_FN, [], 0);
+%         AudapterIO('ost', subject.expt_config.OST_FN, [], 0);
         
-		if ~bAO
+% 		if ~bAlwaysOn
             AudapterIO('init',p);  %SC Inject p to Audapter
-        else
-            p0=p; 
-            p0.dScale=0;
-            AudapterIO('init',p0);
-        end
+%         else
+%             p0=p; 
+%             p0.dScale=0;
+%             AudapterIO('init',p0);
+%         end
 		% --- ~Perturbation field ---
 
         for k = 1 : nTrials
@@ -770,9 +778,22 @@ for n=startPhase:length(allPhases)
                 
                 check_file(ost);
                 check_file(pcf);
-                
+                        
+                if DEBUG_PS
+                    fprintf(pitchShiftLogF, 'Loading ost file: %s...\n', ost); % DEBUG
+                end
                 AudapterIO('ost', ost, [], 0);
+                if DEBUG_PS
+                    fprintf(pitchShiftLogF, 'Done.\n');
+                end
+                
+                if DEBUG_PS
+                    fprintf(pitchShiftLogF, 'Loading pcf file: %s...\n', ost); % DEBUG
+                end
                 AudapterIO('pcf', pcf, [], 0);
+                if DEBUG_PS
+                    fprintf(pitchShiftLogF, 'Done.\n');
+                end
             end
 
 			hgui.trialType=thisTrial;
@@ -822,6 +843,9 @@ for n=startPhase:length(allPhases)
             updateParamDisp(p, hgui);
             set(hgui.button_reproc, 'enable', 'off');
             
+            if DEBUG_PS && isequal(thisphase, 'rand')
+                hgui.ps_pitchShiftLogF = pitchShiftLogF;
+            end
             UIRecorder('singleTrial', hgui.play, 1, hgui);
             data = get(hgui.UIRecorder, 'UserData');           %SC Retrieve the data
             
@@ -829,7 +853,7 @@ for n=startPhase:length(allPhases)
             if isequal(thisphase, 'rand')
                 psSummary = getPitchShiftTimeStamps(data);
                 for k2 = 1 : length(psSummary)
-                    fprintf(pitchShiftF, '%s/%s/%s, %f ms, %f ms, %f cents\n', ...
+                    fprintf(pitchShiftLogF, '%s/%s/%s, %f ms, %f ms, %f cents\n', ...
                             thisphase, repString, ...
                             ['trial-', num2str(k), '-', num2str(thisTrial)], ...
                             psSummary{k2}(1), psSummary{k2}(2), psSummary{k2}(3));
@@ -950,7 +974,7 @@ for n=startPhase:length(allPhases)
     startRep=1;
 end
 
-fclose(pitchShiftF);
+fclose(pitchShiftLogF);
 
 set(hgui.play,'cdata',hgui.skin.play,'userdata',0);
 set(hgui.msgh,'string',...
@@ -962,7 +986,7 @@ close(hgui.UIRecorder)
 pause(2);
 % saveExperiment(dirname);
 
-if bAO
+if bAlwaysOn
     Audapter(2);
 end
 
@@ -973,7 +997,7 @@ save(fullfile(dirname,'state.mat'),'state');
 % percTokenInfo=chooseEHPercToken(dirname,'HEAD');
 % percTokenInfo.prodF0=expt.ehaeInfo.F0;
 % percTokenInfo.x0=1.0;
-% percTokenInfo.bAO=bAO;
+% percTokenInfo.bAlwaysOn=bAlwaysOn;
 
 % expt.percTokenInfo=percTokenInfo;
 save(fullfile(dirname,'expt.mat'),'expt');
