@@ -14,6 +14,18 @@ if ~(isequal(expt_config.PERT_MODE, 'PITCH') || isequal(expt_config.PERT_MODE, '
     error('Unrecognized PERT_MODE: %s', expt_config.PERT_MODE);
 end
 
+%% Optional: full schedule file for experiment design 
+if length(expt_config.FULL_SCHEDULE_FILE) < 2 || ...
+   ~isequal(expt_config.FULL_SCHEDULE_FILE(1), '"') || ...
+   ~isequal(expt_config.FULL_SCHEDULE_FILE(end), '"')
+    error('Unrecognized format in FULL_SCHEDULE_FILE: %s', expt_config.FULL_SCHEDULE_FILE);
+end
+
+expt_config.FULL_SCHEDULE_FILE = expt_config.FULL_SCHEDULE_FILE(2 : end - 1);
+if ~isempty(expt_config.FULL_SCHEDULE_FILE)
+    check_file(expt_config.FULL_SCHEDULE_FILE);
+end
+
 %% Check ost and pcf
 % check_file(expt_config.OST_FN);
 
@@ -166,7 +178,7 @@ if bNew % set up new experiment
                                      expt_config.TRIAL_TYPES_IN_BLOCK, expt_config.MIN_DIST_BETW_SHIFTS, ...
                                      expt_config.ONSET_DELAY_MS, expt_config.NUM_SHIFTS, ...
                                      expt_config.INTER_SHIFT_DELAYS_MS, expt_config.PITCH_SHIFTS_CENT, ...
-                                     expt_config.PITCH_SHIFT_DURS_MS, expt_config.STIM_UTTER);
+                                     expt_config.PITCH_SHIFT_DURS_MS, expt_config.STIM_UTTER, expt_config.FULL_SCHEDULE_FILE);
 	fprintf('Done.\n');
                                     
 %     t_phases = {'start', 'ramp', 'stay', 'end'};

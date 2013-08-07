@@ -1,0 +1,12 @@
+ctrl
+up
+down
+ctrl
+down
+up
+alt
+altb
+ctrl
+alt
+ctrl
+altb
