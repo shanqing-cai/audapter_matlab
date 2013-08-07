@@ -14,7 +14,6 @@ if ~(isequal(expt_config.PERT_MODE, 'PITCH') || isequal(expt_config.PERT_MODE, '
     error('Unrecognized PERT_MODE: %s', expt_config.PERT_MODE);
 end
 
-
 %% Check ost and pcf
 % check_file(expt_config.OST_FN);
 
@@ -190,6 +189,30 @@ if bNew % set up new experiment
         'pvocFrameLen', expt_config.PVOC_FRAME_LEN, ...
         'pvocHop', expt_config.PVOC_HOP);
     p.rmsThresh = expt_config.INTENSITY_THRESH;
+    
+    if isequal(expt_config.DEVICE_NAME, 'UltraLite')
+        %--- Settings for MOTU UlraLite---%
+        cfgUltraLite.downFact = 4;
+        cfgUltraLite.sr = 12000;
+        cfgUltraLite.frameLen = 64;
+        
+        Audapter('deviceName', 'MOTU Audio');
+        
+        p.downFact = cfgUltraLite.downFact;
+        p.sr = cfgUltraLite.sr;
+        p.frameLen = cfgUltraLite.frameLen;
+        
+        fprintf(1, 'INFO: Using MOTU UltraLite settings. \n');
+        fprintf(1, 'INFO: Make sure in MOTU Audio Console, the following parameter values are set:\n');
+        fprintf(1, 'INFO:    downFact = %d\n', cfgUltraLite.downFact);
+        fprintf(1, 'INFO:    sr = %d\n', cfgUltraLite.sr);
+        fprintf(1, 'INFO:    frameLen = %d\n', cfgUltraLite.frameLen);
+        fprintf(1, '\n');
+    elseif isequal(expt_config.DEVICE_NAME, 'MicroBook')
+        Audapter('deviceName', 'MOTU MicroBook');
+    else
+        error('Unrecognized DEVICE_NAME: %s', expt_config.DEVICE_NAME);
+    end
     
     if isequal(expt_config.STEREO_MODE, 'LR_AUDIO')
         p.stereoMode = 1;

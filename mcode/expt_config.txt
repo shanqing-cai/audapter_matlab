@@ -1,11 +1,14 @@
 %=== Subject information ===%
-SUBJECT_ID NWU_TS_20130807_9
+SUBJECT_ID NWU_TS_20130807_11
 SUBJECT_GENDER male
 SUBJECT_DOB 1-JAN-1983
 SUBJECT_GROUP AWS
 
 %=== Data location ===%
 DATA_DIR E:\DATA\APE
+
+%=== Device name ===%
+DEVICE_NAME UltraLite % {MicroBook | UltraLite} (Case sensitive)
 
 %=== Feedback timing mode ===%
 ALWAYS_ON 1     % 0 - no; 1 - yes
