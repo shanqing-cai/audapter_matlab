@@ -78,7 +78,7 @@ if ~isempty(fsic(varargin, 'dirname'))
 end
 
 handles.trigByScanner=0;
-handles.TA=2.5;
+handles.TA=2.0;
 handles.phase='';
 handles.trigKey='add';	% To change
 handles.trialLen = 3;
@@ -456,7 +456,7 @@ eTime=etime(timeNow,hgui.timeCreated);
 if (isequal(evnt.Key,hgui.trigKey) || isequal(evnt.Key,'a'))
 % 	set(hgui.uirecorder,'UserData','go');
     disp(['--> Trigger at ',num2str(eTime),' sec <--']);
-	uiresume(hgui.UIRecorder);    
+	uiresume(hgui.UIRecorder);
 else
 % 	set(hgui.uirecorder,'UserData','nogo');
 end

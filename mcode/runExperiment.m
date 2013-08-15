@@ -50,7 +50,7 @@ subject.hostName            = deblank(hostName);
 subject.dataDir             = expt_config.DATA_DIR;
 
 subject.trigByScanner		= expt_config.TRIGGER_BY_MRI_SCANNER;
-subject.TA					= 2.5;
+subject.TA					= expt_config.FMRI_TA;
 subject.ITI					= 6;
 
 subject.vumeterMode         = 2;     % 1: 10 ticks; 2: 3 ticks;
@@ -333,8 +333,8 @@ hgui.dirname = dirname;
 
 hgui.pcrKnob=subject.pcrKnob;
 hgui.ITI=expt.subject.ITI;
-hgui.trigByScanner=expt.subject.trigByScanner;
-hgui.TA=expt.subject.TA;
+hgui.trigByScanner = expt.subject.trigByScanner;
+hgui.TA = expt.subject.TA;
 hgui.dBRange=expt.subject.dBRange1;
 hgui.trialLen=expt.subject.trialLen;
 hgui.trialLenMax = expt.subject.trialLenMax;
@@ -616,8 +616,13 @@ for n=startPhase:length(allPhases)
                 p.rmsMeanPeak=mean(rmsPeaks);
             end
             
-            hgui.showRmsPrompt = 1;
-            hgui.showSpeedPrompt = 1;
+            if expt_config.TRIGGER_BY_MRI_SCANNER
+                hgui.showRmsPrompt = 0;
+                hgui.showSpeedPrompt = 0;
+            else
+                hgui.showRmsPrompt = 1;
+                hgui.showSpeedPrompt = 1;
+            end
             hgui.bRmsRepeat = 0;  %1 
             hgui.bSpeedRepeat = 0; 
 
@@ -686,7 +691,7 @@ for n=startPhase:length(allPhases)
             hgui.showTextCue=1;
             elseif isequal(thisphase, 'test3')
     end
-                
+
     drawnow    
 
     set(hgui.msgh,'string',getMsgStr(thisphase),'visible','on');        
