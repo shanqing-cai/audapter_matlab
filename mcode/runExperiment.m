@@ -135,10 +135,15 @@ if bNew % set up new experiment
     
 	expt.subject=subject;
     
-    expt.allPhases={'pre', 'pract1', 'pract2', 'rand'};
-    expt.recPhases={'pre', 'pract1', 'pract2', 'rand'}; %SC The pahses during which the data are recorded
+    expt.allPhases={'pre', 'pract1', 'pract2'};
+    expt.recPhases={'pre', 'pract1', 'pract2'}; %SC The pahses during which the data are recorded
 %     expt.allPhases={'pre', 'pract1', 'pract2', 'start', 'ramp','stay','end'};
 %     expt.recPhases={'pre', 'pract1', 'pract2', 'start', 'ramp','stay','end'}; %SC The pahses during which the data are recorded
+
+    for i1 = 1 : expt_config.N_RAND_RUNS
+        expt.allPhases{end + 1} = sprintf('rand%d', i1);
+        expt.recPhases{end + 1} = sprintf('rand%d', i1);
+    end
     
     expt.stimUtter = expt_config.STIM_UTTER;
 %     expt.preWords = expt_config.PRE_WORDS;
@@ -173,14 +178,19 @@ if bNew % set up new experiment
     expt.script.pract2 = genPhaseScript('pract2', ...
                                         expt.script.pract2.nReps, expt.stimUtter);
     
-    fprintf(1, 'Generating script for the random-perturbation phase...\n');
-    [expt.script.rand, expt.pertDes] = genRandScript(expt_config.N_BLOCKS, expt_config.TRIALS_PER_BLOCK, ...
-                                     expt_config.TRIAL_TYPES_IN_BLOCK, expt_config.MIN_DIST_BETW_SHIFTS, ...
-                                     expt_config.ONSET_DELAY_MS, expt_config.NUM_SHIFTS, ...
-                                     expt_config.INTER_SHIFT_DELAYS_MS, expt_config.PITCH_SHIFTS_CENT, ...
-                                     expt_config.INT_SHIFTS_DB, ...
-                                     expt_config.F1_SHIFTS_RATIO, expt_config.F2_SHIFTS_RATIO, ...
-                                     expt_config.SHIFT_DURS_MS, expt_config.STIM_UTTER, expt_config.FULL_SCHEDULE_FILE);
+    
+    for i1 = 1 : expt_config.N_RAND_RUNS
+        phs = sprintf('rand%d', i1);
+        fprintf(1, 'Generating script for the random-perturbation phase %s...\n', phs);
+        [expt.script.(phs), expt.pertDes] = ...
+            genRandScript(expt_config.N_BLOCKS_PER_RAND_RUN, expt_config.TRIALS_PER_BLOCK, ...
+                          expt_config.TRIAL_TYPES_IN_BLOCK, expt_config.MIN_DIST_BETW_SHIFTS, ...
+                          expt_config.ONSET_DELAY_MS, expt_config.NUM_SHIFTS, ...
+                          expt_config.INTER_SHIFT_DELAYS_MS, expt_config.PITCH_SHIFTS_CENT, ...
+                          expt_config.INT_SHIFTS_DB, ...
+                          expt_config.F1_SHIFTS_RATIO, expt_config.F2_SHIFTS_RATIO, ...
+                          expt_config.SHIFT_DURS_MS, expt_config.STIM_UTTER, expt_config.FULL_SCHEDULE_FILE);
+    end
 	fprintf('Done.\n');
 
 %     t_phases = {'start', 'ramp', 'stay', 'end'};
@@ -502,9 +512,8 @@ for n=startPhase:length(allPhases)
 		set(hgui.play,'visible','off');
     end        
    
-    
-    switch(thisphase)
-        case 'pre'
+       
+    if isequal(thisphase, 'pre')
             set(hgui.play,'cdata',hgui.skin.play,'userdata',0);
 
             hgui.showRmsPrompt = 0;
@@ -515,7 +524,7 @@ for n=startPhase:length(allPhases)
             p.bDetect=0;
             p.bShift = 0;       %SC No shift in the practice-1 phase           
             
-        case 'pract1'           
+    elseif isequal(thisphase, 'pract1')         
             set(hgui.play,'cdata',hgui.skin.play,'userdata',0);
 %             if (hgui.vumeterMode==1)
 %                 vumeter=hgui.skin.vumeter;
@@ -542,7 +551,7 @@ for n=startPhase:length(allPhases)
             
             subjProdLevel=[];         
             
-         case 'pract2'
+     elseif isequal(thisphase, 'pract2')
             if exist('subjProdLevel')
                 subjProdLevel=subjProdLevel(find(~isnan(subjProdLevel)));
 
@@ -573,7 +582,7 @@ for n=startPhase:length(allPhases)
 
             hgui.showTextCue=1;
 
-        case 'rand'
+    elseif length(thisphase) >= 4 && isequal(thisphase(1 : 4), 'rand')
             if bAlwaysOn
                 Audapter(2);
             end
@@ -623,7 +632,7 @@ for n=startPhase:length(allPhases)
             pitchShiftLogFN = fullfile(dirname, sprintf('pitch_shift.%.2d.log', length(dfns) + 1));
             pitchShiftLogF = fopen(pitchShiftLogFN, 'at');
             fprintf(pitchShiftLogF, 'trialFileName, voiceOnset(ms), pitchShiftOnset(ms), pitchShiftEnd(ms), pitchShift(cent)\n');
-        case 'start'
+    elseif isequal(thisphase, 'start')
             hgui.showRmsPrompt = 1;
             hgui.showSpeedPrompt = 1;
             hgui.bRmsRepeat = 0;  %1 
@@ -632,7 +641,7 @@ for n=startPhase:length(allPhases)
             set(hgui.play,'cdata',hgui.skin.play,'userdata',0);
             hgui.showTextCue=1;
             
-        case 'ramp'             %SC !! Notice that adaptive RMS threshold updating is no longer done here.           			
+    elseif isequal(thisphase,'ramp')      %SC !! Notice that adaptive RMS threshold updating is no longer done here.           			
             hgui.showRmsPrompt = 1;
             hgui.showSpeedPrompt = 1;
             hgui.bRmsRepeat = 0;  %1 
@@ -653,7 +662,7 @@ for n=startPhase:length(allPhases)
 %             if doPlot
 %                 uiwait(gcf,10);
 % 			end
-        case 'stay'         	
+    elseif isequal(thisphase, 'stay')
 			set(hgui.msgh,'visible','on');
             
             hgui.showRmsPrompt = 1;
@@ -664,7 +673,7 @@ for n=startPhase:length(allPhases)
             p.bDetect = 1;
             p.bShift = 1;
             hgui.showTextCue=1;
-        case 'end'       			
+    elseif isequal(thisphase, 'end')
 			set(hgui.msgh,'visible','on');
             
             hgui.showRmsPrompt = 1;
@@ -675,9 +684,9 @@ for n=startPhase:length(allPhases)
             p.bDetect = 0;
             p.bShift = 0;
             hgui.showTextCue=1;
-        case 'test3'
-            
+            elseif isequal(thisphase, 'test3')
     end
+                
     drawnow    
 
     set(hgui.msgh,'string',getMsgStr(thisphase),'visible','on');        
@@ -747,7 +756,7 @@ for n=startPhase:length(allPhases)
             gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
                          pitchShiftST, 0, 0, pcf_fn);
 %             end
-        elseif ~isequal(thisphase, 'rand')           
+        elseif ~(length(thisphase) >= 4 && isequal(thisphase(1 : 4), 'rand'))
             p.bShift = 0;
             p.pitchShiftRatio = 0;
             p.pertAmp = zeros(1, p.pertFieldN);
@@ -756,7 +765,7 @@ for n=startPhase:length(allPhases)
                          0, 0, 0, pcf_fn);
         end
         
-        if ~isequal(thisphase, 'rand')
+        if ~(length(thisphase) >= 4 && isequal(thisphase(1 : 4), 'rand'))
             check_file(pcf_fn);
             AudapterIO('pcf', pcf_fn, [], 0);
         end
@@ -786,10 +795,10 @@ for n=startPhase:length(allPhases)
             p.pertAmp = zeros(1, p.pertFieldN);
             p.pertPhi = zeros(1, p.pertFieldN);
             p.bShift = 1;
-            p.bPitchShift = 1;
+            p.bPitchShift = double(~isempty(find(struct2array(expt.pertDes.pitchShifts_cent) ~= 0, 1)));
             p.pitchShiftRatio = NaN;
             
-            if isequal(thisphase, 'rand')   % Configure random perturbation                
+            if length(thisphase) >= 4 && isequal(thisphase(1 : 4), 'rand')   % Configure random perturbation                
                 fprintf(1, 'rand pert type = [%s]\n', thisTrial);
                 
                 if ~isequal(thisTrial, 'ctrl')
@@ -802,7 +811,7 @@ for n=startPhase:length(allPhases)
                                        expt.script.(thisphase).(repString).F1Shifts_ratio{k}, ...
                                        expt.script.(thisphase).(repString).F2Shifts_ratio{k}, ...
                                        expt.script.(thisphase).(repString).shifts_onset{k}, ...                                       
-                                       expt.script.(thisphase).(repString).shiftDurs_ms{k})
+                                       expt.script.(thisphase).(repString).shiftDurs_ms{k});
                 else % No perturbation                    
                     p.pertAmp = zeros(1, p.pertFieldN);
                     p.pertPhi = zeros(1, p.pertFieldN);
@@ -888,7 +897,7 @@ for n=startPhase:length(allPhases)
             data = get(hgui.UIRecorder, 'UserData');           %SC Retrieve the data
             
             % -- Write pitch shift log -- 
-            if isequal(thisphase, 'rand')
+            if length(thisphase) >= 4 && isequal(thisphase(1 : 4), 'rand')
                 [psSummary, voiceOnset] = getPitchShiftTimeStamps(data);
                 for k2 = 1 : length(psSummary)
                     fprintf(pitchShiftLogF, '%s/%s/%s, %f, %f, %f, %f\n', ...

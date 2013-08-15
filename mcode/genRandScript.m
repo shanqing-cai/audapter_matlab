@@ -5,7 +5,7 @@ function [phaseScript, pertDes] = genRandScript(nBlocks, trialsPerBlock, ...
                                      intShifts_dB, ...
                                      F1Shifts_ratio, F2Shifts_ratio, ...
                                      shiftDurs_ms, stimUtters, fullSchedFN)
-%% 
+%%
 if ~isempty(fullSchedFN)
     check_file(fullSchedFN);
     sched = textread(fullSchedFN, '%s', 'delimiter', '\n');
@@ -18,7 +18,7 @@ if ~isempty(fullSchedFN)
             fullSchedFN);
 end
 
-check_pos_int(nBlocks, 'N_BLOCKS must be a positive integer');
+check_pos_int(nBlocks, 'N_BLOCKS_PER_RAND_RUN must be a positive integer');
 check_pos_int(trialsPerBlock, 'TRIALS_PER_BLOCK must be a positive integer');
 
 
@@ -232,7 +232,7 @@ a_F1Shifts_ratio = get_shift_values(F1Shifts_ratio, a_trialTypesPert, a_numShift
 %% F2Shift_dB
 a_F2Shifts_ratio = get_shift_values(F2Shifts_ratio, a_trialTypesPert, a_numShifts, 'F2_SHIFTS_RATIO');
 
-%% pitchShifts_cent
+%% shiftDurs_ms
 a_shiftDurs_ms = struct;
 
 shiftDurs_ms = strip_brackets(shiftDurs_ms, 'Wrong format in field ONSET_DELAYS_MS');
@@ -288,6 +288,11 @@ for i1 = 1 : numel(a_trialTypesPert)
         end
     else
         error('Erroneous number of pitch shift duration for shift type %s', tt);
+    end
+    
+    %--- Check that the number of Inf is not > 1 ---%
+    if ~isempty(find(isinf(a_shiftDurs_ms.(tt)), 1)) && length(a_shiftDurs_ms.(tt)) > 1
+        error('More than one Inf (duration of whole vowel) exist in shift duration of shift type %s', tt);
     end
 end
 

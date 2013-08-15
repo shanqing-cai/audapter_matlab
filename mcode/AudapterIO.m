@@ -63,10 +63,6 @@ switch(action)
         end        
         
 %% Audapter mode
-        if (isfield(p, 'bPitchShift'))  % Mel
-            Audapter(3, 'bpitchshift', p.bPitchShift, toPrompt);
-        end
-
         if (isfield(p, 'bBypassFmt'))  % Mel
             Audapter(3, 'bbypassfmt', p.bBypassFmt, toPrompt);
         end
