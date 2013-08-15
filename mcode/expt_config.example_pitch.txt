@@ -5,10 +5,10 @@ SUBJECT_DOB 1-JAN-1983
 SUBJECT_GROUP AWS
 
 %=== Data location ===%
-DATA_DIR E:\DATA\APE
+DATA_DIR C:\DATA\APE
 
 %=== Device name ===%
-DEVICE_NAME MicroBook    % {MicroBook | UltraLite} (Case sensitive)
+DEVICE_NAME UltraLite    % {MicroBook | UltraLite} (Case sensitive)
 
 %=== Feedback timing mode ===%
 ALWAYS_ON 0     % 0 - no; 1 - yes
