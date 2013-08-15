@@ -338,6 +338,7 @@ hgui.dirname = dirname;
 hgui.pcrKnob=subject.pcrKnob;
 hgui.ITI=expt.subject.ITI;
 hgui.trigByScanner = expt.subject.trigByScanner;
+hgui.trigKey = expt_config.MRI_TRIGGER_KEY;
 hgui.TA = expt.subject.TA;
 hgui.dBRange=expt.subject.dBRange1;
 hgui.trialLen=expt.subject.trialLen;
@@ -371,7 +372,7 @@ hgui.lenRange=2.5*round(expt_config.VOWEL_LEN_RANGE*p.sr/(p.frameLen));  % singl
 disp(['Vowel duration range: [',num2str(300-0.4*250),',',num2str(300+0.4*250),'] ms.']);
 
 hgui.debug=DEBUG;
-% hgui.trigKey='equal';
+
 
 % --- Speech-modulated noise (SMN) --- %
 hgui.smnGain = expt_config.SMN_GAIN;

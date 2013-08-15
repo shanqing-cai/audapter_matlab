@@ -80,7 +80,7 @@ end
 handles.trigByScanner=0;
 handles.TA=2.0;
 handles.phase='';
-handles.trigKey='add';	% To change
+handles.trigKey = 'equal';	% To change
 handles.trialLen = 3;
 handles.trialLenMax = 8;
 handles.debug=0;

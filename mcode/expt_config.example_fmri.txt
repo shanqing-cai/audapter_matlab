@@ -1,5 +1,5 @@
 %=== Subject information ===%
-SUBJECT_ID TS_20130815_04
+SUBJECT_ID TS_20130815_06
 SUBJECT_GENDER male
 SUBJECT_DOB 1-JAN-1983
 SUBJECT_GROUP AWS
@@ -14,10 +14,11 @@ DEVICE_NAME MicroBook    % {MicroBook | UltraLite} (Case sensitive)
 ALWAYS_ON 0     % 0 - no; 1 - yes
 
 %=== Experiment design ===%
-N_BLOCKS 10
-TRIALS_PER_BLOCK 10
-TRIAL_TYPES_IN_BLOCK {0-ctrl, 5-up, 5-down}
-MIN_DIST_BETW_SHIFTS 0           % Minimum number of ctrl trials between two shift trials
+N_RAND_RUNS 3            % Number of rand runs
+N_BLOCKS_PER_RAND_RUN 1  % Number of block (a.k.a., repetitions) in each rand run
+TRIALS_PER_BLOCK 5      % Number of trials in each block
+TRIAL_TYPES_IN_BLOCK {3-ctrl, 1-up, 1-down}
+MIN_DIST_BETW_SHIFTS 2           % Minimum number of ctrl trials between two shift trials
 
 %--- Custom trial schedule ---%
 %--- e.g., "fMRI_sched_example.txt" (with the quotes). To disable it, type a pair of double quotes. ---%
@@ -27,21 +28,17 @@ FULL_SCHEDULE_FILE ""
 
 %=== Single-trial design ===%
 ONSET_DELAY_MS {up-[0], down-[0]} % Unit: ms
-% NUM_SHIFTS {up-2, down-2}
 NUM_SHIFTS {up-1, down-1}
 INTER_SHIFT_DELAYS_MS {up-[150-200], down-[150-200]} % Unit: ms
-% PITCH_SHIFTS_CENT {up-[100,150], down-[-100,-150]} % Unit: cent
 PITCH_SHIFTS_CENT {up-[0], down-[0]} % Unit: cent
-% INT_SHIFTS_DB {up-[5,7.5], down-[-5,-7.5]} % Unit: dB
 INT_SHIFTS_DB {up-[0], down-[0]} % Unit: dB
-% F1_SHIFTS_RATIO {up-[0.2,0.3], down-[-0.2,-0.3]} % Unit: ratio
-F1_SHIFTS_RATIO {up-[0.25], down-[-0.25]} % Unit: ratio
-% F2_SHIFTS_RATIO {up-[-0.2,-0.3], down-[0.2,0.3]} % Unit: ratio
-F2_SHIFTS_RATIO {up-[0], down-[0]} % Unit: ratio
-SHIFT_DURS_MS {up-[Inf], down-[Inf]} % Unit: ms. Use Inf for the entire duration of the vowel (only one shift allowed).
+F1_SHIFTS_RATIO {up-[0.2], down-[-0.2]} % Unit: ratio
+F2_SHIFTS_RATIO {up-[-0.1], down-[0.1]} % Unit: ratio
+SHIFT_DURS_MS {up-[Inf], down-[Inf]} % Unit: ms. To impose perturbation on the entire duration of the vowel, use Inf (only one allowed).
 
 %=== Stimulus utterance ===%
-STIM_UTTER AAA
+% STIM_UTTER AAA
+STIM_UTTER BET PET
 
 %=== Intensity threshold ===%
 INTENSITY_THRESH 0.01
@@ -52,16 +49,20 @@ SPL_TARGET 74 % Unit: dB A SPL. Lowered from the adult target of 76
 SPL_RANGE 8 % Unit: dB A SPL: single-sided width
 
 %=== Duration target ===%
-VOWEL_LEN_TARG 2.00 % sec
-VOWEL_LEN_RANGE 0.50 % sec: single-sided width
+VOWEL_LEN_TARG 0.50 % sec
+VOWEL_LEN_RANGE 0.10 % sec: single-sided width
 
 %=== Number of practice trials ===%
-PRE_REPS 0
-PRACT1_REPS 0 % Intensity practice
-PRACT2_REPS 0 % Intensity and duration practice
+PRE_REPS 1
+PRACT1_REPS 1 % Intensity practice
+PRACT2_REPS 1 % Intensity and duration practice
 
+%=== MRI experiment options ===%
+TRIGGER_BY_MRI_SCANNER 1 % 1 (no) or 1 (yes)
+MRI_TRIGGER_KEY add      % Examples: equal | add (the commonest ones for Siemens scanners
+FMRI_TA 2.5 % Unit: s. Time of acquisition (TA) of the fMRI sequence. In the case of sparse sampling, TA < TR.
 
-TRIGGER_BY_MRI_SCANNER 0 % 0 (no) or 1 (yes)
+%=== Children experiment-related optins ===%
 SHOW_KIDS_ANIM 0 % 0 (no) or 1 (yes)
 
 % PERT_MODE PITCH % Alternatives: PITCH / FMT (any other values will lead to error)
@@ -104,7 +105,7 @@ NOISE_REPS_RATIO 0.5
 % Set the value to zero if no noise rep is needed.
 % Noise reps will only be inserted into the start, ramp, stay and end phases.
 
-TRIAL_LEN 4 % Unit: sec
+TRIAL_LEN 3.0 % Unit: sec
 TRIAL_LEN_MAX 8 % Unit: sec
 
 SAMPLING_RATE 48000

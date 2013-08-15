@@ -341,7 +341,7 @@ for n = 1 : pertDes.nBlocks
             if (nToGo >= length(stimUtters))
                 wordsUsed = [wordsUsed, stimUtters(randperm(length(stimUtters)))];
             elseif (nToGo > 0)
-                idx = randperm(length(words));
+                idx = randperm(length(stimUtters));
                 wordsUsed = [wordsUsed, stimUtters(randperm(nToGo))];
             end
         end
