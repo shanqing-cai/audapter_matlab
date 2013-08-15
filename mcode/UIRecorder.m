@@ -942,8 +942,14 @@ if (handles.debug==0)
         if handles.showWordHint || ~handles.showKidsAnim
             xs = get(gca, 'XLim');
             ys = get(gca, 'YLim');
-            htxt = text(xs(1) + 0.3 * range(xs), ys(1) + 0.92 * range(ys), handles.word, ...
-                        'FontSize', 24, 'FontWeight', 'bold', 'Color', 'b');
+            
+            if handles.trigByScanner && length(handles.phase) >= 4 && isequal(handles.phase(1 : 4), 'rand')
+                htxt = text(xs(1) + 0.3 * range(xs), ys(1) + 0.3 * range(ys), handles.word, ...
+                            'FontSize', 24, 'FontWeight', 'bold', 'Color', 'b');
+            else
+                htxt = text(xs(1) + 0.3 * range(xs), ys(1) + 0.92 * range(ys), handles.word, ...
+                            'FontSize', 24, 'FontWeight', 'bold', 'Color', 'b');
+            end
         end
 
         if uiConfig.trialStartWithAnim == 1 || ~handles.showKidsAnim

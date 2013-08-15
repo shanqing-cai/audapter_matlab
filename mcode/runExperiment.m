@@ -14,6 +14,10 @@ expt_config = read_parse_expt_config('expt_config.txt');
 %     error('Unrecognized PERT_MODE: %s', expt_config.PERT_MODE);
 % end
 
+if expt_config.TRIGGER_BY_MRI_SCANNER && expt_config.SHOW_KIDS_ANIM
+    error('TRIGGER_BY_MRI_SCANNER == 1 and SHOW_KIDS_ANIM == 1 are not compatible');
+end
+
 %% Optional: full schedule file for experiment design 
 if length(expt_config.FULL_SCHEDULE_FILE) < 2 || ...
    ~isequal(expt_config.FULL_SCHEDULE_FILE(1), '"') || ...
