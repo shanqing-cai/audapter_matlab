@@ -10,9 +10,9 @@ close all force;
 %% ---- Read and parse expt_config.txt ----
 expt_config = read_parse_expt_config('expt_config.txt');
 
-if ~(isequal(expt_config.PERT_MODE, 'PITCH') || isequal(expt_config.PERT_MODE, 'FMT'))
-    error('Unrecognized PERT_MODE: %s', expt_config.PERT_MODE);
-end
+% if ~(isequal(expt_config.PERT_MODE, 'PITCH') || isequal(expt_config.PERT_MODE, 'FMT'))
+%     error('Unrecognized PERT_MODE: %s', expt_config.PERT_MODE);
+% end
 
 %% Optional: full schedule file for experiment design 
 if length(expt_config.FULL_SCHEDULE_FILE) < 2 || ...
@@ -237,9 +237,9 @@ if bNew % set up new experiment
         error('Unrecognized value of STEREO_MODE: %s', expt_config.STEREO_MODE);
     end
     
-    if isequal(expt_config.PERT_MODE, 'PITCH')
-        p.bBypassFmt = 1;
-    end
+%     if isequal(expt_config.PERT_MODE, 'PITCH')
+%         p.bBypassFmt = 1;
+%     end
     
     state.phase=1;
     state.rep=1;
