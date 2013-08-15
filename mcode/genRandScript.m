@@ -2,7 +2,9 @@ function [phaseScript, pertDes] = genRandScript(nBlocks, trialsPerBlock, ...
                                      trialTypes, minDistBetwShifts, ...
                                      onsetDelays_ms, numShifts, ...
                                      interShiftDelays_ms, pitchShifts_cent, ...
-                                     pitchShifts_ms, stimUtters, fullSchedFN)
+                                     intShifts_dB, ...
+                                     F1Shifts_ratio, F2Shifts_ratio, ...
+                                     shiftDurs_ms, stimUtters, fullSchedFN)
 %% 
 if ~isempty(fullSchedFN)
     check_file(fullSchedFN);
@@ -219,104 +221,57 @@ for i1 = 1 : numel(a_trialTypesPert)
 end
 
 %% pitchShifts_cent
-a_pitchShifts_cent = struct;
+a_pitchShifts_cent = get_shift_values(pitchShifts_cent, a_trialTypesPert, a_numShifts, 'PITCH_SHIFTS_CENT');
 
-pitchShifts_cent = strip_brackets(pitchShifts_cent, 'Wrong format in field ONSET_DELAYS_MS');
+%% intShift_dB
+a_intShifts_dB = get_shift_values(intShifts_dB, a_trialTypesPert, a_numShifts, 'INT_SHIFTS_DB');
 
-for i1 = 1 : numel(a_trialTypesPert)
-    tt = a_trialTypesPert{i1};
-    idx1 = strfind(pitchShifts_cent, tt);
-    if isempty(idx1)
-        error('Cannot find trial type %s in PITCH_SHIFTS_CENT', tt);
-    end
+%% F1Shift_dB
+a_F1Shifts_ratio = get_shift_values(F1Shifts_ratio, a_trialTypesPert, a_numShifts, 'F1_SHIFTS_RATIO');
 
-    %-- Prune the strfind results --%
-    idx1 = prune_strfind(idx1, pitchShifts_cent, tt, '-');
-    if length(idx1) ~= 1
-        error('Duplicate items found in PITCH_SHIFTS_CENT');
-    end
-
-    %-- Search for the end --%
-    if length(pitchShifts_cent) < idx1 + length(tt) + 1 || ~isequal(pitchShifts_cent(idx1 + length(tt)), '-')
-        error('Unrecognized format in PITCH_SHIFTS_CENT');
-    end
-
-    if isequal(pitchShifts_cent(idx1 + length(tt) + 1), '[')
-        idx_rb = strfind(pitchShifts_cent(idx1 + length(tt) + 2 : end), ']');
-
-        if isempty(idx_rb)
-            error('Unrecognized format in PITCH_SHIFTS_CENT');
-        end
-        idx_rb = idx_rb(1);
-
-        t_val = pitchShifts_cent(idx1 + length(tt) + 2 : idx1 + length(tt) + idx_rb); 
-    else
-        if ~isequal(pitchShifts_cent(end), ',')
-            pitchShifts_cent = [pitchShifts_cent, ','];
-        end
-
-        idx_cm = strfind(pitchShifts_cent(idx1 + length(tt) + 1 : end), ',');
-        idx_cm = idx_cm(1);
-        t_val = pitchShifts_cent(idx1 + length(tt) + 1 : idx1 + length(tt) + idx_cm - 1);        
-    end
-
-%     if ~isempty(strfind(t_val, '-'))
-%         error('Unrecognized format in PITCH_SHIFTS_CENT')
-%     end
-    t_vals = splitstring(t_val, ',');
-
-    if length(t_vals) == 1
-        a_pitchShifts_cent.(tt) = repmat(str2double(t_vals{i1}), 1, a_numShifts.(tt));
-    elseif length(t_vals) == a_numShifts.(tt)
-        a_pitchShifts_cent.(tt) = [];
-        for i2 = 1 : a_numShifts.(tt)
-            a_pitchShifts_cent.(tt)(end + 1) = str2double(t_vals{i2});
-        end
-    else
-        error('Erroneous number of pitch shift amounts for shift type %s', tt);
-    end
-end
+%% F2Shift_dB
+a_F2Shifts_ratio = get_shift_values(F2Shifts_ratio, a_trialTypesPert, a_numShifts, 'F2_SHIFTS_RATIO');
 
 %% pitchShifts_cent
-a_pitchShifts_ms = struct;
+a_shiftDurs_ms = struct;
 
-pitchShifts_ms = strip_brackets(pitchShifts_ms, 'Wrong format in field ONSET_DELAYS_MS');
+shiftDurs_ms = strip_brackets(shiftDurs_ms, 'Wrong format in field ONSET_DELAYS_MS');
 
 for i1 = 1 : numel(a_trialTypesPert)
     tt = a_trialTypesPert{i1};
-    idx1 = strfind(pitchShifts_ms, tt);
+    idx1 = strfind(shiftDurs_ms, tt);
     if isempty(idx1)
         error('Cannot find trial type %s in PITCH_SHIFT_DURS_MS', tt);
     end
 
     %-- Prune the strfind results --%
-    idx1 = prune_strfind(idx1, pitchShifts_ms, tt, '-');
+    idx1 = prune_strfind(idx1, shiftDurs_ms, tt, '-');
     if length(idx1) ~= 1
         error('Duplicate items found in PITCH_SHIFT_DURS_MS');
     end
 
     %-- Search for the end --%
-    if length(pitchShifts_ms) < idx1 + length(tt) + 1 || ~isequal(pitchShifts_ms(idx1 + length(tt)), '-')
+    if length(shiftDurs_ms) < idx1 + length(tt) + 1 || ~isequal(shiftDurs_ms(idx1 + length(tt)), '-')
         error('Unrecognized format in PITCH_SHIFT_DURS_MS');
     end
 
-    if isequal(pitchShifts_ms(idx1 + length(tt) + 1), '[')
-        idx_rb = strfind(pitchShifts_ms(idx1 + length(tt) + 2 : end), ']');
+    if isequal(shiftDurs_ms(idx1 + length(tt) + 1), '[')
+        idx_rb = strfind(shiftDurs_ms(idx1 + length(tt) + 2 : end), ']');
 
         if isempty(idx_rb)
             error('Unrecognized format in PITCH_SHIFT_DURS_MS');
         end
         idx_rb = idx_rb(1);
 
-        t_val = pitchShifts_ms(idx1 + length(tt) + 2 : idx1 + length(tt) + idx_rb); 
+        t_val = shiftDurs_ms(idx1 + length(tt) + 2 : idx1 + length(tt) + idx_rb); 
     else
-        if ~isequal(pitchShifts_ms(end), ',')
-            pitchShifts_ms = [pitchShifts_ms, ','];
+        if ~isequal(shiftDurs_ms(end), ',')
+            shiftDurs_ms = [shiftDurs_ms, ','];
         end
 
-        idx_cm = strfind(pitchShifts_ms(idx1 + length(tt) + 1 : end), ',');
+        idx_cm = strfind(shiftDurs_ms(idx1 + length(tt) + 1 : end), ',');
         idx_cm = idx_cm(1);
-        t_val = pitchShifts_ms(idx1 + length(tt) + 1 : idx1 + length(tt) + idx_cm - 1);        
+        t_val = shiftDurs_ms(idx1 + length(tt) + 1 : idx1 + length(tt) + idx_cm - 1);        
     end
 
     if ~isempty(strfind(t_val, '-'))
@@ -325,11 +280,11 @@ for i1 = 1 : numel(a_trialTypesPert)
     t_vals = splitstring(t_val, ',');
 
     if length(t_vals) == 1
-        a_pitchShifts_ms.(tt) = repmat(str2double(t_vals{i1}), 1, a_numShifts.(tt));
+        a_shiftDurs_ms.(tt) = repmat(str2double(t_vals{i1}), 1, a_numShifts.(tt));
     elseif length(t_vals) == a_numShifts.(tt)
-        a_pitchShifts_ms.(tt) = [];
+        a_shiftDurs_ms.(tt) = [];
         for i2 = 1 : a_numShifts.(tt)
-            a_pitchShifts_ms.(tt)(end + 1) = str2double(t_vals{i2});
+            a_shiftDurs_ms.(tt)(end + 1) = str2double(t_vals{i2});
         end
     else
         error('Erroneous number of pitch shift duration for shift type %s', tt);
@@ -354,9 +309,11 @@ pertDes.onsetDelays = a_onsetDelays;
 pertDes.numShifts = a_numShifts;
 pertDes.interShiftDelays = a_interShiftDelays;
 pertDes.pitchShifts_cent = a_pitchShifts_cent;
-pertDes.pitchShifts_ms = a_pitchShifts_ms;
-    
-    
+pertDes.intShifts_dB = a_intShifts_dB;
+pertDes.F1Shifts_ratio = a_F1Shifts_ratio;
+pertDes.F2Shifts_ratio = a_F2Shifts_ratio;
+pertDes.shiftDurs_ms = a_shiftDurs_ms;
+
 %     pertDes = struct;
 %     pertDes.nBlocks = 1;
 %     pertDes.trialsPerBlock = length(sched);
@@ -447,8 +404,11 @@ for n = 1 : pertDes.nBlocks
     nt = length(oneRep.trialOrder);
     oneRep.word = wordsUsed;
     oneRep.pitchShifts_cent = cell(1, nt);
+    oneRep.intShifts_dB = cell(1, nt);
+    oneRep.F1Shifts_ratio = cell(1, nt);
+    oneRep.F2Shifts_ratio = cell(1, nt);
     oneRep.pitchShifts_onset = cell(1, nt);
-    oneRep.pitchShifts_dur = cell(1, nt);
+    oneRep.shiftDurs_ms = cell(1, nt);
 %     oneRep.onsetTimes = cell(1, nt);
 
     for i1 = 1 : nt
@@ -457,17 +417,31 @@ for n = 1 : pertDes.nBlocks
             continue;
         end
         
-        %- Amount (cents) of pitch shift -%
+        
         ns = pertDes.numShifts.(tt);
         oneRep.pitchShifts_cent{i1} = nan(1, ns);
+        oneRep.intShifts_dB{i1} = nan(1, ns);
+        oneRep.F1Shifts_ratio{i1} = nan(1, ns);
+        oneRep.F2Shifts_ratio{i1} = nan(1, ns);
         for i2 = 1 : length(oneRep.pitchShifts_cent{i1})
+            %- Amount (cents) of pitch shift -%
             oneRep.pitchShifts_cent{i1}(i2) = pertDes.pitchShifts_cent.(tt)(i2);
+            
+            %- Amount (dB) of intensity shift -%
+            oneRep.intShifts_dB{i1}(i2) = pertDes.intShifts_dB.(tt)(i2);
+            
+            %- Amount (ratio) of F1 shift -%
+            oneRep.F1Shifts_ratio{i1}(i2) = pertDes.F1Shifts_ratio.(tt)(i2);
+            
+            %- Amount (ratio) of F2 shift -%
+            oneRep.F2Shifts_ratio{i1}(i2) = pertDes.F2Shifts_ratio.(tt)(i2);
         end
         
+        
         %- Duration of pitch shift -%
-        oneRep.pitchShifts_dur{i1} = nan(1, ns);
-        for i2 = 1 : length(oneRep.pitchShifts_dur{i1})
-            oneRep.pitchShifts_dur{i1}(i2) = pertDes.pitchShifts_ms.(tt)(i2);
+        oneRep.shiftDurs_ms{i1} = nan(1, ns);
+        for i2 = 1 : length(oneRep.shiftDurs_ms{i1})
+            oneRep.shiftDurs_ms{i1}(i2) = pertDes.shiftDurs_ms.(tt)(i2);
         end
         
         oneRep.pitchShifts_onset{i1} = nan(1, ns);
@@ -479,7 +453,7 @@ for n = 1 : pertDes.nBlocks
         for i2 = 2 : length(oneRep.pitchShifts_onset{i1})
             oneRep.pitchShifts_onset{i1}(i2) = ...
                 oneRep.pitchShifts_onset{i1}(i2 - 1) + rng_isd(1) + range(rng_isd) * rand ...
-                + oneRep.pitchShifts_dur{i1}(i2 - 1);
+                + oneRep.shiftDurs_ms{i1}(i2 - 1);
         end
     end
        
@@ -505,4 +479,66 @@ for i2 = 1 : numel(idx)
         idx1(end + 1) =idx(i2);
     end
 end
+return
+
+function a_shifts = get_shift_values(inShifts, a_trialTypesPert, a_numShifts, fieldName)
+a_shifts = struct;
+
+inShifts = strip_brackets(inShifts, ...
+                                  sprintf('Wrong format in field %s', fieldName));
+
+for i1 = 1 : numel(a_trialTypesPert)
+    tt = a_trialTypesPert{i1};
+    idx1 = strfind(inShifts, tt);
+    if isempty(idx1)
+        error('Cannot find trial type %s in %s', tt, fieldName);
+    end
+
+    %-- Prune the strfind results --%
+    idx1 = prune_strfind(idx1, inShifts, tt, '-');
+    if length(idx1) ~= 1
+        error('Duplicate items found in %s', fieldName);
+    end
+
+    %-- Search for the end --%
+    if length(inShifts) < idx1 + length(tt) + 1 || ~isequal(inShifts(idx1 + length(tt)), '-')
+        error('Unrecognized format in %s', fieldName);
+    end
+
+    if isequal(inShifts(idx1 + length(tt) + 1), '[')
+        idx_rb = strfind(inShifts(idx1 + length(tt) + 2 : end), ']');
+
+        if isempty(idx_rb)
+            error('Unrecognized format in %s', fieldName);
+        end
+        idx_rb = idx_rb(1);
+
+        t_val = inShifts(idx1 + length(tt) + 2 : idx1 + length(tt) + idx_rb); 
+    else
+        if ~isequal(inShifts(end), ',')
+            inShifts = [inShifts, ','];
+        end
+
+        idx_cm = strfind(inShifts(idx1 + length(tt) + 1 : end), ',');
+        idx_cm = idx_cm(1);
+        t_val = inShifts(idx1 + length(tt) + 1 : idx1 + length(tt) + idx_cm - 1);        
+    end
+
+%     if ~isempty(strfind(t_val, '-'))
+%         error('Unrecognized format in PITCH_SHIFTS_CENT')
+%     end
+    t_vals = splitstring(t_val, ',');
+
+    if length(t_vals) == 1
+        a_shifts.(tt) = repmat(str2double(t_vals{i1}), 1, a_numShifts.(tt));
+    elseif length(t_vals) == a_numShifts.(tt)
+        a_shifts.(tt) = [];
+        for i2 = 1 : a_numShifts.(tt)
+            a_shifts.(tt)(end + 1) = str2double(t_vals{i2});
+        end
+    else
+        error('Erroneous number of %s amounts for shift type %s', fieldName, tt);
+    end
+end
+
 return
