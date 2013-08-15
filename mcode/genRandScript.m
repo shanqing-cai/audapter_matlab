@@ -280,7 +280,7 @@ for i1 = 1 : numel(a_trialTypesPert)
     t_vals = splitstring(t_val, ',');
 
     if length(t_vals) == 1
-        a_shiftDurs_ms.(tt) = repmat(str2double(t_vals{i1}), 1, a_numShifts.(tt));
+        a_shiftDurs_ms.(tt) = repmat(str2double(t_vals{1}), 1, a_numShifts.(tt));
     elseif length(t_vals) == a_numShifts.(tt)
         a_shiftDurs_ms.(tt) = [];
         for i2 = 1 : a_numShifts.(tt)
@@ -407,7 +407,7 @@ for n = 1 : pertDes.nBlocks
     oneRep.intShifts_dB = cell(1, nt);
     oneRep.F1Shifts_ratio = cell(1, nt);
     oneRep.F2Shifts_ratio = cell(1, nt);
-    oneRep.pitchShifts_onset = cell(1, nt);
+    oneRep.shifts_onset = cell(1, nt);
     oneRep.shiftDurs_ms = cell(1, nt);
 %     oneRep.onsetTimes = cell(1, nt);
 
@@ -444,15 +444,15 @@ for n = 1 : pertDes.nBlocks
             oneRep.shiftDurs_ms{i1}(i2) = pertDes.shiftDurs_ms.(tt)(i2);
         end
         
-        oneRep.pitchShifts_onset{i1} = nan(1, ns);
+        oneRep.shifts_onset{i1} = nan(1, ns);
         rng_onsetDelay = pertDes.onsetDelays.(tt){randi(length(pertDes.onsetDelays.(tt)))};
         
-        oneRep.pitchShifts_onset{i1}(1) = rng_onsetDelay(1) + range(rng_onsetDelay) * rand;
+        oneRep.shifts_onset{i1}(1) = rng_onsetDelay(1) + range(rng_onsetDelay) * rand;
         
         rng_isd = pertDes.interShiftDelays.(tt){randi(length(pertDes.interShiftDelays.(tt)))};
-        for i2 = 2 : length(oneRep.pitchShifts_onset{i1})
-            oneRep.pitchShifts_onset{i1}(i2) = ...
-                oneRep.pitchShifts_onset{i1}(i2 - 1) + rng_isd(1) + range(rng_isd) * rand ...
+        for i2 = 2 : length(oneRep.shifts_onset{i1})
+            oneRep.shifts_onset{i1}(i2) = ...
+                oneRep.shifts_onset{i1}(i2 - 1) + rng_isd(1) + range(rng_isd) * rand ...
                 + oneRep.shiftDurs_ms{i1}(i2 - 1);
         end
     end
@@ -530,7 +530,7 @@ for i1 = 1 : numel(a_trialTypesPert)
     t_vals = splitstring(t_val, ',');
 
     if length(t_vals) == 1
-        a_shifts.(tt) = repmat(str2double(t_vals{i1}), 1, a_numShifts.(tt));
+        a_shifts.(tt) = repmat(str2double(t_vals{1}), 1, a_numShifts.(tt));
     elseif length(t_vals) == a_numShifts.(tt)
         a_shifts.(tt) = [];
         for i2 = 1 : a_numShifts.(tt)

@@ -139,7 +139,11 @@ if (~isnan(i1) && ~isnan(i2) && ~isempty(i1) && ~isempty(i2) && k2 >= k1)
             taxis1 = 0 : frameDur : frameDur * (idx2 - idx1);
             if idx2 <= size(data.fmts, 1)
                 plot(taxis1, data.fmts(idx1 : idx2, 1), 'k-', 'LineWidth', 1.5);   hold on;
-                plot(taxis1, data.fmts(idx1 : idx2, 2), 'k-', 'LineWidth', 1.5); 
+                plot(taxis1, data.fmts(idx1 : idx2, 2), 'k-', 'LineWidth', 1.5);
+                
+                if ii == 5
+                    plot(taxis1, data.sfmts(idx1 : idx2, 1 : 2), 'c-', 'LineWidth', 1.5);
+                end
 
                 plot(taxis1, data.ost_stat(idx1 : idx2) * 500, 'b-');
                 

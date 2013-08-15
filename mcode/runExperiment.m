@@ -706,47 +706,47 @@ for n=startPhase:length(allPhases)
 		
 		% --- Perturbation field ---
 		p.pertF2=linspace(p.F2Min, p.F2Max, p.pertFieldN);
-        if isequal(subject.expt_config.PERT_MODE, 'FMT')
-            t_amp = norm([subject.expt_config.SHIFT_RATIO_SUST_F1, ...
-                          subject.expt_config.SHIFT_RATIO_SUST_F2]);
-            t_angle = angle(subject.expt_config.SHIFT_RATIO_SUST_F1 + ...
-                            i * subject.expt_config.SHIFT_RATIO_SUST_F2);        
-        end
+%         if isequal(subject.expt_config.PERT_MODE, 'FMT')
+%             t_amp = norm([subject.expt_config.SHIFT_RATIO_SUST_F1, ...
+%                           subject.expt_config.SHIFT_RATIO_SUST_F2]);
+%             t_angle = angle(subject.expt_config.SHIFT_RATIO_SUST_F1 + ...
+%                             i * subject.expt_config.SHIFT_RATIO_SUST_F2);        
+%         end
 
         pcf_fn = fullfile(subsubdirname, 'fmt.pcf');
                     
         if isequal(thisphase, 'ramp')
-            if isequal(subject.expt_config.PERT_MODE, 'FMT')
-                p.bShift = 1;
-                p.bPitchShift = 0;
-                p.bPitchShiftRatio = 1.0;
-                p.pertAmp = i0 / (expt.script.ramp.nReps+1) * t_amp * ones(1, p.pertFieldN);
-                p.pertPhi = t_angle * ones(1, p.pertFieldN);
-                gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
-                             i0 / (expt.script.ramp.nReps+1) * t_amp, t_angle, pcf_fn);
-            else
-                p.bShift = 0;
-                pitchShiftST = i0 / (expt.script.ramp.nReps+1) * subject.expt_config.PITCH_SHIFT_SEMITONES_SUST;
-                p.pitchShiftRatio = 2 ^ (pitchShiftST / 12.0);
-                gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
-                             pitchShiftST, 0, 0, pcf_fn);
-            end
+%             if isequal(subject.expt_config.PERT_MODE, 'FMT')
+%                 p.bShift = 1;
+%                 p.bPitchShift = 0;
+%                 p.bPitchShiftRatio = 1.0;
+%                 p.pertAmp = i0 / (expt.script.ramp.nReps+1) * t_amp * ones(1, p.pertFieldN);
+%                 p.pertPhi = t_angle * ones(1, p.pertFieldN);
+%                 gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
+%                              i0 / (expt.script.ramp.nReps+1) * t_amp, t_angle, pcf_fn);
+%             else
+            p.bShift = 0;
+            pitchShiftST = i0 / (expt.script.ramp.nReps+1) * subject.expt_config.PITCH_SHIFT_SEMITONES_SUST;
+            p.pitchShiftRatio = 2 ^ (pitchShiftST / 12.0);
+            gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
+                         pitchShiftST, 0, 0, pcf_fn);
+%             end
         elseif isequal(thisphase, 'stay')
-            if isequal(subject.expt_config.PERT_MODE, 'FMT')
-                p.bShift = 1;
-                p.bPitchShift = 0;
-                p.bPitchShiftRatio = 1.0;
-                p.pertAmp = t_amp * ones(1, p.pertFieldN);
-                p.pertPhi = t_angle * ones(1, p.pertFieldN);
-                gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
-                             t_amp, t_angle, pcf_fn);
-            else
-                p.bShift = 0;
-                pitchShiftST = subject.expt_config.PITCH_SHIFT_SEMITONES_SUST;
-                p.pitchShiftRatio = 2 ^ (pitchShiftST / 12.0);
-                gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
-                             pitchShiftST, 0, 0, pcf_fn);
-            end
+%             if isequal(subject.expt_config.PERT_MODE, 'FMT')
+%                 p.bShift = 1;
+%                 p.bPitchShift = 0;
+%                 p.bPitchShiftRatio = 1.0;
+%                 p.pertAmp = t_amp * ones(1, p.pertFieldN);
+%                 p.pertPhi = t_angle * ones(1, p.pertFieldN);
+%                 gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
+%                              t_amp, t_angle, pcf_fn);
+%             else
+            p.bShift = 0;
+            pitchShiftST = subject.expt_config.PITCH_SHIFT_SEMITONES_SUST;
+            p.pitchShiftRatio = 2 ^ (pitchShiftST / 12.0);
+            gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
+                         pitchShiftST, 0, 0, pcf_fn);
+%             end
         elseif ~isequal(thisphase, 'rand')           
             p.bShift = 0;
             p.pitchShiftRatio = 0;
@@ -789,26 +789,27 @@ for n=startPhase:length(allPhases)
             p.bPitchShift = 1;
             p.pitchShiftRatio = NaN;
             
-            
             if isequal(thisphase, 'rand')   % Configure random perturbation                
                 fprintf(1, 'rand pert type = [%s]\n', thisTrial);
                 
                 if ~isequal(thisTrial, 'ctrl')
-                    p.pertAmp = zeros(1, p.pertFieldN);
-                    p.pertPhi = zeros(1, p.pertFieldN);                    
+                    p.pertAmp = abs(expt.script.(thisphase).(repString).F1Shifts_ratio{k}(1) + i * expt.script.(thisphase).(repString).F2Shifts_ratio{k}(1)) * ones(1, p.pertFieldN);
+                    p.pertPhi = angle(expt.script.(thisphase).(repString).F1Shifts_ratio{k}(1) + i * expt.script.(thisphase).(repString).F2Shifts_ratio{k}(1)) * ones(1, p.pertFieldN);
                     
                     gen_multi_pert_pcf(ost, pcf, expt_config.INTENSITY_THRESH, ...
                                        expt.script.(thisphase).(repString).pitchShifts_cent{k}, ...
-                                       expt.script.(thisphase).(repString).pitchShifts_onset{k}, ...
-                                       expt.script.(thisphase).(repString).pitchShifts_dur{k})
-%                 elseif isequal(thisTrial, 'down') % Downward perturbation
-%                     gen_multi_pert_pcf(ost, pcf, expt_config.INTENSITY_THRESH, ...
-%                                        -1.0 * expt.script.(thisphase).(repString).pitchShifts_cent{k}, ...
-%                                        expt.script.(thisphase).(repString).pitchShifts_onset{k}, ...
-%                                        expt.script.(thisphase).(repString).pitchShifts_dur{k})
-                else % No perturbation
+                                       expt.script.(thisphase).(repString).intShifts_dB{k}, ...
+                                       expt.script.(thisphase).(repString).F1Shifts_ratio{k}, ...
+                                       expt.script.(thisphase).(repString).F2Shifts_ratio{k}, ...
+                                       expt.script.(thisphase).(repString).shifts_onset{k}, ...                                       
+                                       expt.script.(thisphase).(repString).shiftDurs_ms{k})
+                else % No perturbation                    
+                    p.pertAmp = zeros(1, p.pertFieldN);
+                    p.pertPhi = zeros(1, p.pertFieldN);
+                    
                     gen_multi_pert_pcf(ost, pcf, ...
-                                       expt_config.INTENSITY_THRESH, [0], [60], [20]);
+                                       expt_config.INTENSITY_THRESH, ...
+                                       [0], [0], [0], [0], [60], [20]);
                 end                               
                 
                 AudapterIO('init', p);
@@ -865,7 +866,7 @@ for n=startPhase:length(allPhases)
             end
             % ~Count down
             
-            if (hgui.trialType>=2)   %SC The distinction between train and test words                             
+            if (isnumeric(hgui.trialType) && hgui.trialType >= 2)   %SC The distinction between train and test words                             
                 Audapter(3, 'bdetect', 0, 1);
                 Audapter(3, 'bshift', 0, 1);
 			else
