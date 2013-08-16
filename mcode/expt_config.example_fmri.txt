@@ -53,9 +53,9 @@ VOWEL_LEN_TARG 0.50 % sec
 VOWEL_LEN_RANGE 0.10 % sec: single-sided width
 
 %=== Number of practice trials ===%
-PRE_REPS 1
-PRACT1_REPS 1 % Intensity practice
-PRACT2_REPS 1 % Intensity and duration practice
+PRE_REPS 2    % pre: initial familiarization
+PRACT1_REPS 2 % pract1: Intensity practice
+PRACT2_REPS 2 % pract2: Intensity and duration practice
 
 %=== MRI experiment options ===%
 TRIGGER_BY_MRI_SCANNER 1 % 1 (no) or 1 (yes)

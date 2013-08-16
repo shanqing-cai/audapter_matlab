@@ -53,9 +53,9 @@ VOWEL_LEN_TARG 2.00 % sec
 VOWEL_LEN_RANGE 0.25 % sec: single-sided width
 
 %=== Number of practice trials ===%
-PRE_REPS 0
-PRACT1_REPS 0 % Intensity practice
-PRACT2_REPS 0 % Intensity and duration practice
+PRE_REPS 0    % pre: initial familiarization
+PRACT1_REPS 0 % pract1: Intensity practice
+PRACT2_REPS 0 % pract2: Intensity and duration practice
 
 %=== MRI experiment options ===%
 TRIGGER_BY_MRI_SCANNER 0 % 1 (no) or 1 (yes)
@@ -117,7 +117,7 @@ PVOC_FRAME_LEN 512
 PVOC_HOP 128
 
 % -- STEREO MODE -- % 
-STEREO_MODE      LR_AUDIO    % {LR_AUDIO, L_AUDIO, L_AUDIO_R_SIM_TTL}
+STEREO_MODE      L_AUDIO_R_SIM_TTL    % {LR_AUDIO, L_AUDIO, L_AUDIO_R_SIM_TTL}
 
 % -- Blended noise -- %
 BLEND_NOISE_DB -Inf % Unit: dB. To disable blended noise, use -Inf (negative infinity, i.e., not zero!!)

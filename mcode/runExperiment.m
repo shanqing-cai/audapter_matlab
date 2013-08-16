@@ -60,7 +60,7 @@ subject.ITI					= 6;
 subject.vumeterMode         = 2;     % 1: 10 ticks; 2: 3 ticks;
 
 if subject.trigByScanner== 1
-	subject.showProgress		= 0;
+	subject.showProgress		= 1;
 	subject.showPlayButton      = 0;
 else
 	subject.showProgress		= 1;
