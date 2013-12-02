@@ -1,4 +1,5 @@
 *.asv
 *~
+hs_err_*.log
 
 
