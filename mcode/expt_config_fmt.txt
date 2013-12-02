@@ -1,0 +1,142 @@
+%=== Subject information ===%
+SUBJECT_ID TS_FMT_20131202_04
+SUBJECT_GENDER female       % {female | male}
+SUBJECT_DOB 1-JAN-1983      % Follow the format: DAY-MON-YEAR (e.g., 2-FEB-1990)
+SUBJECT_GROUP AWS
+
+%=== Data location ===%
+DATA_DIR C:\DATA\APE
+
+%=== Device name ===%
+DEVICE_NAME MicroBook    % {MicroBook | UltraLite} (Case sensitive)
+
+%=== Feedback timing mode ===%
+ALWAYS_ON 0     % 0 - no; 1 - yes
+
+%=== Experiment design ===%
+N_RAND_RUNS 1            % Number of rand runs
+N_BLOCKS_PER_RAND_RUN 1  % Number of block (a.k.a., repetitions) in each rand run
+TRIALS_PER_BLOCK 5      % Number of trials in each block
+TRIAL_TYPES_IN_BLOCK {3-ctrl, 1-up, 1-down}
+MIN_DIST_BETW_SHIFTS 1           % Minimum number of ctrl trials between two shift trials
+
+%--- Custom trial schedule ---%
+%--- e.g., "fMRI_sched_example.txt" (with the quotes). To disable it, type a pair of double quotes. ---%
+%--- Overrides N_BLOCKS, TRIALS_PER_BLOCK, TRIAL_TYPES_IN_BLOCK and MIN_DIST_BETW_SHIFTS ---%
+FULL_SCHEDULE_FILE ""
+% FULL_SCHEDULE_FILE "fMRI_sched_example.txt"
+
+%=== Randomized perturbation: Single-trial design ===%
+ONSET_DELAY_MS {up-[0], down-[0]} % Unit: ms
+NUM_SHIFTS {up-1, down-1}
+INTER_SHIFT_DELAYS_MS {up-[150-200], down-[150-200]} % Unit: ms
+PITCH_SHIFTS_CENT {up-[0], down-[0]} % Unit: cent
+INT_SHIFTS_DB {up-[0], down-[0]} % Unit: dB
+F1_SHIFTS_RATIO {up-[0.2], down-[-0.2]} % Unit: ratio
+F2_SHIFTS_RATIO {up-[-0.1], down-[0.1]} % Unit: ratio
+SHIFT_DURS_MS {up-[Inf], down-[Inf]} % Unit: ms. To impose perturbation on the entire duration of the vowel, use Inf (only one allowed).
+
+%=== Sustained perturbation: configurations ===%
+%== The name of the perturbation must be "sust" (otherwise error will be reported) ==%
+SUST_ONSET_DELAY_MS {sust-[0]} % Unit: ms
+SUST_NUM_SHIFTS {sust-[1]}
+SUST_INTER_SHIFT_DELAYS_MS {sust-[150-200]} % Unit: ms
+SUST_PITCH_SHIFTS_CENT {sust-[0]} % Unit: cent
+SUST_INT_SHIFTS_DB {sust-[0]} % Unit: dB
+SUST_F1_SHIFTS_RATIO {sust-[0.2]} % Unit: ratio
+SUST_F2_SHIFTS_RATIO {sust-[-0.1]} % Unit: ratio
+SUST_SHIFT_DURS_MS {sust-[Inf]} % Unit: ms. To impose perturbation on the entire duration of the vowel, use Inf (only one allowed).
+
+SUST_TRIALS_PER_BLOCK 2
+
+SUST_START_REPS 2
+SUST_RAMP_REPS 2
+SUST_STAY_REPS 2
+SUST_END_REPS 2
+
+%=== Stimulus utterance ===%
+STIM_UTTER PEAR BEAR
+SUST_STIM_UTTER PEAR BEAR
+
+%=== Intensity threshold ===%
+INTENSITY_THRESH 0.01       % Use 0.01 for behavioral and fMRI 
+
+%=== Intensity target ===%
+MOUTH_MIC_DIST 10 % Unit: cm
+SPL_TARGET 74 % Unit: dB A SPL. Lowered from the adult target of 76
+SPL_RANGE 8 % Unit: dB A SPL: single-sided width
+
+%=== Duration target ===%
+VOWEL_LEN_TARG 0.50 % sec
+VOWEL_LEN_RANGE 0.10 % sec: single-sided width
+
+%=== Number of practice trials ===%
+PRE_REPS 2    % pre: initial familiarization
+PRACT1_REPS 2 % pract1: Intensity practice
+PRACT2_REPS 2 % pract2: Intensity and duration practice
+
+%=== MRI experiment options ===%
+TRIGGER_BY_MRI_SCANNER 0 % 0 (no) or 1 (yes)
+MRI_TRIGGER_KEY add      % Examples: equal | add (the commonest ones for Siemens scanners
+FMRI_TA 2.5 % Unit: s. Time of acquisition (TA) of the fMRI sequence. In the case of sparse sampling, TA < TR.
+TRIAL_LEN 3.0 % Unit: s
+
+%=== Children experiment-related optins ===%
+SHOW_KIDS_ANIM 0 % 0 (no) or 1 (yes)
+
+% PERT_MODE PITCH % Alternatives: PITCH / FMT (any other values will lead to error)
+
+SHIFT_RATIO_RAND_LOWER_F1 +0.25 % 200 / 800
+SHIFT_RATIO_RAND_LOWER_F2 -0.125 % 250 / 2000
+SHIFT_RATIO_RAND_HIGHER_F1 -0.25
+SHIFT_RATIO_RAND_HIGHER_F2 +0.125
+
+%SHIFT_DIRECTION_SUST LOWER % EH --> AE
+%SHIFT_RATIO_SUST_F1 +0.25
+%SHIFT_RATIO_SUST_F2 -0.125
+
+% Online sentence tracking (ost) and perturbation configuration (pcf)
+OST_FN ../pert/ost % ost file name
+OST_MAX_STATE 4 % Must match the ost file
+PERT_STATES [1, 2] % Must be an array (e.g., [1] or [1, 2])
+
+% PRE_REPS 2 % Natural production of the VID words
+% PRACT1_REPS 4 % Volume (loudness) practice
+% PRACT2_REPS 4 % Speed practice
+
+RAND_BLOCKS 12 % Number of blocks in the random phase: must be an integer multiple of 3
+RAND_TRIALS_PER_BLOCK 9 % Number of trials in each random block
+RAND_LOWER_TRIALS_PER_BLOCK 1 % Number of "lower" trials in each random block
+RAND_HIGHER_TRIALS_PER_BLOCK 1 % Number of "higher" trials in each random block
+
+
+
+NOISE_REPS_RATIO 0.5
+% The ratio of noise reps to regular reps. For example, if the value is 0.5,
+% there will be 1 noise rep for every two regular reps.
+% Set the value to zero if no noise rep is needed.
+% Noise reps will only be inserted into the start, ramp, stay and end phases.
+
+
+TRIAL_LEN_MAX 8 % Unit: sec
+
+SAMPLING_RATE 48000
+FRAME_SIZE 96
+DOWNSAMP_FACT 3
+
+% -- Phase vocoder options -- %
+PVOC_FRAME_LEN 512
+PVOC_HOP 128
+
+% -- STEREO MODE -- % 
+STEREO_MODE      LR_AUDIO    % {LR_AUDIO, L_AUDIO, L_AUDIO_R_SIM_TTL}
+
+% -- Blended noise -- %
+BLEND_NOISE_DB -Inf % Unit: dB. To disable blended noise, use -Inf (negative infinity, i.e., not zero!!)
+
+% -- Speech-modulated noise (SMN) -- %
+SMN_GAIN 10 % Unit: dB
+SMN_FF_0 0.8 % Initial forgetting factor (must be < 1.0)
+SMN_FF_1 0.99 % Steady-state forgetting factor (must be < 1.0)
+SMN_ON_RAMP 0.1 % Unit: s
+SMN_OFF_RAMP 0.1 % Unit: s

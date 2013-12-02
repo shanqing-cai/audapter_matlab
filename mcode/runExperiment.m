@@ -2,11 +2,10 @@ function runExperiment(exptConfigFN, varargin)
 DEBUG = 0;
 DEBUG_PS = 0;
 
-[ret, hostName] = system('hostname');
+[~, hostName] = system('hostname');
 
 fclose all;
 close all force;
-
 
 %% ---- Read and parse exptConfig file (e.g., expt_config_fmt.txt) ----
 check_file(exptConfigFN);
@@ -137,27 +136,23 @@ if bNew % set up new experiment
         rmdir(dirname, 's');
     end
     mkdir(dirname)
-    copyfile('expt_config.txt',fullfile(dirname,'expt_config.txt'));
+    copyfile(exptConfigFN, fullfile(dirname, 'expt_config.txt'));
     
 	expt.subject=subject;
     
     expt.allPhases={'pre', 'pract1', 'pract2'};
     expt.recPhases={'pre', 'pract1', 'pract2'}; %SC The pahses during which the data are recorded
-%     expt.allPhases={'pre', 'pract1', 'pract2', 'start', 'ramp','stay','end'};
-%     expt.recPhases={'pre', 'pract1', 'pract2', 'start', 'ramp','stay','end'}; %SC The pahses during which the data are recorded
 
     for i1 = 1 : expt_config.N_RAND_RUNS
         expt.allPhases{end + 1} = sprintf('rand%d', i1);
         expt.recPhases{end + 1} = sprintf('rand%d', i1);
     end
     
+    expt.allPhases = [expt.allPhases, {'start', 'ramp', 'stay', 'end'}];
+    expt.recPhases = [expt.recPhases, {'start', 'ramp', 'stay', 'end'}];
+    
     expt.stimUtter = expt_config.STIM_UTTER;
-%     expt.preWords = expt_config.PRE_WORDS;
-%     expt.pract1Words = expt.preWords;
-%     expt.pract2Words = expt.preWords;
-%     expt.randWords = expt_config.RAND_WORDS;	% 3 3-letters, 5 4-letters
-%     expt.sustWords = expt_config.SUST_WORDS;
-%     if expt_config.TEST1_REPS==0    % No generization tests 
+    
     expt.trialTypes=[1];
     expt.trialOrderRandReps = 1;	%How many reps are randomized together
     expt.script.pre.nReps = expt_config.PRE_REPS;    %SC Numbers of repetitions in the stages   % !!1!!	
@@ -168,6 +163,12 @@ if bNew % set up new experiment
     expt.script.rand.trialsPerBlock = expt_config.RAND_TRIALS_PER_BLOCK; 
     expt.script.rand.trialsPerBlock_lower = expt_config.RAND_LOWER_TRIALS_PER_BLOCK;
     expt.script.rand.trialsPerBlock_higher = expt_config.RAND_HIGHER_TRIALS_PER_BLOCK;
+    
+    expt.sustWords = expt_config.STIM_UTTER;
+    expt.script.start.nReps = expt_config.SUST_START_REPS;
+    expt.script.ramp.nReps = expt_config.SUST_RAMP_REPS;
+    expt.script.stay.nReps = expt_config.SUST_STAY_REPS;
+    expt.script.end.nReps = expt_config.SUST_END_REPS;
 
 	expt.trialTypeDesc = cell(1, 5);
 	expt.trialTypeDesc{1} = 'Speech with auditory feedback';
@@ -185,11 +186,14 @@ if bNew % set up new experiment
                                         expt.script.pract2.nReps, expt.stimUtter);
     
     
+    
+    
     for i1 = 1 : expt_config.N_RAND_RUNS
         phs = sprintf('rand%d', i1);
         fprintf(1, 'Generating script for the random-perturbation phase %s...\n', phs);
         [expt.script.(phs), expt.pertDes] = ...
-            genRandScript(expt_config.N_BLOCKS_PER_RAND_RUN, expt_config.TRIALS_PER_BLOCK, ...
+            genRandScript(phs, ...
+                          expt_config.N_BLOCKS_PER_RAND_RUN, expt_config.TRIALS_PER_BLOCK, ...
                           expt_config.TRIAL_TYPES_IN_BLOCK, expt_config.MIN_DIST_BETW_SHIFTS, ...
                           expt_config.ONSET_DELAY_MS, expt_config.NUM_SHIFTS, ...
                           expt_config.INTER_SHIFT_DELAYS_MS, expt_config.PITCH_SHIFTS_CENT, ...
@@ -198,15 +202,28 @@ if bNew % set up new experiment
                           expt_config.SHIFT_DURS_MS, expt_config.STIM_UTTER, expt_config.FULL_SCHEDULE_FILE);
     end
 	fprintf('Done.\n');
-
-%     t_phases = {'start', 'ramp', 'stay', 'end'};
-%     for k1 = 1 : length(t_phases)
-%         t_phase = t_phases{k1};
+    
+    t_phases = {'start', 'ramp', 'stay', 'end'};
+    for k1 = 1 : length(t_phases)
+        t_phase = t_phases{k1};
+        expt.script.(t_phase).noiseRepsRatio = expt_config.NOISE_REPS_RATIO; % TODO
+        fprintf(1, 'Generating script for the random-perturbation phase %s...\n', t_phase);
 %         expt.script.(t_phase)  = ...
 %             genPhaseScript(t_phase,  ...
 %                            expt.script.(t_phase).nReps,  expt.sustWords, ...
 %                            'noiseRepsRatio', expt.script.(t_phase).noiseRepsRatio);
-%     end
+        [expt.script.(t_phase), expt.pertDes] = ...
+            genRandScript(t_phase, ...
+                          expt.script.(t_phase).nReps, expt_config.SUST_TRIALS_PER_BLOCK, ...
+                          {}, {}, ...
+                          expt_config.SUST_ONSET_DELAY_MS, expt_config.SUST_NUM_SHIFTS, ...
+                          expt_config.SUST_INTER_SHIFT_DELAYS_MS, expt_config.SUST_PITCH_SHIFTS_CENT, ...
+                          expt_config.SUST_INT_SHIFTS_DB, ...
+                          expt_config.SUST_F1_SHIFTS_RATIO, expt_config.SUST_F2_SHIFTS_RATIO, ...
+                          expt_config.SUST_SHIFT_DURS_MS, expt_config.SUST_STIM_UTTER, '');
+    end
+    fprintf('Done.\n');
+
     
     p = getAudapterDefaultParams(subject.sex,...
         'closedLoopGain',expt.subject.closedLoopGain,...
@@ -451,56 +468,59 @@ for n=startPhase:length(allPhases)
     
     hgui.phase=thisphase;
     
+    disp(['--- Coming up: ',thisphase,'. nReps = ',num2str(expt.script.(thisphase).nReps),...
+          '; nTrials = ',num2str(expt.script.(thisphase).nTrials),' ---']);
+    
     % Adjust the number of reps
-    if (~isequal(thisphase,'ramp') && ~isequal(thisphase,'stay'))
-        disp(['--- Coming up: ',thisphase,'. nReps = ',num2str(expt.script.(thisphase).nReps),...
-            '; nTrials = ',num2str(expt.script.(thisphase).nTrials),' ---']);
-        nRepsNew=input('(Modify nReps) nRepsNew = ','s');
-        nRepsNew=str2num(nRepsNew);
-        if (~isempty(nRepsNew) && ~ischar(nRepsNew) && nRepsNew~=expt.script.(thisphase).nReps)
-            expt.script.(thisphase).nReps=nRepsNew;
-            expt.script.(thisphase)=genPhaseScript(thisphase, expt.script.(thisphase).nReps,...
-                expt.preWords, expt.trialTypes,expt.trainWords,expt.testWords,expt.pseudoWords,...
-                expt.trialOrderRandReps,expt.subject.designNum);
-            disp(['Changed: ',thisphase,'. nReps = ',num2str(expt.script.(thisphase).nReps),...
-                '; nTrials = ',num2str(expt.script.(thisphase).nTrials),' ---']);
-            save(fullfile(dirname,'expt.mat'),'expt');
-            disp(['Saved ',fullfile(dirname,'expt.mat')]);
-        end        
-    elseif isequal(thisphase,'ramp')
-        disp(['--- Coming up: ','ramp','. nReps = ',num2str(expt.script.ramp.nReps),...
-            '; nTrials = ',num2str(expt.script.ramp.nTrials),' ---']);
-        disp(['--- Coming up: ','stay','. nReps = ',num2str(expt.script.stay.nReps),...
-            '; nTrials = ',num2str(expt.script.stay.nTrials),' ---']);
-        disp(['--- Ramp+Stay: nReps = ',num2str(expt.script.ramp.nReps+expt.script.stay.nReps),...
-            '; nTrials = ',num2str(expt.script.ramp.nTrials+expt.script.stay.nTrials)]);
-        nRepsNew=input('(Modify nReps) Ramp: nRepsNew = ','s');
-        nRepsNew=str2num(nRepsNew);
-        if (~isempty(nRepsNew) && ~ischar(nRepsNew) && nRepsNew~=expt.script.(thisphase).nReps)
-            expt.script.ramp.nReps=nRepsNew;
-            expt.script.ramp=genPhaseScript('ramp',expt.script.ramp.nReps,...
-                expt.trialTypes,expt.preWords, expt.trainWords,expt.testWords,expt.pseudoWords,...
-                expt.trialOrderRandReps,expt.subject.designNum);
-            disp(['Changed: ramp. ','nReps = ',num2str(expt.script.ramp.nReps),...
-                '; nTrials = ',num2str(expt.script.ramp.nTrials),' ---']);
-            save(fullfile(dirname,'expt.mat'),'expt');
-            disp(['Saved ',fullfile(dirname,'expt.mat')]);
-        end
-        nRepsNew=input('(Modify nReps) Stay: nRepsNew = ','s');
-        nRepsNew=str2num(nRepsNew);
-        if (~isempty(nRepsNew) && ~ischar(nRepsNew) && nRepsNew~=expt.script.(thisphase).nReps)
-            expt.script.stay.nReps=nRepsNew;
-            expt.script.stay=genPhaseScript('stay',expt.script.stay.nReps,...
-                expt.trialTypes,expt.preWords, expt.trainWords,expt.testWords,expt.pseudoWords,...
-                expt.trialOrderRandReps,expt.subject.designNum);
-            disp(['Changed: stay. ','nReps = ',num2str(expt.script.stay.nReps),...
-                '; nTrials = ',num2str(expt.script.stay.nTrials),' ---']);
-            save(fullfile(dirname,'expt.mat'),'expt');
-            disp(['Saved ',fullfile(dirname,'expt.mat')]);
-        end
-        disp(['--- Ramp+Stay: nReps = ',num2str(expt.script.ramp.nReps+expt.script.stay.nReps),...
-            '; nTrials = ',num2str(expt.script.ramp.nTrials+expt.script.stay.nTrials)]);
-    end
+%     if (~isequal(thisphase,'ramp') && ~isequal(thisphase,'stay'))
+%         disp(['--- Coming up: ',thisphase,'. nReps = ',num2str(expt.script.(thisphase).nReps),...
+%             '; nTrials = ',num2str(expt.script.(thisphase).nTrials),' ---']);
+%         nRepsNew=input('(Modify nReps) nRepsNew = ','s');
+%         nRepsNew=str2num(nRepsNew);
+%         if (~isempty(nRepsNew) && ~ischar(nRepsNew) && nRepsNew~=expt.script.(thisphase).nReps)
+%             expt.script.(thisphase).nReps=nRepsNew;
+%             expt.script.(thisphase)=genPhaseScript(thisphase, expt.script.(thisphase).nReps,...
+%                 expt.preWords, expt.trialTypes,expt.trainWords,expt.testWords,expt.pseudoWords,...
+%                 expt.trialOrderRandReps,expt.subject.designNum);
+%             disp(['Changed: ',thisphase,'. nReps = ',num2str(expt.script.(thisphase).nReps),...
+%                 '; nTrials = ',num2str(expt.script.(thisphase).nTrials),' ---']);
+%             save(fullfile(dirname,'expt.mat'),'expt');
+%             disp(['Saved ',fullfile(dirname,'expt.mat')]);
+%         end
+%     elseif isequal(thisphase,'ramp')
+%         disp(['--- Coming up: ','ramp','. nReps = ',num2str(expt.script.ramp.nReps),...
+%             '; nTrials = ',num2str(expt.script.ramp.nTrials),' ---']);
+%         disp(['--- Coming up: ','stay','. nReps = ',num2str(expt.script.stay.nReps),...
+%             '; nTrials = ',num2str(expt.script.stay.nTrials),' ---']);
+%         disp(['--- Ramp+Stay: nReps = ',num2str(expt.script.ramp.nReps+expt.script.stay.nReps),...
+%             '; nTrials = ',num2str(expt.script.ramp.nTrials+expt.script.stay.nTrials)]);
+%         nRepsNew=input('(Modify nReps) Ramp: nRepsNew = ','s');
+%         nRepsNew=str2num(nRepsNew);
+%         if (~isempty(nRepsNew) && ~ischar(nRepsNew) && nRepsNew~=expt.script.(thisphase).nReps)
+%             expt.script.ramp.nReps=nRepsNew;
+%             expt.script.ramp=genPhaseScript('ramp',expt.script.ramp.nReps,...
+%                 expt.trialTypes,expt.preWords, expt.trainWords,expt.testWords,expt.pseudoWords,...
+%                 expt.trialOrderRandReps,expt.subject.designNum);
+%             disp(['Changed: ramp. ','nReps = ',num2str(expt.script.ramp.nReps),...
+%                 '; nTrials = ',num2str(expt.script.ramp.nTrials),' ---']);
+%             save(fullfile(dirname,'expt.mat'),'expt');
+%             disp(['Saved ',fullfile(dirname,'expt.mat')]);
+%         end
+%         nRepsNew=input('(Modify nReps) Stay: nRepsNew = ','s');
+%         nRepsNew=str2num(nRepsNew);
+%         if (~isempty(nRepsNew) && ~ischar(nRepsNew) && nRepsNew~=expt.script.(thisphase).nReps)
+%             expt.script.stay.nReps=nRepsNew;
+%             expt.script.stay=genPhaseScript('stay',expt.script.stay.nReps,...
+%                 expt.trialTypes,expt.preWords, expt.trainWords,expt.testWords,expt.pseudoWords,...
+%                 expt.trialOrderRandReps,expt.subject.designNum);
+%             disp(['Changed: stay. ','nReps = ',num2str(expt.script.stay.nReps),...
+%                 '; nTrials = ',num2str(expt.script.stay.nTrials),' ---']);
+%             save(fullfile(dirname,'expt.mat'),'expt');
+%             disp(['Saved ',fullfile(dirname,'expt.mat')]);
+%         end
+%         disp(['--- Ramp+Stay: nReps = ',num2str(expt.script.ramp.nReps+expt.script.stay.nReps),...
+%             '; nTrials = ',num2str(expt.script.ramp.nTrials+expt.script.stay.nTrials)]);
+%     end
     % Adjust the number of reps
     
     nReps=expt.script.(thisphase).nReps;
@@ -512,14 +532,19 @@ for n=startPhase:length(allPhases)
 
     hgui.showSpeedPrompt = 0;
     hgui.showRmsPrompt = 0;
-    hgui.bSpeedRepeat=0;
-    hgui.bRmsRepeat=0;
+    hgui.bSpeedRepeat = 0;
+    hgui.bRmsRepeat = 0;
 	
 	if (subject.showPlayButton==0)
 		set(hgui.play,'visible','off');
     end        
    
-       
+    bIsPertPhase = (length(thisphase) >= 4 && isequal(thisphase(1 : 4), 'rand')) ...
+            || isequal(thisphase, 'start') ...
+            || isequal(thisphase, 'ramp') ...
+            || (length(thisphase) >= 4 && isequal(thisphase(1 : 4), 'stay')) ...
+            || isequal(thisphase, 'end');
+    
     if isequal(thisphase, 'pre')
             set(hgui.play,'cdata',hgui.skin.play,'userdata',0);
 
@@ -589,7 +614,7 @@ for n=startPhase:length(allPhases)
 
             hgui.showTextCue=1;
 
-    elseif length(thisphase) >= 4 && isequal(thisphase(1 : 4), 'rand')
+    elseif bIsPertPhase
             if bAlwaysOn
                 Audapter(2);
             end
@@ -630,13 +655,17 @@ for n=startPhase:length(allPhases)
                 hgui.showRmsPrompt = 1;
                 hgui.showSpeedPrompt = 1;
             end
-            hgui.bRmsRepeat = 0;  %1 
+            hgui.bRmsRepeat = 0;  %1
             hgui.bSpeedRepeat = 0; 
 
             p.bDetect=1;
             p.bShift=0;
             
-            set(hgui.play,'cdata',hgui.skin.play,'userdata',0);
+            if ~(isequal(thisphase, 'ramp') || ...
+                 (length(thisphase) >= 4 && isequal(thisphase(1 : 4), 'stay')) || ...
+                 isequal(thisphase, 'end'))
+                set(hgui.play,'cdata',hgui.skin.play,'userdata',0);
+            end
             hgui.showTextCue=1;
             
             % -- Prepare pitch shift log file -- %
@@ -644,60 +673,61 @@ for n=startPhase:length(allPhases)
             pitchShiftLogFN = fullfile(dirname, sprintf('pitch_shift.%.2d.log', length(dfns) + 1));
             pitchShiftLogF = fopen(pitchShiftLogFN, 'at');
             fprintf(pitchShiftLogF, 'trialFileName, voiceOnset(ms), pitchShiftOnset(ms), pitchShiftEnd(ms), pitchShift(cent)\n');
-    elseif isequal(thisphase, 'start')
-            hgui.showRmsPrompt = 1;
-            hgui.showSpeedPrompt = 1;
-            hgui.bRmsRepeat = 0;  %1 
-            hgui.bSpeedRepeat = 0; 
-            
-            set(hgui.play,'cdata',hgui.skin.play,'userdata',0);
-            hgui.showTextCue=1;
-            
-    elseif isequal(thisphase,'ramp')      %SC !! Notice that adaptive RMS threshold updating is no longer done here.           			
-            hgui.showRmsPrompt = 1;
-            hgui.showSpeedPrompt = 1;
-            hgui.bRmsRepeat = 0;  %1 
-            hgui.bSpeedRepeat = 0; 
-            
-            p.bDetect = 1;
-			p.bShift = 1;
-            
-            if bAlwaysOn
-                Audapter(1);
-%                 Audapter(3, 'scale', 0);
-            end
-            
-            set(hgui.play,'cdata',hgui.skin.play,'userdata',0);
-			hgui.showTextCue=1;
-
-            
-%             if doPlot
-%                 uiwait(gcf,10);
-% 			end
-    elseif isequal(thisphase, 'stay')
-			set(hgui.msgh,'visible','on');
-            
-            hgui.showRmsPrompt = 1;
-            hgui.showSpeedPrompt = 1;
-            hgui.bRmsRepeat = 0;  %1 
-            hgui.bSpeedRepeat = 0; 
-            
-            p.bDetect = 1;
-            p.bShift = 1;
-            hgui.showTextCue=1;
-    elseif isequal(thisphase, 'end')
-			set(hgui.msgh,'visible','on');
-            
-            hgui.showRmsPrompt = 1;
-            hgui.showSpeedPrompt = 1;
-            hgui.bRmsRepeat = 0;  %1 
-            hgui.bSpeedRepeat = 0; 
-            
-            p.bDetect = 0;
-            p.bShift = 0;
-            hgui.showTextCue=1;
-            elseif isequal(thisphase, 'test3')
     end
+%     elseif isequal(thisphase, 'start')
+%             hgui.showRmsPrompt = 1;
+%             hgui.showSpeedPrompt = 1;
+%             hgui.bRmsRepeat = 0;  %1 
+%             hgui.bSpeedRepeat = 0; 
+%             
+%             set(hgui.play,'cdata',hgui.skin.play,'userdata',0);
+%             hgui.showTextCue=1;
+%             
+%     elseif isequal(thisphase,'ramp')      %SC !! Notice that adaptive RMS threshold updating is no longer done here.           			
+%             hgui.showRmsPrompt = 1;
+%             hgui.showSpeedPrompt = 1;
+%             hgui.bRmsRepeat = 0;  %1 
+%             hgui.bSpeedRepeat = 0; 
+%             
+%             p.bDetect = 1;
+% 			p.bShift = 1;
+%             
+%             if bAlwaysOn
+%                 Audapter(1);
+% %                 Audapter(3, 'scale', 0);
+%             end
+%             
+%             set(hgui.play,'cdata',hgui.skin.play,'userdata',0);
+% 			hgui.showTextCue=1;
+% 
+%             
+% %             if doPlot
+% %                 uiwait(gcf,10);
+% % 			end
+%     elseif isequal(thisphase, 'stay')
+% 			set(hgui.msgh,'visible','on');
+%             
+%             hgui.showRmsPrompt = 1;
+%             hgui.showSpeedPrompt = 1;
+%             hgui.bRmsRepeat = 0;  %1 
+%             hgui.bSpeedRepeat = 0; 
+%             
+%             p.bDetect = 1;
+%             p.bShift = 1;
+%             hgui.showTextCue=1;
+%     elseif isequal(thisphase, 'end')
+% 			set(hgui.msgh,'visible','on');
+%             
+%             hgui.showRmsPrompt = 1;
+%             hgui.showSpeedPrompt = 1;
+%             hgui.bRmsRepeat = 0;  %1 
+%             hgui.bSpeedRepeat = 0; 
+%             
+%             p.bDetect = 0;
+%             p.bShift = 0;
+%             hgui.showTextCue=1;
+%             elseif isequal(thisphase, 'test3')
+%     end
 
     drawnow    
 
@@ -714,7 +744,7 @@ for n=startPhase:length(allPhases)
 %         AudapterIO('init',p0);
 %     end
 
-    for i0=startRep:nReps    %SC Loop for the reps in the phase
+    for i0 = startRep : nReps    %SC Loop for the reps in the phase
         repString=['rep',num2str(i0)];
         state.rep=i0;
         state.params=p;
@@ -735,49 +765,15 @@ for n=startPhase:length(allPhases)
 %         end
 
         pcf_fn = fullfile(subsubdirname, 'fmt.pcf');
-                    
-        if isequal(thisphase, 'ramp')
-%             if isequal(subject.expt_config.PERT_MODE, 'FMT')
-%                 p.bShift = 1;
-%                 p.bPitchShift = 0;
-%                 p.bPitchShiftRatio = 1.0;
-%                 p.pertAmp = i0 / (expt.script.ramp.nReps+1) * t_amp * ones(1, p.pertFieldN);
-%                 p.pertPhi = t_angle * ones(1, p.pertFieldN);
-%                 gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
-%                              i0 / (expt.script.ramp.nReps+1) * t_amp, t_angle, pcf_fn);
-%             else
-            p.bShift = 0;
-            pitchShiftST = i0 / (expt.script.ramp.nReps+1) * subject.expt_config.PITCH_SHIFT_SEMITONES_SUST;
-            p.pitchShiftRatio = 2 ^ (pitchShiftST / 12.0);
-            gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
-                         pitchShiftST, 0, 0, pcf_fn);
-%             end
-        elseif isequal(thisphase, 'stay')
-%             if isequal(subject.expt_config.PERT_MODE, 'FMT')
-%                 p.bShift = 1;
-%                 p.bPitchShift = 0;
-%                 p.bPitchShiftRatio = 1.0;
-%                 p.pertAmp = t_amp * ones(1, p.pertFieldN);
-%                 p.pertPhi = t_angle * ones(1, p.pertFieldN);
-%                 gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
-%                              t_amp, t_angle, pcf_fn);
-%             else
-            p.bShift = 0;
-            pitchShiftST = subject.expt_config.PITCH_SHIFT_SEMITONES_SUST;
-            p.pitchShiftRatio = 2 ^ (pitchShiftST / 12.0);
-            gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
-                         pitchShiftST, 0, 0, pcf_fn);
-%             end
-        elseif ~(length(thisphase) >= 4 && isequal(thisphase(1 : 4), 'rand'))
+           
+        if ~bIsPertPhase
             p.bShift = 0;
             p.pitchShiftRatio = 0;
             p.pertAmp = zeros(1, p.pertFieldN);
             p.pertPhi = zeros(1, p.pertFieldN);
             gen_pert_pcf(subject.expt_config.OST_MAX_STATE, subject.expt_config.PERT_STATES, ...
                          0, 0, 0, pcf_fn);
-        end
-        
-        if ~(length(thisphase) >= 4 && isequal(thisphase(1 : 4), 'rand'))
+                     
             check_file(pcf_fn);
             AudapterIO('pcf', pcf_fn, [], 0);
         end
@@ -810,12 +806,12 @@ for n=startPhase:length(allPhases)
             p.bPitchShift = double(~isempty(find(struct2array(expt.pertDes.pitchShifts_cent) ~= 0, 1)));
             p.pitchShiftRatio = NaN;
             
-            if length(thisphase) >= 4 && isequal(thisphase(1 : 4), 'rand')   % Configure random perturbation                
-                fprintf(1, 'rand pert type = [%s]\n', thisTrial);
+            if bIsPertPhase   % Configure perturbation
+                fprintf(1, 'Pert type = [%s]\n', thisTrial);
                 
                 if ~isequal(thisTrial, 'ctrl')
-                    p.pertAmp = abs(expt.script.(thisphase).(repString).F1Shifts_ratio{k}(1) + i * expt.script.(thisphase).(repString).F2Shifts_ratio{k}(1)) * ones(1, p.pertFieldN);
-                    p.pertPhi = angle(expt.script.(thisphase).(repString).F1Shifts_ratio{k}(1) + i * expt.script.(thisphase).(repString).F2Shifts_ratio{k}(1)) * ones(1, p.pertFieldN);
+                    p.pertAmp = abs(expt.script.(thisphase).(repString).F1Shifts_ratio{k}(1) + 1i * expt.script.(thisphase).(repString).F2Shifts_ratio{k}(1)) * ones(1, p.pertFieldN);
+                    p.pertPhi = angle(expt.script.(thisphase).(repString).F1Shifts_ratio{k}(1) + 1i * expt.script.(thisphase).(repString).F2Shifts_ratio{k}(1)) * ones(1, p.pertFieldN);
                     
                     gen_multi_pert_pcf(ost, pcf, expt_config.INTENSITY_THRESH, ...
                                        expt.script.(thisphase).(repString).pitchShifts_cent{k}, ...
@@ -824,7 +820,7 @@ for n=startPhase:length(allPhases)
                                        expt.script.(thisphase).(repString).F2Shifts_ratio{k}, ...
                                        expt.script.(thisphase).(repString).shifts_onset{k}, ...                                       
                                        expt.script.(thisphase).(repString).shiftDurs_ms{k});
-                else % No perturbation                    
+                else % No perturbation
                     p.pertAmp = zeros(1, p.pertFieldN);
                     p.pertPhi = zeros(1, p.pertFieldN);
                     
@@ -909,7 +905,7 @@ for n=startPhase:length(allPhases)
             data = get(hgui.UIRecorder, 'UserData');           %SC Retrieve the data
             
             % -- Write pitch shift log -- 
-            if length(thisphase) >= 4 && isequal(thisphase(1 : 4), 'rand')
+            if bIsPertPhase
                 [psSummary, voiceOnset] = getPitchShiftTimeStamps(data);
                 for k2 = 1 : length(psSummary)
                     fprintf(pitchShiftLogF, '%s/%s/%s, %f, %f, %f, %f\n', ...

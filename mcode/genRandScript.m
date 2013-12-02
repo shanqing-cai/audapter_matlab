@@ -1,10 +1,15 @@
-function [phaseScript, pertDes] = genRandScript(nBlocks, trialsPerBlock, ...
+function [phaseScript, pertDes] = genRandScript(phase, nBlocks, trialsPerBlock, ...
                                      trialTypes, minDistBetwShifts, ...
                                      onsetDelays_ms, numShifts, ...
                                      interShiftDelays_ms, pitchShifts_cent, ...
                                      intShifts_dB, ...
                                      F1Shifts_ratio, F2Shifts_ratio, ...
                                      shiftDurs_ms, stimUtters, fullSchedFN)
+%%
+sustPhaseNames = {'start', 'ramp', 'stay', ...
+                  'stay1', 'stay2', 'stay3', 'stay4', ...
+                  'end'};
+
 %%
 if ~isempty(fullSchedFN)
     check_file(fullSchedFN);
@@ -23,6 +28,16 @@ check_pos_int(trialsPerBlock, 'TRIALS_PER_BLOCK must be a positive integer');
 
 
 %% trialTypes
+if ~isempty(fsic(sustPhaseNames, phase))
+    assert(isempty(trialTypes));
+    trialTypes = sprintf('{%d-sust}', trialsPerBlock);
+    minDistBetwShifts = 0;
+    
+    bSust = 1;
+else
+    bSust = 0;
+end
+
 a_trialTypes = {};
 a_trialTypeIsPert = [];
 a_nTrialsPerBlock = [];
@@ -63,16 +78,24 @@ else
 end
 
 
-%--- Make sure that ctrl is first in list ---%
-idxCtrl = fsic(a_trialTypes, 'ctrl');
-if length(idxCtrl) == 0
-    error('It is mandatory that ctrl is in TRIAL_TYPES_IN_BLOCK, although the number may be set to zero if necessary.');
-end
 
-idxOrd = [idxCtrl, setxor(1 : length(a_trialTypes), idxCtrl)];
-a_trialTypes = a_trialTypes(idxOrd);
-a_trialTypeIsPert = a_trialTypeIsPert(idxOrd);
-a_nTrialsPerBlock = a_nTrialsPerBlock(idxOrd);
+if ~bSust
+    %--- Make sure that ctrl is first in list ---%
+    idxCtrl = fsic(a_trialTypes, 'ctrl');
+    if length(idxCtrl) == 0
+        error('It is mandatory that ctrl is in TRIAL_TYPES_IN_BLOCK, although the number may be set to zero if necessary.');
+    end
+    
+    idxOrd = [idxCtrl, setxor(1 : length(a_trialTypes), idxCtrl)];
+    a_trialTypes = a_trialTypes(idxOrd);
+    a_trialTypeIsPert = a_trialTypeIsPert(idxOrd);
+    a_nTrialsPerBlock = a_nTrialsPerBlock(idxOrd);  
+    
+else
+    %--- Make sure that sust is the only type of trial ---%
+    assert(length(a_trialTypes) == 1);
+    assert(isequal(a_trialTypes{1}, 'sust'));
+end
 
 a_trialTypesPert = a_trialTypes(find(a_trialTypeIsPert));
 
@@ -326,7 +349,7 @@ pertDes.shiftDurs_ms = a_shiftDurs_ms;
 %     pertDes.trialTypes = unique(sched);
 % end
 
-%%
+%% Generate the actual phase script
 phaseScript = struct();
 
 phaseScript.nReps = pertDes.nBlocks;
@@ -387,14 +410,20 @@ for n = 1 : pertDes.nBlocks
         end
 
         oneRep.trialOrder = [trialOrder_pre, oneRep.trialOrder];
-
-        prevPertPos = find(oneRep.trialOrder);
-        prevPertPos = prevPertPos(end) - length(oneRep.trialOrder) - 1;
+        
+        if minDistBetwShifts > 0
+            prevPertPos = find(oneRep.trialOrder);
+            prevPertPos = prevPertPos(end) - length(oneRep.trialOrder) - 1;
+        end
 
         oneRep.trialOrder = num2cell(oneRep.trialOrder);
         for i1 = 1 : length(oneRep.trialOrder)
             if oneRep.trialOrder{i1} == 0
-                oneRep.trialOrder{i1} = 'ctrl';
+                if ~bSust
+                    oneRep.trialOrder{i1} = 'ctrl';
+                else
+                    oneRep.trialOrder{i1} = 'sust';
+                end
             else
                 oneRep.trialOrder{i1} = pertDes.trialTypesPert{oneRep.trialOrder{i1}};
             end
@@ -416,6 +445,18 @@ for n = 1 : pertDes.nBlocks
     oneRep.shiftDurs_ms = cell(1, nt);
 %     oneRep.onsetTimes = cell(1, nt);
 
+    if bSust 
+        if isequal(phase, 'start') || isequal(phase, 'end')
+            pertScale = 0.0;
+        elseif isequal(phase, 'ramp')
+            pertScale = n / (pertDes.nBlocks + 1);
+        elseif (length(phase) >= 4) && isequal(phase(1 : 4), 'stay')
+            pertScale = 1.0;
+        end
+    else
+        pertScale = 1.0;
+    end
+
     for i1 = 1 : nt
         tt = oneRep.trialOrder{i1};
         if isequal(tt, 'ctrl')
@@ -430,16 +471,16 @@ for n = 1 : pertDes.nBlocks
         oneRep.F2Shifts_ratio{i1} = nan(1, ns);
         for i2 = 1 : length(oneRep.pitchShifts_cent{i1})
             %- Amount (cents) of pitch shift -%
-            oneRep.pitchShifts_cent{i1}(i2) = pertDes.pitchShifts_cent.(tt)(i2);
+            oneRep.pitchShifts_cent{i1}(i2) = pertScale * pertDes.pitchShifts_cent.(tt)(i2);
             
             %- Amount (dB) of intensity shift -%
-            oneRep.intShifts_dB{i1}(i2) = pertDes.intShifts_dB.(tt)(i2);
+            oneRep.intShifts_dB{i1}(i2) = pertScale * pertDes.intShifts_dB.(tt)(i2);
             
             %- Amount (ratio) of F1 shift -%
-            oneRep.F1Shifts_ratio{i1}(i2) = pertDes.F1Shifts_ratio.(tt)(i2);
+            oneRep.F1Shifts_ratio{i1}(i2) = pertScale * pertDes.F1Shifts_ratio.(tt)(i2);
             
             %- Amount (ratio) of F2 shift -%
-            oneRep.F2Shifts_ratio{i1}(i2) = pertDes.F2Shifts_ratio.(tt)(i2);
+            oneRep.F2Shifts_ratio{i1}(i2) = pertScale * pertDes.F2Shifts_ratio.(tt)(i2);
         end
         
         
