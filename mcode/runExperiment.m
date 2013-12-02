@@ -1,4 +1,4 @@
-function runExperiment(varargin)
+function runExperiment(exptConfigFN, varargin)
 DEBUG = 0;
 DEBUG_PS = 0;
 
@@ -7,8 +7,10 @@ DEBUG_PS = 0;
 fclose all;
 close all force;
 
-%% ---- Read and parse expt_config.txt ----
-expt_config = read_parse_expt_config('expt_config.txt');
+
+%% ---- Read and parse exptConfig file (e.g., expt_config_fmt.txt) ----
+check_file(exptConfigFN);
+expt_config = read_parse_expt_config(exptConfigFN);
 
 % if ~(isequal(expt_config.PERT_MODE, 'PITCH') || isequal(expt_config.PERT_MODE, 'FMT'))
 %     error('Unrecognized PERT_MODE: %s', expt_config.PERT_MODE);
