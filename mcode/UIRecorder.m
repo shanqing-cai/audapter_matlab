@@ -249,6 +249,14 @@ hkf = figure('Position', [50, 100, 1000, 600], 'Color', 'w', ...
              'Toolbar', 'none', 'Menubar', 'none');
 handles.hkf = hkf;
 
+handles.msgTxt = uicontrol('Parent', handles.hkf, 'Style', 'text', ...
+                           'Unit', 'normalized', ...
+                           'Position', [0.05, 0.45, 0.9, 0.5], ...
+                           'String', {'Hello', 'world'}, ...
+                           'FontName', 'Helvetica', 'FontSize', 20, 'FontWeight', 'normal', 'ForegroundColor', [0, 0, 1], ...
+                           'HorizontalAlignment', 'left', ...
+                           'visible', 'off');
+
 nMainPanels = 3;
 leftMargin = 0.075;
 panelSpacing = 0.025;
@@ -825,6 +833,10 @@ if (handles.trigByScanner==1)
     uiwait(handles.UIRecorder);
 else
     waitfor(handles.play,'userdata',1);
+end
+
+if isequal(get(handles.msgTxt, 'visible'), 'on')
+    set(handles.msgTxt, 'visible', 'off');
 end
 
 if (handles.debug==0)

@@ -731,7 +731,13 @@ for n=startPhase:length(allPhases)
 
     drawnow    
 
-    set(hgui.msgh,'string',getMsgStr(thisphase),'visible','on');        
+%     set(hgui.msgh,'string',getMsgStr(thisphase),'visible','on');    
+    set(0, 'CurrentFigure', hgui.UIRecorder);
+    xs = get(gca, 'XLim');
+    ys = get(gca, 'YLim');
+    set(hgui.msgTxt, 'visible', 'on', 'String', getMsgStr(thisphase));
+%     htxt = text(xs(1) + 0.05 * range(xs), ys(1) + 0.95 * range(ys), getMsgStr(thisphase), ...
+%                 'FontName', 'Helvetica', 'FontSize', 20, 'FontWeight', 'normal', 'Color', 'b');
 
 %     if ~bAlwaysOn
     if isfile(fullfile(dirname, 'p.mat'))
