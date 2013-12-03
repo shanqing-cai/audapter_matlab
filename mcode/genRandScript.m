@@ -45,7 +45,8 @@ a_nTrialsPerBlock = [];
 if ~isempty(fullSchedFN)
     a_trialTypes = unique(sched);
     for i1 = 1 : numel(a_trialTypes)
-        a_trialTypeIsPert(i1) = ~isequal(a_trialTypes{i1}, 'ctrl');
+        a_trialTypeIsPert(i1) = ~(isequal(a_trialTypes{i1}, 'ctrl') || ...
+                                  isequal(a_trialTypes{i1}, 'baseline'));
         a_nTrialsPerBlock(i1) = length(fsic(sched, a_trialTypes{i1}));
     end
     
@@ -61,7 +62,8 @@ else
 
         t_strs = splitstring(t_items{i1}, '-');
         a_trialTypes{end + 1} = t_strs{2};
-        a_trialTypeIsPert(end + 1) = ~isequal(lower(a_trialTypes{end}), 'ctrl');
+        a_trialTypeIsPert(end + 1) = ~(isequal(lower(a_trialTypes{end}), 'ctrl') || ...
+                                       isequal(lower(a_trialTypes{end}), 'baseline'));
         a_nTrialsPerBlock(end + 1) = str2double(t_strs{1});
 
         check_pos_int(a_nTrialsPerBlock(end), ...
@@ -72,18 +74,15 @@ else
         error('Duplicate items in TRIAL_TYPES_IN_BLOCK');
     end
 
-    
-
-    
 end
 
 
 
 if ~bSust
     %--- Make sure that ctrl is first in list ---%
-    idxCtrl = fsic(a_trialTypes, 'ctrl');
+    idxCtrl = union(fsic(a_trialTypes, 'ctrl'), fsic(a_trialTypes, 'baseline'));
     if length(idxCtrl) == 0
-        error('It is mandatory that ctrl is in TRIAL_TYPES_IN_BLOCK, although the number may be set to zero if necessary.');
+        error('It is mandatory that ctrl or baseline is in TRIAL_TYPES_IN_BLOCK, although the numbers may be set to zero if necessary.');
     end
     
     idxOrd = [idxCtrl, setxor(1 : length(a_trialTypes), idxCtrl)];
@@ -350,6 +349,8 @@ pertDes.shiftDurs_ms = a_shiftDurs_ms;
 % end
 
 %% Generate the actual phase script
+nNoPertTypes = length(fsic(a_trialTypes, 'ctrl')) + length(fsic(a_trialTypes, 'baseline'));
+
 phaseScript = struct();
 
 phaseScript.nReps = pertDes.nBlocks;
@@ -402,8 +403,8 @@ for n = 1 : pertDes.nBlocks
         bOkay = 0;
         while ~bOkay
             oneRep.trialOrder = oneRep.trialOrder(randperm(length(oneRep.trialOrder)));
-
-            idxPert = find(oneRep.trialOrder);
+          
+            idxPert = find(oneRep.trialOrder >= nNoPertTypes);
             distPert = diff(idxPert) - 1;
 
             bOkay = isempty(find(distPert < minDistBetwShifts, 1));
@@ -418,15 +419,17 @@ for n = 1 : pertDes.nBlocks
 
         oneRep.trialOrder = num2cell(oneRep.trialOrder);
         for i1 = 1 : length(oneRep.trialOrder)
-            if oneRep.trialOrder{i1} == 0
-                if ~bSust
-                    oneRep.trialOrder{i1} = 'ctrl';
-                else
-                    oneRep.trialOrder{i1} = 'sust';
-                end
+%             if oneRep.trialOrder{i1} == 0
+            if ~bSust
+                oneRep.trialOrder{i1} = a_trialTypes{oneRep.trialOrder{i1} + 1};
+%                 oneRep.trialOrder{i1} = pertDes.trialTypesPert{oneRep.trialOrder{i1}};
+%                     oneRep.trialOrder{i1} = 'ctrl';
             else
-                oneRep.trialOrder{i1} = pertDes.trialTypesPert{oneRep.trialOrder{i1}};
+                oneRep.trialOrder{i1} = 'sust';
             end
+%             else
+                
+%             end
         end
     
     else
@@ -445,6 +448,12 @@ for n = 1 : pertDes.nBlocks
     oneRep.shiftDurs_ms = cell(1, nt);
 %     oneRep.onsetTimes = cell(1, nt);
 
+    %-- Use random symbols to replace the characters in baseline trials --%
+    idxBL = fsic(oneRep.trialOrder, 'baseline');
+    for j1 = 1 : numel(idxBL)
+        oneRep.word{idxBL(j1)} = char_symbol(oneRep.word{idxBL(j1)});
+    end
+    
     if bSust 
         if isequal(phase, 'start') || isequal(phase, 'end')
             pertScale = 0.0;
@@ -459,10 +468,9 @@ for n = 1 : pertDes.nBlocks
 
     for i1 = 1 : nt
         tt = oneRep.trialOrder{i1};
-        if isequal(tt, 'ctrl')
+        if isequal(tt, 'ctrl') || isequal(tt, 'baseline')
             continue;
         end
-        
         
         ns = pertDes.numShifts.(tt);
         oneRep.pitchShifts_cent{i1} = nan(1, ns);

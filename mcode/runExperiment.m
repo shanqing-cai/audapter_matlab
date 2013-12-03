@@ -809,7 +809,7 @@ for n=startPhase:length(allPhases)
             if bIsPertPhase   % Configure perturbation
                 fprintf(1, 'Pert type = [%s]\n', thisTrial);
                 
-                if ~isequal(thisTrial, 'ctrl')
+                if ~(isequal(thisTrial, 'ctrl') || isequal(thisTrial, 'baseline'))
                     p.pertAmp = abs(expt.script.(thisphase).(repString).F1Shifts_ratio{k}(1) + 1i * expt.script.(thisphase).(repString).F2Shifts_ratio{k}(1)) * ones(1, p.pertFieldN);
                     p.pertPhi = angle(expt.script.(thisphase).(repString).F1Shifts_ratio{k}(1) + 1i * expt.script.(thisphase).(repString).F2Shifts_ratio{k}(1)) * ones(1, p.pertFieldN);
                     

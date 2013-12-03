@@ -77,11 +77,11 @@ PRACT2_REPS 2 % pract2: Intensity and duration practice
 
 %=== MRI experiment options ===%
 TRIGGER_BY_MRI_SCANNER 0 % 0 (no) or 1 (yes)
-MRI_TRIGGER_KEY add      % Examples: equal | add (the commonest ones for Siemens scanners
+MRI_TRIGGER_KEY add      % Examples: equal | add (the commonest ones for Siemens scanners)
 FMRI_TA 2.5 % Unit: s. Time of acquisition (TA) of the fMRI sequence. In the case of sparse sampling, TA < TR.
 TRIAL_LEN 3.0 % Unit: s
 
-%=== Children experiment-related optins ===%
+%=== Children experiment-related options ===%
 SHOW_KIDS_ANIM 0 % 0 (no) or 1 (yes)
 
 % PERT_MODE PITCH % Alternatives: PITCH / FMT (any other values will lead to error)

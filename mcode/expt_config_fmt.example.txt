@@ -1,5 +1,5 @@
 %=== Subject information ===%
-SUBJECT_ID TS_FMT_20131203_FMT04
+SUBJECT_ID TS_FMT_20131203_FMT06
 SUBJECT_GENDER male       % {female | male}
 SUBJECT_DOB 1-JAN-1983      % Follow the format: DAY-MON-YEAR (e.g., 2-FEB-1990)
 SUBJECT_GROUP AWS
@@ -77,11 +77,11 @@ PRACT2_REPS 2 % pract2: Intensity and duration practice
 
 %=== MRI experiment options ===%
 TRIGGER_BY_MRI_SCANNER 0 % 0 (no) or 1 (yes)
-MRI_TRIGGER_KEY add      % Examples: equal | add (the commonest ones for Siemens scanners
+MRI_TRIGGER_KEY equal      % Examples: equal | add (the commonest ones for Siemens scanners)
 FMRI_TA 2.5 % Unit: s. Time of acquisition (TA) of the fMRI sequence. In the case of sparse sampling, TA < TR.
 TRIAL_LEN 3.0 % Unit: s
 
-%=== Children experiment-related optins ===%
+%=== Children experiment-related options ===%
 SHOW_KIDS_ANIM 0 % 0 (no) or 1 (yes)
 
 % PERT_MODE PITCH % Alternatives: PITCH / FMT (any other values will lead to error)
