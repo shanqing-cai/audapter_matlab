@@ -159,11 +159,6 @@ if bNew % set up new experiment
     expt.script.pract1.nReps = expt_config.PRACT1_REPS; %SC Default 2   %SC-Mod(09/26/2007)        % !!1!!
     expt.script.pract2.nReps = expt_config.PRACT2_REPS; %SC Default 2   %SC-Mod(09/26/2007)        % !!1!!
     
-    expt.script.rand.nBlocks = expt_config.RAND_BLOCKS;  %SC Default 10   %SC-Mod(09/26/2007)       % !!8!!
-    expt.script.rand.trialsPerBlock = expt_config.RAND_TRIALS_PER_BLOCK; 
-    expt.script.rand.trialsPerBlock_lower = expt_config.RAND_LOWER_TRIALS_PER_BLOCK;
-    expt.script.rand.trialsPerBlock_higher = expt_config.RAND_HIGHER_TRIALS_PER_BLOCK;
-    
     expt.sustWords = expt_config.STIM_UTTER;
     expt.script.start.nReps = expt_config.SUST_START_REPS;
     expt.script.ramp.nReps = expt_config.SUST_RAMP_REPS;
@@ -184,9 +179,6 @@ if bNew % set up new experiment
                                         expt.script.pract1.nReps, expt.stimUtter);
     expt.script.pract2 = genPhaseScript('pract2', ...
                                         expt.script.pract2.nReps, expt.stimUtter);
-    
-    
-    
     
     for i1 = 1 : expt_config.N_RAND_RUNS
         phs = sprintf('rand%d', i1);
