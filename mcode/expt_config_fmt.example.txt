@@ -1,6 +1,6 @@
 %=== Subject information ===%
-SUBJECT_ID TS_FMT_20131202_04
-SUBJECT_GENDER female       % {female | male}
+SUBJECT_ID TS_FMT_20131203_FMT03
+SUBJECT_GENDER male       % {female | male}
 SUBJECT_DOB 1-JAN-1983      % Follow the format: DAY-MON-YEAR (e.g., 2-FEB-1990)
 SUBJECT_GROUP AWS
 
@@ -14,7 +14,7 @@ DEVICE_NAME MicroBook    % {MicroBook | UltraLite} (Case sensitive)
 ALWAYS_ON 0     % 0 - no; 1 - yes
 
 %=== Experiment design ===%
-N_RAND_RUNS 1            % Number of rand runs
+N_RAND_RUNS 0            % Number of rand runs
 N_BLOCKS_PER_RAND_RUN 1  % Number of block (a.k.a., repetitions) in each rand run
 TRIALS_PER_BLOCK 5      % Number of trials in each block
 TRIAL_TYPES_IN_BLOCK {3-ctrl, 1-up, 1-down}
