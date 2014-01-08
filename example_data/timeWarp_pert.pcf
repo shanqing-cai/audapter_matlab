@@ -1,10 +1,16 @@
 # Section 1 (Time warping): tBegin, rate1, dur1, durHold, rate2 
-0
+2
+0.94, 0.1, 0.1, 0.1, 1.5
+1.502, 0.1, 0.1, 0.1, 1.5
+# 4, 0.18, 0.5, 0.1, 0.1, 2
+# 4, 0.452, 0.5, 0.1, 0.1, 2
 
 # Section 2: stat pitchShift(st) gainShift(dB) fmtPertAmp fmtPertPhi(rad)
-5
+6
 0, 0.0, 0, 0, 0
 1, 0.0, 0, 0, 0
 2, 0.0, 0, 0, 0
 3, 0.0, 0, 0, 0
-4, 0.0, 0, 0.5, 0
+4, 0.0, 0, 0, 0
+5, 0.0, 0, 0, 0
+    

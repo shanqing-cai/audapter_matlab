@@ -5,7 +5,7 @@ load 'G:\DATA\RHYTHM-FMRI\BERRY_COLLAB_DATA_1\run1\rep1\trial-1-2.mat';
 p = data.params;
 
 %% Setting ost and pcf
-% ost_fn = '../pert/ost';
+ost_fn = '../pert/ost';
 pcf_fn = '../pert/fmt_pert.pcf';
 % ost_fn = '../pert/ost';
 % pcf_fn = 'E:\tmp\sdap2\pert\pitch_up.pcf';
@@ -18,10 +18,10 @@ p.bRatioShift = 1;
 p.bBypassFmt = 0;           % === Important === %
 p.bPitchShift = 0;          % === Important === %
 
-% check_file(ost_fn);
+check_file(ost_fn);
 check_file(pcf_fn);
 
-% Audapter(8, ost_fn, 1);
+Audapter(8, ost_fn, 1);
 Audapter(9, pcf_fn, 1);
 
 % Audapter(3, 'bbypassfmt', 0, 1); 
@@ -47,8 +47,10 @@ fs = data.params.sr;
 
 sigIn = data.signalIn;
 
-sigIn = resample(sigIn, data.params.sr * data.params.downFact, fs);
-sigInCell = makecell(sigIn, data.params.frameLen * data.params.downFact);
+% sigIn = resample(sigIn, data.params.sr * data.params.downFact, fs);
+sigIn = resample(sigIn, data.params.sr * data.params.downfact, fs);
+% sigInCell = makecell(sigIn, data.params.frameLen * data.params.downFact);
+sigInCell = makecell(sigIn, data.params.frameLen * data.params.downfact);
 
 Audapter(6);   % Reset;\
 
@@ -59,6 +61,9 @@ p.bRMSClip=1;
 % p.pitchShiftRatio = 2 ^ (1 / 12);
 
 AudapterIO('init', p);
+Audapter(3, 'rmsthr', 5e-3);
+
+Audapter('reset');
 
 for n = 1 : length(sigInCell)
     Audapter(5, sigInCell{n});
@@ -76,7 +81,7 @@ plot(tAxis, data1.fmts, 'b');
 
 frameDur = data.params.frameLen / data.params.sr;
 tAxis = 0 : frameDur : frameDur * (size(data.rms, 1) - 1);
-plot(tAxis, data.ost_stat);
+plot(tAxis, data1.ost_stat * 500, 'w-');
 
 figure('Position', [100, 100, 1400, 600]);
 % subplot('Position', [0.5, 0.1, 0.45, 0.8]);
@@ -84,5 +89,6 @@ show_spectrogram(data1.signalOut, fs, 'noFig');
 plot(tAxis, data1.fmts, 'b');
 plot(tAxis, data1.sfmts, 'g');
 
-%     soundsc(data1.signalIn + data1.signalOut, fs);
+% soundsc(data1.signalIn, fs)
+% soundsc(data1.signalOut, fs);
 return

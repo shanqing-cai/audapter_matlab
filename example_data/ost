@@ -1,0 +1,11 @@
+# Online status tracking (OST) configuration file
+rmsSlopeWin = 0.030000
+
+# Main section: Heuristic rules for tracking
+n = 4
+0 INTENSITY_RISE_HOLD 0.02 0.0200 {} # Detect onset of first word
+2 INTENSITY_FALL 0.01 0.0100 {} # Detect the end of the first word
+4 ELAPSED_TIME 0.48 0 {}
+5 OST_END NaN NaN {} # Compulsory ending rule
+
+n = 0

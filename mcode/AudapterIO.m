@@ -254,7 +254,7 @@ switch(action)
 
         end
     case 'reset',
-        Audapter(6);
+        Audapter('reset');
         
     case 'ost',
         if nargin == 2
