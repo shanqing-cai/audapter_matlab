@@ -23,11 +23,11 @@ data.params.LBk = 0;
 data.params.LBb = 0;
 fs = data.params.sr;
 sigIn = data.signalIn;
-    
-AudapterIO('reset');   % Reset;
 
 sigIn = resample(sigIn, fsNoDS, data.params.sr);     
 sigInCell = makecell(sigIn, frameLenNoDS);
+
+AudapterIO('reset');   % Reset;
 
 %%
 data.params.downFact = downFact;
@@ -37,6 +37,10 @@ data.params.nLPC = nLPC;
 
 data.params.bRatioShift = 0;
 data.params.bMelShift = 0;
+
+% Nullify OST and PCF, so that they won't override the perturbation field
+Audapter('ost', '', 0);
+Audapter('pcf', '', 0);
 
 AudapterIO('init', data.params); % Set speaker-specific parameters
 
