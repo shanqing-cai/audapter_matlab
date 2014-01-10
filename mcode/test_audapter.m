@@ -31,6 +31,8 @@ elseif isequal(pertMode, 'pitch')
     pcf_fn = '../example_data/pitch_pert.pcf';
 elseif isequal(pertMode, 'timeWarp')
     pcf_fn = '../example_data/timeWarp_pert.pcf';
+elseif isequal(pertMode, 'debug')    % DEBUG
+    pcf_fn = '../example_data/time_warp_demo.pcf';
 else
     error('Unrecognized perturbation mode: %s', pertMode);
 end
@@ -41,7 +43,13 @@ p.rmsThresh = 0.01;
 p.bShift = 1;
 p.bRatioShift = 1;
 p.bBypassFmt = 0;           % === Important === %
-p.bPitchShift = 0;          % === Important === %
+
+if isequal(pertMode, 'pitch') || isequal(pertMode, 'timeWarp') ...
+        || isequal(pertMode, 'debug')
+    p.bPitchShift = 1;          % === Important === %
+else
+    p.bPitchShift = 0;          % === Important === %
+end
 
 check_file(ost_fn);
 check_file(pcf_fn);
@@ -58,6 +66,10 @@ Audapter('pcf', pcf_fn, 0);
 mbw = mbw - mean(mbw);
 mb_rms = rms(mbw);
 mbw = mbw / mb_rms;
+
+if length(mbw) > Audapter('getMaxPBLen')
+    mbw = mbw(1 : Audapter('getMaxPBLen'));
+end
 
 Audapter('setParam', 'datapb', mbw, 0);
 
@@ -82,15 +94,9 @@ if ~isempty(fsic(varargin, '--nLPC'))
     p.nLPC = varargin{fsic(varargin, '--nLPC') + 1};
 end
 
-
 AudapterIO('init', p);
 
-Audapter('setParam', 'rmsthr', 5e-3);
-if isequal(pertMode, 'pitch') || isequal(pertMode, 'timeWarp')
-    Audapter('setParam', 'bpitchshift', 1, 1);
-else
-    Audapter('setParam', 'bpitchshift', 0, 1);
-end
+Audapter('setParam', 'rmsthr', 5e-3, 0);
 
 Audapter('reset');
 

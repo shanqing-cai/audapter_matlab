@@ -26,7 +26,7 @@ paramNames = {'bShift',     'bTrack',       'bDetect',      'bWeight', ...
 
 for i1 = 1 : numel(paramNames)
     pn = paramNames{i1};
-    
+
     p.(pn) = Audapter('getParam', pn);
 end
 

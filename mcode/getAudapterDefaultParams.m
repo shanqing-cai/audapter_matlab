@@ -12,6 +12,8 @@ switch sex
         error('specify sex (male / female');
 end
 
+p.nFB           = 1;
+
 p.aFact         = 1;
 p.bFact         = 0.8;
 p.gFact         = 1;
@@ -105,7 +107,7 @@ end
 p.rampLen=0.25; %SC(2008/06/22)
 
 % SC(2009/02/06) RMS clipping protection
-p.bRMSClip=1;
+p.bRMSClip = 0;
 % p.rmsClipThresh=1.0;
 
 load('micRMS_100dBA.mat');
@@ -117,7 +119,6 @@ if ~isempty(fsic(varargin, 'bPitchShift'))
 end
 
 p.bBypassFmt = 0;
-
 
 %% 
 p.fb3Gain = dBSPL2WaveAmp(-Inf);
@@ -153,6 +154,9 @@ end
 if ~isempty(fsic(varargin, 'pvocHop'))
     p.pvocHop = varargin{fsic(varargin, 'pvocHop') + 1};
 end
+
+%%
+p.bPitchShift = 0;
 
 %%
 p.stereoMode = 1; % Left-right audio identical

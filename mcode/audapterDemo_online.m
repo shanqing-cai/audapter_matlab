@@ -1,12 +1,15 @@
 function audapterDemo_online(mode, varargin)
 %% Configurations
+audioInterfaceName = 'MOTU MicroBook';
+
 sRate = 48000;  % Hardware sampling rate (before downsampling)
 downFact = 3;
 frameLen = 96;  % Before downsampling
 
-audioInterfaceName = 'MOTU MicroBook';
+defaultGender = 'female';
 
-persistent p;
+%% Visualization configuration
+ostMult = 500;
 
 %% 
 Audapter('deviceName', audioInterfaceName);
@@ -14,28 +17,59 @@ Audapter('setParam', 'downFact', downFact, 0);
 Audapter('setParam', 'sRate', sRate / downFact, 0);
 Audapter('setParam', 'frameLen', frameLen / downFact, 0);
 
+bVis = 0;
+bVisFmts = 0;
+bVisOST = 0;
+visName = '';
+
 if isequal(mode, 'persistentFormantShift')
+    gender = varargin{1};
+    
     Audapter('ost', '', 0);
     Audapter('pcf', '', 0);
     
-    p = getAudapterDefaultParams('male');
+    params = getAudapterDefaultParams(gender);
     
-    p.f1Min = 0;
+    params.f1Min = 0;
+    params.f2Max = 5000;
+    params.f2Min = 0;
+    params.f2Max = 5000;
+    params.pertF2 = linspace(0, 5000, 257);
+    params.pertAmp = 0.4 * ones(1, 257);
+    params.pertPhi = 0.75 * pi * ones(1, 257);
+    params.bTrack = 1;
+    params.bShift = 1;
+    params.bRatioShift = 1;
+    params.bMelShift = 0;
     
-    AudapterIO('init', p);
+    AudapterIO('init', params);
     
-    Audapter('setParam', 'f1Min', 0, 0);
-    Audapter('setParam', 'f1Max', 5000, 0);
-    Audapter('setParam', 'f2Min', 0, 0);
-    Audapter('setParam', 'f2Max', 5000, 0);
-    Audapter('setParam', 'pertF2', linspace(0, 5000, 257), 0);
-    Audapter('setParam', 'pertAmp', 0.4 * ones(1, 257), 0);
-    Audapter('setParam', 'pertPhi', pi * 0.75 * ones(1, 257), 0);
+    Audapter('reset');
+    Audapter('start');
+    fprintf(1, 'Please say something...');
+    pause(2);
+    fprintf(1, '\n');
+    Audapter('stop');    
     
-    Audapter('setParam', 'bTrack', 1, 0);
-    Audapter('setParam', 'bShift', 1, 0);
-    Audapter('setParam', 'bRatioShift', 1, 0);
-    Audapter('setParam', 'bMelShift', 0, 0);
+    bVis = 1;
+    bVisFmts = 1;
+    visName = 'Persistent formant shift';
+    
+elseif isequal(mode, 'focalFormantShift');
+    
+elseif isequal(mode, 'persistentPitchShift')
+    ostFN = '../example_data/one_state_tracking.ost';
+    pcfFN = '../example_data/persistent_pitch_pert.pcf';
+    
+    check_file(ostFN);
+    check_file(pcfFN);
+    Audapter('ost', ostFN, 0);
+    Audapter('pcf', pcfFN, 0);
+    
+    params = getAudapterDefaultParams(defaultGender);
+    params.bPitchShift = 1;
+    
+    AudapterIO('init', params);
     
     Audapter('reset');
     Audapter('start');
@@ -44,24 +78,88 @@ if isequal(mode, 'persistentFormantShift')
     fprintf(1, '\n');
     Audapter('stop');
     
-    data = AudapterIO('getData');
+    bVis = 1;
+    visName = 'Persistent pitch shift (up 2 semitones)';
     
-    % -- Visualization -- %
-    frameDur = data.params.frameLen / data.params.sr;
-    tAxis = 0 : frameDur : frameDur * (size(data.fmts, 1) - 1);
+elseif isequal(mode, 'twoShortPitchShifts');
+    ostFN = '../example_data/two_blips.ost';
+    pcfFN = '../example_data/two_pitch_shifts.pcf';
     
-    figure;
-    subplot('Position', [0.1, 0.5, 0.8, 0.375]);
-    hold on;
-    show_spectrogram(data.signalIn, data.params.sr, 'noFig');
-    plot(tAxis, data.fmts(:, 1 : 2), 'w');
+    check_file(ostFN);
+    check_file(pcfFN);
+    Audapter('ost', ostFN, 0);
+    Audapter('pcf', pcfFN, 0);
     
-    subplot('Position', [0.1, 0.125, 0.8, 0.375]);
-    hold on;
-    show_spectrogram(data.signalOut, data.params.sr, 'noFig');
-    plot(tAxis, data.fmts(:, 1 : 2), 'w');
-    tAxis = 0 : frameDur : frameDur * (size(data.fmts, 1) - 1);
-    plot(tAxis, data.sfmts(:, 1 : 2), 'g');
+    params = getAudapterDefaultParams(defaultGender);
+    params.bPitchShift = 1;
+    
+    AudapterIO('init', params);
+    
+    Audapter('reset');
+    Audapter('start');
+    fprintf(1, 'Please hum...');
+    pause(2);
+    fprintf(1, '\n');
+    Audapter('stop');    
+    
+    bVis = 1;
+    bVisOST = 1;
+    visName = 'Two short pitch shifts';
+    
+elseif isequal(mode, 'timeWarp')
+    ostFN = '../example_data/two_blips.ost';
+    pcfFN = '../example_data/time_warp_demo.pcf';
+    
+    check_file(ostFN);
+    check_file(pcfFN);
+    Audapter('ost', ostFN, 0);
+    Audapter('pcf', pcfFN, 0);
+    
+    params = getAudapterDefaultParams(defaultGender);
+    params.bPitchShift = 1;
+    
+    AudapterIO('init', params);
+    
+    Audapter('reset');
+    Audapter('start');
+    fprintf(1, 'Please say "puh puh puh ..."...');
+    pause(2);
+    fprintf(1, '\n');
+    Audapter('stop');    
+    
+    bVis = 1;
+    bVisOST = 1;
+    visName = 'Time warping';
+    
+elseif isequal(mode, 'globalDAF_multiVoice')
+    Audapter('ost', '', 0);
+    Audapter('pcf', '', 0);
+    
+    globalDelay = [0.100, 0.200];  % Unit: s
+    gain = [1.0, 1.0];
+    pitchShiftRatio = 2 .^ ([-2, 4] / 12);
+    
+    params = getAudapterDefaultParams(defaultGender);
+    frameDur = params.frameLen / params.sr;
+    
+    params.nfb = length(globalDelay);
+    params.pitchShiftRatio = pitchShiftRatio;
+    params.delayFrames = round(globalDelay / frameDur);
+    params.pitchShiftRatio = pitchShiftRatio;
+    params.gain = gain;
+    params.bPitchShift = 1;
+    params.bBypassFmt = 1;
+    
+    AudapterIO('init', params);
+    
+    Audapter('reset');
+    Audapter('start');
+    fprintf(1, 'Please say something...');
+    pause(3);
+    fprintf(1, '\n');
+    Audapter('stop');
+    
+    bVis = 1;
     
 elseif isequal(mode, 'playTone')
     noteRatio = 2 ^ (1 / 12);
@@ -107,8 +205,81 @@ elseif isequal(mode, 'playWave')
     Audapter('playWave');
     pause(length(sigInRS) / sRate);
     Audapter('stop');
-else
     
+elseif isequal(mode, 'playToneSeq')
+    Audapter('setParam', 'tsgNTones', 4, 0);
+    Audapter('setParam', 'tsgToneDur', [0.75, 0.25, 0.25, 0.5], 0);
+    Audapter('setParam', 'tsgToneFreq', 440 * 2 * (2 .^ ([-2, -9, -5, 0] / 12)), 0);
+    Audapter('setParam', 'tsgToneAmp', [0.075, 0.05, 0.05, 0.10], 0);
+    Audapter('setParam', 'tsgtoneramp', [0.05, 0.05, 0.05, 0.05], 0);
+    Audapter('setParam', 'tsgInt', [0.75, 0.25, 0.25, 0.5], 0);
+    Audapter('setParam', 'wgTime', 0, 0);
+    
+    Audapter('reset');
+    Audapter('playToneSeq');
+    pause(2);
+    Audapter('stop');
+    
+    p = getAudapterParamSet();
+else
+    error('Unrecognized mode: %s', mode);
+end
+
+
+%% -- Visualization -- %%
+if bVis
+    data = AudapterIO('getData');
+    
+    frameDur = data.params.frameLen / data.params.sr;
+    tAxis = 0 : frameDur : frameDur * (size(data.fmts, 1) - 1);
+    
+    %-----------------------%
+    figure;
+    subplot('Position', [0.1, 0.5, 0.8, 0.375]);
+    show_spectrogram(data.signalIn, data.params.sr, 'noFig');
+    
+    if bVisFmts
+        plot(tAxis, data.fmts(:, 1 : 2), 'w');
+    end
+    if bVisOST
+        plot(tAxis, data.ost_stat * ostMult, 'b-');
+    end
+        
+    ylabel('Frequency (Hz)');
+    
+    xs = get(gca, 'XLim');
+    ys = get(gca, 'YLim');
+    text(xs(1) + 0.025 * range(xs), ys(2) - 0.075 * range(ys), ...
+         'Input sound', 'FontSize', 12);
+    
+    %-----------------------%
+    subplot('Position', [0.1, 0.125, 0.8, 0.375]);
+    hold on;
+    show_spectrogram(data.signalOut, data.params.sr, 'noFig');
+    
+    legendItems = {};
+    if bVisFmts
+        plot(tAxis, data.fmts(:, 1 : 2), 'w');
+        plot(tAxis, data.sfmts(:, 1 : 2), 'g');
+        legendItems{end + 1} = 'Original F1 and f2';
+        legendItems{end + 1} = 'Shifted F1 and f2';
+    end
+    if bVisOST
+        plot(tAxis, data.ost_stat * ostMult, 'b-');
+        legendItems{end + 1} = sprintf('OST stat * %d', ostMult);
+    end
+    
+    xlabel('Time (s)');
+    ylabel('Frequency (Hz)');
+    
+    xs = get(gca, 'XLim');
+    ys = get(gca, 'YLim');
+    text(xs(1) + 0.025 * range(xs), ys(2) - 0.075 * range(ys), ...
+         sprintf('Output sound: %s', visName), 'FontSize', 12);
+     
+    if ~isempty(legendItems)
+        legend(legendItems);
+    end
 end
 
 return

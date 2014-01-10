@@ -98,6 +98,11 @@ switch(action)
         
         if (isfield(p,'fb'))    % 2008/06/18
             Audapter(3,'fb',p.fb, toPrompt);
+        end
+        if (isfield(p,'nfb'))    % 2008/06/18
+            Audapter(3,'nfb',p.nfb, toPrompt);
+        else
+            Audapter(3, 'nfb', 1, toPrompt);
         end       
         if (isfield(p,'trialLen'))  %SC(2008/06/22)
             Audapter(3,'triallen',p.trialLen, toPrompt);
@@ -180,6 +185,43 @@ switch(action)
             Audapter(3, 'stereomode', p.stereoMode, toPrompt);
         end
         
+        if (isfield(p, 'tsgNTones'))
+            Audapter(3, 'tsgNTones', p.tsgNTones, toPrompt);
+        end
+        if (isfield(p, 'tsgToneDur'))
+            Audapter(3, 'tsgToneDur', p.tsgToneDur, toPrompt);
+        end
+        if (isfield(p, 'tsgToneFreq'))
+            Audapter(3, 'tsgToneFreq', p.tsgToneFreq, toPrompt);
+        end
+        if (isfield(p, 'tsgToneAmp'))
+            Audapter(3, 'tsgToneAmp', p.tsgToneAmp, toPrompt);
+        end
+        if (isfield(p, 'tsgToneRamp'))
+            Audapter(3, 'tsgToneRamp', p.tsgToneRamp, toPrompt);
+        end
+        if (isfield(p, 'tsgInt'))
+            Audapter(3, 'tsgInt', p.tsgInt, toPrompt);
+        end
+        
+        if (isfield(p, 'delayFrames'))
+            Audapter(3, 'delayFrames', p.delayFrames, toPrompt);
+        end
+        
+        if (isfield(p, 'wgFreq'))
+            Audapter(3, 'wgFreq', p.wgFreq, toPrompt);
+        end
+        if (isfield(p, 'wgAmp'))
+            Audapter(3, 'wgAmp', p.wgAmp, toPrompt);
+        end
+        if (isfield(p, 'wgTime'))
+            Audapter(3, 'wgTime', p.wgTime, toPrompt);
+        end
+        
+        if (isfield(p, 'dataPB'))
+            Audapter(3, 'dataPB', p.dataPB, toPrompt);
+        end
+        
         return;
 %%            
     case 'process',
@@ -231,8 +273,8 @@ switch(action)
                 
                 offS = offS + 1;
                 data.pitchShiftRatio = dataMat(:, offS);
-                
-                data.params         = p;
+                                
+                data.params         = getAudapterParamSet();
 
                 varargout(1)        = {data};
 
