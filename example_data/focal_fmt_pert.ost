@@ -1,0 +1,15 @@
+# Online status tracking (OST) configuration file
+rmsSlopeWin = 0.030000
+
+# Main section: Heuristic rules for tracking
+n = 8
+0 INTENSITY_RISE_HOLD 0.02 0.05 {} # Detect voicing onset during "I"
+2 INTENSITY_RATIO_RISE 0.9666 0.0200 {} # Detect the onset of the [s] in "said"
+4 INTENSITY_RATIO_FALL_HOLD 0.9666 0.004 {} # Detect the offset of the [s]
+6 INTENSITY_RISE_HOLD_POS_SLOPE 0.01 0.020 {} # Detect the onset of [eh] in "said"
+8 INTENSITY_FALL 0.01 0.0250 {} # Detect the offset of [eh] in "said"
+10 INTENSITY_RISE_HOLD_POS_SLOPE 0.01 0.020 {} # Detect the onset of [ae] in "pap"
+12 INTENSITY_FALL 0.01 0.0250 {} # Detect the offset of [ae] in "pap"
+14 OST_END NaN NaN {}
+
+n = 0

@@ -1,0 +1,8 @@
+# Section 1 (Time warping): tBegin, rate1, dur1, durHold, rate2 
+0
+
+# Section 2: stat pitchShift(st) gainShift(dB) fmtPertAmp fmtPertPhi(rad)
+1
+0, 2.0, 0, 0, 0
+
+

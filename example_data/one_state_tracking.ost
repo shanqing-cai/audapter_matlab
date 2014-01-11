@@ -1,0 +1,8 @@
+# Online status tracking (OST) configuration file
+rmsSlopeWin = 0.030000
+
+# Main section: Heuristic rules for tracking
+n = 1
+0 OST_END NaN NaN {} # Compulsory ending rule
+
+n = 0

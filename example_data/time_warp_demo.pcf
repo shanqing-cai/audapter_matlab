@@ -1,0 +1,13 @@
+# Section 1 (Time warping): (ostStat_initial), tBegin, rate1, dur1, durHold, rate2 
+1
+2, 0.1, 0.5, 0.2, 0.1, 2
+
+# Section 2: stat pitchShift(st) gainShift(dB) fmtPertAmp fmtPertPhi(rad)
+7
+0, 0.0, 0, 0, 0
+1, 0.0, 0, 0, 0
+2, 0.0, 0, 0, 0 # Onset of voicing
+3, 0.0, 0, 0, 0
+4, 0.0, 0, 0, 0
+5, 0.0, 0, 0, 0
+6, 0.0, 0, 0, 0

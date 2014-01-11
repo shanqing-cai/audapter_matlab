@@ -9,7 +9,9 @@ frameLen = 96;  % Before downsampling
 defaultGender = 'female';
 
 %% Visualization configuration
-ostMult = 500;
+gray = [0.5, 0.5, 0.5];
+ostMult = 250;
+legendFontSize = 8;
 
 %% 
 Audapter('deviceName', audioInterfaceName);
@@ -56,6 +58,36 @@ if isequal(mode, 'persistentFormantShift')
     visName = 'Persistent formant shift';
     
 elseif isequal(mode, 'focalFormantShift');
+    gender = varargin{1};
+     
+    ostFN = '../example_data/focal_fmt_pert.ost';
+    pcfFN = '../example_data/focal_fmt_pert.pcf';
+    
+    check_file(ostFN);
+    check_file(pcfFN);
+    Audapter('ost', ostFN, 0);
+    Audapter('pcf', pcfFN, 0);
+    
+    params = getAudapterDefaultParams(gender);
+    
+    params.bShift = 1;
+    params.bRatioShift = 1;
+    params.bMelShift = 0;    
+    
+    AudapterIO('init', params);
+    
+    Audapter('reset');
+    Audapter('start');
+    fprintf(1, 'Please say "I said pap again"...');
+    pause(2);
+    fprintf(1, '\n');
+    Audapter('stop'); 
+    
+    
+    bVis = 1;
+    bVisFmts = 1;
+    bVisOST = 1;
+    visName = 'Focal formant shift';
     
 elseif isequal(mode, 'persistentPitchShift')
     ostFN = '../example_data/one_state_tracking.ost';
@@ -136,8 +168,9 @@ elseif isequal(mode, 'globalDAF_multiVoice')
     Audapter('pcf', '', 0);
     
     globalDelay = [0.100, 0.200];  % Unit: s
+%     globalDelay = [0.200, 0.400];  % Unit: s
     gain = [1.0, 1.0];
-    pitchShiftRatio = 2 .^ ([-2, 4] / 12);
+    pitchShiftRatio = 2 .^ ([-2, 2] / 12);
     
     params = getAudapterDefaultParams(defaultGender);
     frameDur = params.frameLen / params.sr;
@@ -239,7 +272,7 @@ if bVis
     show_spectrogram(data.signalIn, data.params.sr, 'noFig');
     
     if bVisFmts
-        plot(tAxis, data.fmts(:, 1 : 2), 'w');
+        plot(tAxis, data.fmts(:, 1 : 2), 'Color', gray);
     end
     if bVisOST
         plot(tAxis, data.ost_stat * ostMult, 'b-');
@@ -259,10 +292,12 @@ if bVis
     
     legendItems = {};
     if bVisFmts
-        plot(tAxis, data.fmts(:, 1 : 2), 'w');
+        plot(tAxis, data.fmts(:, 1 : 2), 'Color', gray);
         plot(tAxis, data.sfmts(:, 1 : 2), 'g');
-        legendItems{end + 1} = 'Original F1 and f2';
-        legendItems{end + 1} = 'Shifted F1 and f2';
+        legendItems{end + 1} = 'Original F1';
+        legendItems{end + 1} = 'Original F2';
+        legendItems{end + 1} = 'Shifted F1';
+        legendItems{end + 1} = 'Shifted F2';
     end
     if bVisOST
         plot(tAxis, data.ost_stat * ostMult, 'b-');
@@ -278,7 +313,8 @@ if bVis
          sprintf('Output sound: %s', visName), 'FontSize', 12);
      
     if ~isempty(legendItems)
-        legend(legendItems);
+        legend(legendItems, 'FontSize', legendFontSize, ...
+               'Location', 'Southwest');
     end
 end
 
