@@ -79,8 +79,8 @@ if isequal(mode, 'persistentFormantShift')
         params.fb = varargin{fsic(varargin, 'fb') + 1};
     end
     
-    params.trialLen = 1.5;
-    params.rampLen = 0.25;
+%     params.trialLen = 1.5;
+%     params.rampLen = 0.25;
     
     AudapterIO('init', params);
     
