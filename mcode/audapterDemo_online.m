@@ -13,6 +13,8 @@ gray = [0.5, 0.5, 0.5];
 ostMult = 250;
 legendFontSize = 8;
 
+noiseWavFN = 'mtbabble48k.wav';
+
 %% 
 Audapter('deviceName', audioInterfaceName);
 Audapter('setParam', 'downFact', downFact, 0);
@@ -44,14 +46,50 @@ if isequal(mode, 'persistentFormantShift')
     params.bRatioShift = 1;
     params.bMelShift = 0;
     
+    % Selecte feedback mode
+    if isempty(fsic(varargin, 'fb'))
+       params.fb = 1; 
+    else
+        fbMode = varargin{fsic(varargin, 'fb') + 1};
+        if ~(fbMode >= 0 && fbMode <=4 && floor(fbMode) == fbMode)
+            error('Invalid fb mode: %d', fbMode);
+        end
+        
+        if fbMode >= 2 && fbMode <= 4
+            %--- Load noise ---%
+            maxPBSize = Audapter('getMaxPBLen');
+            
+            check_file(noiseWavFN);
+            [w, fs] = wavread(noiseWavFN);
+    
+            if fs ~= params.sr * params.downFact
+                w = resample(w, params.sr * params.downFact, fs);              
+            end
+            if length(w) > maxPBSize
+                w = w(1 : maxPBSize);
+            end
+            Audapter('setParam', 'datapb', w, 1);  
+        end
+        
+        if fbMode == 3
+            params.fb3Gain = 0.1;
+        end
+        
+        fprintf(1, 'Setting fb to %d\n', fbMode);
+        params.fb = varargin{fsic(varargin, 'fb') + 1};
+    end
+    
+    params.trialLen = 1.5;
+    params.rampLen = 0.25;
+    
     AudapterIO('init', params);
     
     Audapter('reset');
     Audapter('start');
     fprintf(1, 'Please say something...');
-    pause(2);
+    pause(3);
     fprintf(1, '\n');
-    Audapter('stop');    
+    Audapter('stop');
     
     bVis = 1;
     bVisFmts = 1;

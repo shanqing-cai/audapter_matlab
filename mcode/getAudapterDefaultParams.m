@@ -98,13 +98,13 @@ p.gainAdapt     =0;
 % Trial-related
 p.fb=1; % Voice only;
 
-p.trialLen=3; %SC(2008/06/22) % Maximum allowable: 
+p.trialLen = 0; %SC(2008/06/22) % 0 corresponds to no length limit (circular)
 
 if ~isempty(findStringInCell(varargin,'trialLen'))
     p.trialLen=varargin{findStringInCell(varargin,'trialLen')+1};
 end
 
-p.rampLen=0.25; %SC(2008/06/22)
+p.rampLen = 0; %SC(2008/06/22) % 0 corresponds to no ramp
 
 % SC(2009/02/06) RMS clipping protection
 p.bRMSClip = 0;

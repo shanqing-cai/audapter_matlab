@@ -322,6 +322,11 @@ mbw = mbw - mean(mbw);
 mb_rms = rms(mbw);
 mbw = mbw / mb_rms;
 
+maxPBSize = Audapter('getMaxPBLen');
+if length(mbw) > maxPBSize
+    mbw = mbw(1 : maxPBSize);
+end
+
 Audapter(3, 'datapb', mbw, 0);
 
 %% expt

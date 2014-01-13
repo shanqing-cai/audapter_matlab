@@ -31,6 +31,7 @@ for i1 = 1 : numel(paramNames)
 end
 
 % --- Aliased paramters --- %
+p.rmsThresh = p.rmsThr;
 p.sr = p.sRate;
 
 return

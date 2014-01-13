@@ -1,5 +1,5 @@
 %=== Subject information ===%
-SUBJECT_ID TS_FMT_20131203_FMT06
+SUBJECT_ID TS_FMT_20140113_FMT02
 SUBJECT_GENDER male       % {female | male}
 SUBJECT_DOB 1-JAN-1983      % Follow the format: DAY-MON-YEAR (e.g., 2-FEB-1990)
 SUBJECT_GROUP AWS
