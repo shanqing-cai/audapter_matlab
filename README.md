@@ -2,10 +2,15 @@ Audapter is a software package for configurable real-time manipulation of acoust
 
 
 1)	Formant frequencies (F1 and F2), in both static and time-varying ways
+
 2)	Fundamental frequency (F0, or pitch)
+
 3)	Local timing, through time-warping
+
 4)	Local intensity
+
 5)	Global time delay (delayed auditory feedback)
+
 6)	Global intensity
 
 
