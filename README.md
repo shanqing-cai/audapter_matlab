@@ -15,7 +15,9 @@ Audapter is a software package for configurable real-time manipulation of acoust
 
 
 
-This repository contain the MATLAB code for Audapter. The C++ MEX core of Audapter has not been made public yet. To request it, write to the author of this repository. 
+This repository contains the MATLAB code for Audapter. 
+
+The C++ source code for the MEX core of Audapter has not been made public yet. To request it, please write to the author of this repository. 
 
 You can download a copy of Audapter manual at: http://scai.io/AudapterManual.pdf
 
