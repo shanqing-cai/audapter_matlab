@@ -21,3 +21,5 @@ The C++ source code for the MEX core of Audapter has not been made public yet. T
 
 You can download a copy of Audapter manual at: http://scai.io/AudapterManual.pdf
 
+The MEX files can be downloaded at: http://scai.io/
+
