@@ -107,7 +107,7 @@ for i1=1:numel(items)
             str=str(1:idxp(1)-1);
         end
     else
-        fprintf('WARNING: item %s not specified.\n',item);
+        fprintf('WARNING: item %s not specified.\n', item{1});
         config.(item{1})=[];
         continue;
     end
