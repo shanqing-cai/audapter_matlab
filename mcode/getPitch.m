@@ -1,7 +1,7 @@
 function f0s=getPitch(varargin)
 %% Load signal and specify parameters
 if (nargin==0)
-    [sig,sr]=wavread('site2.wav');        % Site2: Fric.(9338:11400),Vowel:(11700:16380)
+    [sig,sr]=read_audio('site2.wav');        % Site2: Fric.(9338:11400),Vowel:(11700:16380)
 else
 %     fileName=varargin{1};
 %     load(fileName); % gives data

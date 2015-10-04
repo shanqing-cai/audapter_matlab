@@ -3,7 +3,7 @@ MAX_PB_SIZE = 120000;
 fs1 = 48000;
 rampDur = 0.1;
 
-[w, fs0] = wavread(wavFN);
+[w, fs0] = read_audio(wavFN);
 w = resample(w, fs1, fs0);
 
 if length(w) > MAX_PB_SIZE

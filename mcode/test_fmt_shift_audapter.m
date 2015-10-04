@@ -28,7 +28,7 @@ Audapter(9, pcf_fn, 1);
 % Audapter(3, 'bpitchshift', 0, 1);
 
 %% Load the multi-talker babble noise
-[mbw, fs_mtb]=wavread('mtbabble48k.wav');
+[mbw, fs_mtb]=read_audio('mtbabble48k.wav');
 
 % Normalize the amplitude of the mtb noise
 mbw = mbw - mean(mbw);
@@ -89,6 +89,6 @@ show_spectrogram(data1.signalOut, fs, 'noFig');
 plot(tAxis, data1.fmts, 'b');
 plot(tAxis, data1.sfmts, 'g');
 
-% soundsc(data1.signalIn, fs)
-% soundsc(data1.signalOut, fs);
+% play_audio(data1.signalIn, fs)
+% play_audio(data1.signalOut, fs);
 return

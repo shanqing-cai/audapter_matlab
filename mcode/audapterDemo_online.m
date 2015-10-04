@@ -60,7 +60,7 @@ if isequal(mode, 'persistentFormantShift')
             maxPBSize = Audapter('getMaxPBLen');
             
             check_file(noiseWavFN);
-            [w, fs] = wavread(noiseWavFN);
+            [w, fs] = read_audio(noiseWavFN);
     
             if fs ~= params.sr * params.downFact
                 w = resample(w, params.sr * params.downFact, fs);              

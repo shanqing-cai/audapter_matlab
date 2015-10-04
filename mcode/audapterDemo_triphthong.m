@@ -59,7 +59,9 @@ taxis2 = 0 : frameDur : frameDur * (size(data1.fmts ,1) - 1);
 
 figure('Position',[200,200,800,400]);
 [s, f, t]=spectrogram(data1.signalIn, 64, 48, 1024, data1.params.sr);
+colormap jet;
 [s2, f2, t2]=spectrogram(data1.signalOut, 64, 48, 1024, data1.params.sr);
+colormap jet;
 subplot(121);
 imagesc(t, f, 10 * log10(abs(s)));  hold on;
 axis xy;
@@ -84,8 +86,8 @@ title('Shifted');
 %%
 if (toPlay)
     drawnow;
-    wavplay(data1.signalIn, data1.params.sr);
-    wavplay(data1.signalOut, data1.params.sr);
+    play_audio(data1.signalIn, data1.params.sr);    
+    play_audio(data1.signalOut, data1.params.sr);
 end
 
 return

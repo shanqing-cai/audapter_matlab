@@ -315,7 +315,7 @@ else
 end
 
 %% Load the multi-talker babble noise
-[mbw, fs_mtb]=wavread('mtbabble48k.wav');
+[mbw, fs_mtb]=read_audio('mtbabble48k.wav');
 
 % Normalize the amplitude of the mtb noise
 mbw = mbw - mean(mbw);

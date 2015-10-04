@@ -60,7 +60,7 @@ Audapter('pcf', pcf_fn, 0);
 % Audapter('setParam', 'bbypassfmt', 0, 1); 
 
 %% Load the multi-talker babble noise
-[mbw, fs_mtb]=wavread('mtbabble48k.wav');
+[mbw, fs_mtb] = read_audio('mtbabble48k.wav');
 
 % Normalize the amplitude of the mtb noise
 mbw = mbw - mean(mbw);
@@ -154,8 +154,8 @@ drawnow;
 
 %%
 if bPlay
-    soundsc(data1.signalIn, fs)
-    soundsc(data1.signalOut, fs);
+    play_audio(data1.signalIn, fs);
+    play_audio(data1.signalOut, fs);
 end
 
 
