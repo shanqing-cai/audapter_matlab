@@ -225,6 +225,7 @@ function varargout=compareFormTrackParams(expDir,varargin)
 
 						[s,f,t]=spectrogram(data.signalIn,128,120,1024,data.params.sr);
 						imagesc(t*1e3,f,log10(abs(s)));
+                        colormap jet;
 						axis xy;    hold on;
 
 						taxis=1e3*(0:t0:t0*(size(fmts1,1)-1));

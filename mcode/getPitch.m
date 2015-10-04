@@ -72,6 +72,7 @@ end
 % [s,f,t]=spectrogram(sig,96,80,1024,sr);
 % figure;
 % imagesc(t,f,log10(abs(s)));
+% colormap jet;
 % hold on;
 % axis xy;
 % tt=((nStart+hLen*nFrame)/sr):(nFrame/sr):((nStart+hLen*nFrame)/sr)+(nFrame/sr)*(length(f0s)-1);
