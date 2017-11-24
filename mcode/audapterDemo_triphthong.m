@@ -3,11 +3,24 @@ function audapterDemo_triphthong(varargin)
 gender = 'female';
 
 toPlay = ~isempty(fsic(varargin, '--play')) || ~isempty(fsic(varargin, '-p'));
+trackPitch = ~isempty(fsic(varargin, '--track_pitch'));
+pitchGender = gender;
+if ~isempty(fsic(varargin, '--pitch_gender'))
+    pitchGender = varargin{fsic(varargin, '--pitch_gender') + 1};
+end
+customWav = '';
+if ~isempty(fsic(varargin, '--custom_wav'))
+    customWav = varargin{fsic(varargin, '--custom_wav') + 1};
+end
 
 downFact = 3; % Downsampling factor
 fsNoDS = 48000; % Sampling rate, before downsampling
 frameLenNoDS = 96;  % Frame length before downsampling (# of samples)
 nLPC = 17;  % Order of linar prediction (LP)
+
+if ~isempty(fsic(varargin, '--framelen_no_ds'))
+    frameLenNoDS = varargin{fsic(varargin, '--framelen_no_ds') + 1};
+end
 
 %% Set default parameters
 p=getAudapterDefaultParams(gender);
@@ -27,6 +40,12 @@ sigIn = data.signalIn;
 sigIn = resample(sigIn, fsNoDS, data.params.sr);     
 sigInCell = makecell(sigIn, frameLenNoDS);
 
+if ~isempty(customWav)
+    [w, wfs] = audioread(customWav);
+    sigIn = resample(w, fsNoDS, wfs);
+    sigInCell = makecell(sigIn, frameLenNoDS);
+end
+
 AudapterIO('reset');   % Reset;
 
 %%
@@ -37,6 +56,17 @@ data.params.nLPC = nLPC;
 
 data.params.bRatioShift = 0;
 data.params.bMelShift = 0;
+
+if trackPitch
+    data.params.bTrackPitch = 1;
+    if isequal(lower(pitchGender), 'female')
+        data.params.pitchLowerBoundHz = 120;
+        data.params.pitchUpperBoundHz = 360;
+    elseif isequal(lower(pitchGender), 'male')
+        data.params.pitchLowerBoundHz = 80;
+        data.params.pitchUpperBoundHz = 160;
+    end
+end
 
 % Nullify OST and PCF, so that they won't override the perturbation field
 Audapter('ost', '', 0);
@@ -82,6 +112,12 @@ set(gca, 'YLim', [0, 4000]);
 xlabel('Time (s)');
 ylabel('Frequency (Hz)');
 title('Shifted');
+
+%%
+if trackPitch
+    figure;
+    plot(data1.pitchHz);
+end
 
 %%
 if (toPlay)

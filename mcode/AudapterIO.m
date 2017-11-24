@@ -218,6 +218,16 @@ switch(action)
             Audapter(3, 'wgTime', p.wgTime, toPrompt);
         end
         
+        if isfield(p, 'bTrackPitch')
+            Audapter(3, 'btrackpitch', p.bTrackPitch, toPrompt);
+        end
+        if isfield(p, 'pitchLowerBoundHz')
+            Audapter(3, 'pitchlowerboundhz', p.pitchLowerBoundHz, toPrompt);
+        end
+        if isfield(p, 'pitchUpperBoundHz')
+            Audapter(3, 'pitchUpperboundhz', p.pitchUpperBoundHz, toPrompt);
+        end
+        
         if (isfield(p, 'dataPB'))
             Audapter(3, 'dataPB', p.dataPB, toPrompt);
         end
@@ -273,7 +283,12 @@ switch(action)
                 
                 offS = offS + 1;
                 data.pitchShiftRatio = dataMat(:, offS);
-                                
+                
+                offS = offS + 1;
+                if size(dataMat, 2) >= offS
+                    data.pitchHz = dataMat(:, offS);
+                end
+
                 data.params         = getAudapterParamSet();
 
                 varargout(1)        = {data};
