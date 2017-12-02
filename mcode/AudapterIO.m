@@ -218,14 +218,41 @@ switch(action)
             Audapter(3, 'wgTime', p.wgTime, toPrompt);
         end
         
-        if isfield(p, 'bTrackPitch')
-            Audapter(3, 'btrackpitch', p.bTrackPitch, toPrompt);
+        if isfield(p, 'bTimeDomainShift')
+            Audapter(3, 'btimedomainshift', p.bTimeDomainShift, toPrompt);
+        else
+            Audapter(3, 'btimedomainshift', 0, toPrompt);
         end
         if isfield(p, 'pitchLowerBoundHz')
             Audapter(3, 'pitchlowerboundhz', p.pitchLowerBoundHz, toPrompt);
+        else
+            Audapter(3, 'pitchlowerboundhz', 0, toPrompt);
         end
         if isfield(p, 'pitchUpperBoundHz')
-            Audapter(3, 'pitchUpperboundhz', p.pitchUpperBoundHz, toPrompt);
+            Audapter(3, 'pitchupperboundhz', p.pitchUpperBoundHz, toPrompt);
+        else
+            Audapter(3, 'pitchupperboundhz', 0, toPrompt);
+        end
+        if isfield(p, 'timeDomainPitchShiftSchedule')
+            if ndims(p.timeDomainPitchShiftSchedule) ~= 2
+                error('Unexpected number of dimensions in p.timeDomainPitchShiftSchedule: %d',...
+                    ndims(p.timeDomainPitchShiftSchedule));
+            end
+            if length(p.timeDomainPitchShiftSchedule) == 1
+                Audapter(3, 'timedomainpitchshiftschedule', ...
+                    p.timeDomainPitchShiftSchedule, toPrompt);
+            elseif size(p.timeDomainPitchShiftSchedule, 2) == 2
+                % Flatten in row-major order.
+                psSched = transpose(p.timeDomainPitchShiftSchedule);
+                Audapter(3, 'timedomainpitchshiftschedule', psSched(:), toPrompt);
+            elseif size(p.timeDomainPitchShiftSchedule, 1) == 2
+                Audapter(3, 'timedomainpitchshiftschedule',...
+                    p.timeDomainPitchShiftSchedule(:), toPrompt);
+            else
+                error('Unexpected shape in p.timeDomainPitchShiftSchedule');
+            end
+        else
+            Audapter(3, 'timedomainpitchshiftschedule', 1.0, toPrompt);
         end
         
         if (isfield(p, 'dataPB'))
@@ -287,6 +314,11 @@ switch(action)
                 offS = offS + 1;
                 if size(dataMat, 2) >= offS
                     data.pitchHz = dataMat(:, offS);
+                end
+                
+                offS = offS + 1;
+                if size(dataMat, 2) >= offS
+                    data.shiftedPitchHz = dataMat(:, offS);
                 end
 
                 data.params         = getAudapterParamSet();

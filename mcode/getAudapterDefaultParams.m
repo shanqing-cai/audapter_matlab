@@ -159,9 +159,10 @@ end
 p.bPitchShift = 0;
 
 %%
-p.bTrackPitch = 0;
+p.bTimeDomainShift = 0;
 p.pitchLowerBoundHz = 0;
 p.pitchUpperBoundHz = 0;
+p.timeDomainPitchShiftSchedule = 1.0;
 
 %%
 p.stereoMode = 1; % Left-right audio identical
