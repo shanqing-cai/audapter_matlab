@@ -32,6 +32,13 @@ if ~isempty(fsic(varargin, '--save_wav'))
     end
 end
 
+algorithm = '';
+if ~isempty(fsic(varargin, '--pp_peaks'))
+    algorithm = 'pp_peaks';
+elseif ~isempty(fsic(varargin, '--pp_valleys'))
+    algorithm = 'pp_valleys';
+end
+
 %% Get parameters for time-domain shifting.
 params = getAudapterDefaultParams(pitchGender);
 
@@ -58,6 +65,12 @@ params.nDelay = 7;
 % Time-domain shift requires bCepsLift = 1.
 params.bCepsLift = 1;
 
+if isempty(algorithm)
+    params.timeDomainPitchShiftAlgorithm = 'pp_none';
+else
+    params.timeDomainPitchShiftAlgorithm = algorithm;
+end
+
 % The following line specifies the time-domain pitch perturbation schedule.
 % It is a 3x2 matrix. Each row corresponds to an "anchor point" in time.
 % The 1st element of the row is the time relative to the crossing of the
@@ -74,7 +87,8 @@ params.bCepsLift = 1;
 % ramp up the pitch-shift ratio from none to 100 cents in a period of 1
 % sec; finally hold the 100-cent shift until the end of the supra-threshold
 % event".
-params.timeDomainPitchShiftSchedule = [0, 1.0; 1, 1.0; 2, 1.0595];
+params.timeDomainPitchShiftSchedule = [0, 1.0; 1, 1.0; 2, 0.9439];
+% params.timeDomainPitchShiftSchedule = [0, 1.0; 1, 1.0; 2, 1.0595];
 params.rmsThresh = 0.011;
 
 AudapterIO('init', params);
@@ -178,7 +192,7 @@ ylabel('Pitch (Hz)');
 %% Play input and output sound.
 if toPlay
     drawnow;
-    play_audio(data.signalIn, data.params.sr);
+%     play_audio(data.signalIn, data.params.sr);
     play_audio(data.signalOut, data.params.sr);
 end
 
