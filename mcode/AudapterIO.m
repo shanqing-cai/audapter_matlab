@@ -143,6 +143,10 @@ switch(action)
             Audapter(3,'fn2',1500, toPrompt);
         end
         
+        if (isfield(p, 'fb2Gain'));
+            Audapter(3, 'fb2gain', p.fb2Gain, toPrompt);
+        end
+        
         if (isfield(p, 'fb3Gain'));
             Audapter(3, 'fb3gain', p.fb3Gain, toPrompt);
         end
@@ -255,21 +259,6 @@ switch(action)
             Audapter(3, 'timedomainpitchshiftschedule', 1.0, toPrompt);
         end
         
-        if isfield(p, 'timeDomainPitchShiftAlgorithm')
-            if isequal(p.timeDomainPitchShiftAlgorithm, 'pp_none')
-                Audapter(3, 'timedomainpitchshiftalgorithm', 0);
-            elseif isequal(p.timeDomainPitchShiftAlgorithm, 'pp_peaks')
-                Audapter(3, 'timedomainpitchshiftalgorithm', 1);
-            elseif isequal(p.timeDomainPitchShiftAlgorithm, 'pp_valleys')
-                Audapter(3, 'timedomainpitchshiftalgorithm', 2);
-            else
-               error('Invalid value in timeDomainPitchShiftAlgorithm ''%s\''', ...
-                     p.timeDomainPitchShiftAlgorithm);
-            end
-        else
-            Audapter(3, 'timedomainpitchshiftalgorithm', 0);
-        end
-
         if (isfield(p, 'dataPB'))
             Audapter(3, 'dataPB', p.dataPB, toPrompt);
         end

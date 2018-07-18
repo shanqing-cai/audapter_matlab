@@ -121,6 +121,8 @@ end
 p.bBypassFmt = 0;
 
 %% 
+p.fb2Gain = 1;
+
 p.fb3Gain = dBSPL2WaveAmp(-Inf);
 
 p.fb4GainDB = 10;
