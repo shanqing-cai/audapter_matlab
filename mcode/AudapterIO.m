@@ -260,17 +260,17 @@ switch(action)
         end
         if isfield(p, 'timeDomainPitchShiftAlgorithm')
             if isequal(p.timeDomainPitchShiftAlgorithm, 'pp_none')
-                Audapter(3, 'timedomainpitchshiftalgorithm', 0);
+                Audapter(3, 'timedomainpitchshiftalgorithm', 0, toPrompt);
             elseif isequal(p.timeDomainPitchShiftAlgorithm, 'pp_peaks')
-                Audapter(3, 'timedomainpitchshiftalgorithm', 1);
+                Audapter(3, 'timedomainpitchshiftalgorithm', 1, toPrompt);
             elseif isequal(p.timeDomainPitchShiftAlgorithm, 'pp_valleys')
-                Audapter(3, 'timedomainpitchshiftalgorithm', 2);
+                Audapter(3, 'timedomainpitchshiftalgorithm', 2, toPrompt);
             else
                 error('Invalid value in timeDomainPitchShiftAlgorithm ''%s\''', ...
                     p.timeDomainPitchShiftAlgorithm);
             end
         else
-            Audapter(3, 'timedomainpitchshiftalgorithm', 0);
+            Audapter(3, 'timedomainpitchshiftalgorithm', 0, toPrompt);
         end
 
         if (isfield(p, 'dataPB'))
