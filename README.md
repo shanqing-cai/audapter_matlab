@@ -21,5 +21,5 @@ The C++ source code for the MEX core of Audapter is open-source: https://github.
 
 You can download a copy of Audapter manual at: http://sites.bu.edu/guentherlab/files/2016/11/AudapterManual.pdf
 
-The MEX files (32-bit and 64-bit) can be downloaded from: http://sites.bu.edu/guentherlab/files/2016/11/Audapter_MEX-Files.zip
+The MEX files (32-bit and 64-bit) can be downloaded from: https://github.com/shanqing-cai/audapter_mex/tree/master/bin
 
