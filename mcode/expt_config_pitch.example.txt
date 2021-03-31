@@ -30,7 +30,7 @@ FULL_SCHEDULE_FILE ""
 ONSET_DELAY_MS {up-[0], down-[0]} % Unit: ms
 NUM_SHIFTS {up-1, down-1}
 INTER_SHIFT_DELAYS_MS {up-[150-200], down-[150-200]} % Unit: ms
-PITCH_SHIFTS_CENT {up-[100], down-[-1-0]} % Unit: cent
+PITCH_SHIFTS_CENT {up-[100], down-[-100]} % Unit: cent
 INT_SHIFTS_DB {up-[0], down-[0]} % Unit: dB
 F1_SHIFTS_RATIO {up-[0], down-[0]} % Unit: ratio
 F2_SHIFTS_RATIO {up-[0], down-[0]} % Unit: ratio
