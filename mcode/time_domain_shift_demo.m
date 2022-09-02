@@ -2,8 +2,8 @@ function time_domain_shift_demo(pitchGender, isOnline, varargin)
 %% Offline and online demo for time-domain pitch shifting.
 % Usage examples:
 % - For offline demo:
-%   time_domain_shift_demo('female', 0, '--wav', 'C:\speechres\samples\dante\Pilot22SF2Trial5_micIn.wav', '--play');
-%   time_domain_shift_demo('male', 0, '--wav', 'C:\speechres\samples\dante\Pilot26SF3Trial4_micIn.wav', '--play');
+%   time_domain_shift_demo('female', 0, '--wav', 'sustained-eee-female.wav', '--play');
+%   time_domain_shift_demo('male', 0, '--wav', 'sustained-eee-male.wav', '--play');
 %  
 % - For online demo:
 %   time_domain_shift_demo('female', 1);
