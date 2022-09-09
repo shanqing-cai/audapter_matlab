@@ -19,7 +19,7 @@ This repository contains the MATLAB code for Audapter.
 
 The C++ source code for the MEX core of Audapter is open-source: https://github.com/shanqing-cai/audapter_mex
 
-You can download a copy of Audapter manual at: http://sites.bu.edu/guentherlab/files/2016/11/AudapterManual.pdf
+You can download a copy of Audapter manual at: https://sites.bu.edu/guentherlab/files/2022/09/AudapterManual_2.1.5.pdf
 
 The MEX files (64-bit) can be downloaded from: https://github.com/shanqing-cai/audapter_mex/tree/master/bin
 
